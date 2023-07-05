@@ -6,7 +6,7 @@
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 03 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 08 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>About</title>
       <link>http://Niccolo10.github.io/about/</link>
@@ -15,15 +15,6 @@
       <guid>http://Niccolo10.github.io/about/</guid>
       <description>About Me Welcome to my webpage! I am thrilled to share my passion for cybersecurity with you. With a background in Informatics Engineering and specialized studies in cybersecurity, I am dedicated to making a meaningful impact in this rapidly evolving field.
 During my Bachelor&amp;rsquo;s degree at the University of Firenze in Italy, I developed a strong foundation in algorithms, programming, networks, and database systems. This solid base sparked my interest in cybersecurity, driving me to pursue advanced studies and specialize in this exciting domain.</description>
-    </item>
-    
-    <item>
-      <title>DWT-SVD_DWT-DCT-image-watermaking</title>
-      <link>http://Niccolo10.github.io/projects/watermarking/</link>
-      <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/projects/watermarking/</guid>
-      <description>&lt;p&gt;Embedding of a watermak using DWT-SVD and a DWT-DCT tranform.&lt;/p&gt;</description>
     </item>
     
     <item>
