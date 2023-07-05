@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C&#43;&#43; on My New Hugo Site</title>
+    <link>http://Niccolo10.github.io/tags/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on My New Hugo Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 08 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Todo List </title>
+      <link>http://Niccolo10.github.io/projects/todolist/</link>
+      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/projects/todolist/</guid>
+      <description>&lt;p&gt;TodoApp is a user-friendly and feature-rich task management application that helps users stay organized, increase productivity, and effortlessly manage their tasks and to-do lists.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

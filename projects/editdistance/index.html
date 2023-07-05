@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+Edit-Distance wiht/without N-Gram | Niccolò Parlanti
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="http://Niccolo10.github.io/projects/editdistance/" >
+<link href="/sass/main.min.bd50fd55bdd49c6c06dae8bc3b639dd10bbead210d44d3c4f5835f726426ea0f.css" rel="stylesheet">
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a href="http://Niccolo10.github.io/">
+                <span class="terminal">root@cybersec ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu"/>
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/projects" title="" >
+                        ~/projects</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/writeups" title="" >
+                        ~/writeups</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>Edit-Distance wiht/without N-Gram</h1>
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/python/">#Python</a><span></span>
+    <a href="/tags/algorithm/">#algorithm</a></dd>
+            
+            
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2023-04-08">April 8, 2023</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>2 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p>This project implements the Edit Distance algorithm with and without N-Gram support, providing a versatile tool for string similarity and comparison tasks in various domains.</p>
+<p>This project implements the Edit Distance algorithm with and without N-Gram support. The Edit Distance algorithm calculates the minimum number of operations required to transform one string into another. It is useful for tasks like spell checking, DNA sequence analysis, and natural language processing.</p>
+<p>The implementation consists of two main parts: the Edit Distance algorithm itself and the N-Gram support.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Code snippet for the edit_distance function</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">edit_distance</span>(string1, string2):
+    <span style="color:#75715e"># Implementation of the edit distance algorithm</span>
+    <span style="color:#75715e"># ...</span>
+    <span style="color:#66d9ef">return</span> distance</code></pre></div>
+<p>In addition to the basic Edit Distance algorithm, this project also incorporates N-Gram support. N-Grams are contiguous subsequences of characters or words in a given input string. They are used to enhance the Edit Distance algorithm by considering the similarity between two strings based on their shared N-Grams.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Code snippet for the nGramCreator function</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">nGramCreator</span>(input_string, n):
+    <span style="color:#75715e"># Implementation of the N-Gram generation</span>
+    <span style="color:#75715e"># ...</span>
+    <span style="color:#66d9ef">return</span> ngrams</code></pre></div>
+<p>The Jaccard function computes the Jaccard similarity between two sets of N-Grams. This similarity measure helps in determining the similarity between two strings based on their N-Grams.</p>
+<p>The project includes test functions to evaluate the performance of the Edit Distance algorithm with and without N-Gram support. For example, the TestEditDistance function tests the algorithm on a dictionary of Italian words and finds the word with the minimum edit distance from the input word.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Code snippet for the TestEditDistance function</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">TestEditDistance</span>(input_word, dictionary):
+    <span style="color:#75715e"># Test function to find the word with minimum edit distance</span>
+    <span style="color:#75715e"># ...</span>
+    <span style="color:#66d9ef">return</span> result</code></pre></div>
+<p>The project also includes various test cases to evaluate the algorithm&rsquo;s performance in different scenarios, such as testing on words with added characters, removed characters, and swapped characters.</p>
+<p>The project generates graphs to visualize the performance of the Edit Distance algorithm with and without N-Gram support. These graphs provide insights into the efficiency of the algorithms in different scenarios.</p>
+<p>You can find my full project on this <a href="https://github.com/Niccolo10/N-GramEditDistance">Github Repository</a>.</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2023 Niccolò Parlanti
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
