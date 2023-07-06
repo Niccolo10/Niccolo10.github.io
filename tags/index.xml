@@ -6,34 +6,7 @@
     <description>Recent content in Tags on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 08 Apr 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>CSS</title>
-      <link>http://Niccolo10.github.io/tags/css/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/tags/css/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>HTML</title>
-      <link>http://Niccolo10.github.io/tags/html/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/tags/html/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>JavaScript</title>
-      <link>http://Niccolo10.github.io/tags/javascript/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/tags/javascript/</guid>
-      <description></description>
-    </item>
-    
+    <lastBuildDate>Tue, 18 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Python</title>
       <link>http://Niccolo10.github.io/tags/python/</link>
@@ -58,6 +31,33 @@
       <pubDate>Tue, 18 Oct 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/watermark/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CSS</title>
+      <link>http://Niccolo10.github.io/tags/css/</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/tags/css/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>HTML</title>
+      <link>http://Niccolo10.github.io/tags/html/</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/tags/html/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>http://Niccolo10.github.io/tags/javascript/</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/tags/javascript/</guid>
       <description></description>
     </item>
     
