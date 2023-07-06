@@ -76,7 +76,7 @@ FastTicket Web App  | Niccolò Parlanti
             
                 <dt>published</dt>
                 
-                <dd><time datetime="2022-04-15">April 15, 2022</time></dd>
+                <dd><time datetime="2023-04-08">April 8, 2023</time></dd>
             
             
                 <dt>reading time</dt>
@@ -153,57 +153,57 @@ FastTicket Web App  | Niccolò Parlanti
 <p>Clicking on any point of interest on the map triggers the &ldquo;Take Me Here&rdquo; button. Clicking the button calls the <code>createRoute()</code> function, which creates a route using real-time user data and the point of interest data.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#75715e">//Routing
 </span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Route</span>,<span style="color:#a6e22e">latUser</span>,<span style="color:#a6e22e">lngUser</span>;
+        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Route</span>,<span style="color:#a6e22e">latUser</span>,<span style="color:#a6e22e">lngUser</span>;
+        
+        <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">createRoute</span>(<span style="color:#a6e22e">coordinates</span>) {
+        
+        	<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>){
+            		<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>.<span style="color:#a6e22e">getCurrentPosition</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">position</span>){
+            			<span style="color:#a6e22e">latUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">latitude</span>) ;
+            			<span style="color:#a6e22e">lngUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">longitude</span>);
+            			<span style="color:#a6e22e">WaitAndRoute</span>();
+            		})
+        	}<span style="color:#66d9ef">else</span> <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;geolocation does not work&#34;</span>);
 
-<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">createRoute</span>(<span style="color:#a6e22e">coordinates</span>) {
-
-	<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>){
-			<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>.<span style="color:#a6e22e">getCurrentPosition</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">position</span>){
-				<span style="color:#a6e22e">latUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">latitude</span>) ;
-				<span style="color:#a6e22e">lngUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">longitude</span>);
-				<span style="color:#a6e22e">WaitAndRoute</span>();
-			})
-	}<span style="color:#66d9ef">else</span> <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;geolocation does not work&#34;</span>);
-
-<span style="color:#a6e22e">lat</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">coordinates</span>[<span style="color:#ae81ff">1</span>];	
-<span style="color:#a6e22e">lng</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">coordinates</span>[<span style="color:#ae81ff">0</span>];
-
-	<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">WaitAndRoute</span>(){
-		<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">Route</span>){
-				<span style="color:#a6e22e">mymap</span>.<span style="color:#a6e22e">removeControl</span>(<span style="color:#a6e22e">Route</span>);
-		}
-
-		<span style="color:#a6e22e">Route</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">Routing</span>.<span style="color:#a6e22e">control</span>({
-			<span style="color:#a6e22e">waypoints</span><span style="color:#f92672">:</span> [
-				<span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">latLng</span>(<span style="color:#a6e22e">latUser</span>, <span style="color:#a6e22e">lngUser</span>),
-				<span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">latLng</span>(<span style="color:#a6e22e">lat</span>, <span style="color:#a6e22e">lng</span>)
-			],
-			<span style="color:#a6e22e">routeWhileDragging</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
-			<span style="color:#a6e22e">show</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>
-		}).<span style="color:#a6e22e">addTo</span>(<span style="color:#a6e22e">mymap</span>);
-
-		<span style="color:#a6e22e">mymap</span>.<span style="color:#a6e22e">closePopup</span>();
-
-	}
-};</code></pre></div></p>
+        <span style="color:#a6e22e">lat</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">coordinates</span>[<span style="color:#ae81ff">1</span>];	
+        <span style="color:#a6e22e">lng</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">coordinates</span>[<span style="color:#ae81ff">0</span>];
+        
+        	<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">WaitAndRoute</span>(){
+        		<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">Route</span>){
+        			    <span style="color:#a6e22e">mymap</span>.<span style="color:#a6e22e">removeControl</span>(<span style="color:#a6e22e">Route</span>);
+        		}
+        
+        		<span style="color:#a6e22e">Route</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">Routing</span>.<span style="color:#a6e22e">control</span>({
+        		    <span style="color:#a6e22e">waypoints</span><span style="color:#f92672">:</span> [
+        		        <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">latLng</span>(<span style="color:#a6e22e">latUser</span>, <span style="color:#a6e22e">lngUser</span>),
+        		        <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">latLng</span>(<span style="color:#a6e22e">lat</span>, <span style="color:#a6e22e">lng</span>)
+        		    ],
+        		    <span style="color:#a6e22e">routeWhileDragging</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+        		    <span style="color:#a6e22e">show</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>
+        		}).<span style="color:#a6e22e">addTo</span>(<span style="color:#a6e22e">mymap</span>);
+        
+        		<span style="color:#a6e22e">mymap</span>.<span style="color:#a6e22e">closePopup</span>();
+        
+        	}
+    };</code></pre></div></p>
 <h3 id="routing-to-the-nearest-shop">Routing to the Nearest Shop</h3>
 <p>Upon page load, the web app automatically calculates the route to the nearest ticket office based on the user&rsquo;s real-time position.
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getNearest</span>(){
-	<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>){
-			<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>.<span style="color:#a6e22e">getCurrentPosition</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">position</span>){
-				<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">latUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">latitude</span>) ;
-				<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">lngUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">longitude</span>);
-				<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">shop</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">geoJson</span>(<span style="color:#a6e22e">atafLayer</span>);
-				<span style="color:#a6e22e">shopIndex</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">leafletKnn</span>(<span style="color:#a6e22e">shop</span>);
-				<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">nearestResult</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">shopIndex</span>.<span style="color:#a6e22e">nearest</span>([<span style="color:#a6e22e">lngUser</span>,<span style="color:#a6e22e">latUser</span>], <span style="color:#ae81ff">1</span>)[<span style="color:#ae81ff">0</span>];
-				<span style="color:#a6e22e">lng</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nearestResult</span>.<span style="color:#a6e22e">lon</span>;
-				<span style="color:#a6e22e">lat</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nearestResult</span>.<span style="color:#a6e22e">lat</span>;
-				<span style="color:#a6e22e">createRoute</span>([<span style="color:#a6e22e">lng</span>, <span style="color:#a6e22e">lat</span>])
-			
-		})
-	}
-}
-<span style="color:#a6e22e">getNearest</span>()</code></pre></div></p>
+        	<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>){
+            		<span style="color:#a6e22e">navigator</span>.<span style="color:#a6e22e">geolocation</span>.<span style="color:#a6e22e">getCurrentPosition</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">position</span>){
+            			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">latUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">latitude</span>) ;
+            			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">lngUser</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">position</span>.<span style="color:#a6e22e">coords</span>.<span style="color:#a6e22e">longitude</span>);
+            			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">shop</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">L</span>.<span style="color:#a6e22e">geoJson</span>(<span style="color:#a6e22e">atafLayer</span>);
+            			<span style="color:#a6e22e">shopIndex</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">leafletKnn</span>(<span style="color:#a6e22e">shop</span>);
+            			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">nearestResult</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">shopIndex</span>.<span style="color:#a6e22e">nearest</span>([<span style="color:#a6e22e">lngUser</span>,<span style="color:#a6e22e">latUser</span>], <span style="color:#ae81ff">1</span>)[<span style="color:#ae81ff">0</span>];
+            			<span style="color:#a6e22e">lng</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nearestResult</span>.<span style="color:#a6e22e">lon</span>;
+            			<span style="color:#a6e22e">lat</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nearestResult</span>.<span style="color:#a6e22e">lat</span>;
+            			<span style="color:#a6e22e">createRoute</span>([<span style="color:#a6e22e">lng</span>, <span style="color:#a6e22e">lat</span>])
+        			
+        		})
+        	}
+    }
+    <span style="color:#a6e22e">getNearest</span>()</code></pre></div></p>
 <h3 id="removal-of-displayed-route">Removal of Displayed Route</h3>
 <p>A button on the map allows the user to remove the displayed route, effectively deleting the previously created route.</p>
 <p>You can find my full project on this <a href="https://github.com/Niccolo10/FastTicket_WebApp">Github Repository</a>.</p>
