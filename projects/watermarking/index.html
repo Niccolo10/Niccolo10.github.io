@@ -103,7 +103,7 @@ DWT-SVD_DWT-DCT-image-watermaking | Niccolò Parlanti
 </li>
 </ul>
 <p>This embedding method is designed to simultaneously embed the mark in three different images. A CSV file is utilized for the WPSNR function in the detection method. The detection method takes the original image, the watermarked image, and the image after being attacked as inputs. It determines if the mark is still present in the attacked image and calculates the WPSNR of this image. This method can be easily modified to detect the presence of the mark in any given image.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mixed_embedding</span>(original, mark, seq_0_dct, seq_1_dct, seq_0_svd, seq_1_svd, loc_dct_lv1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, loc_dct_lv2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, loc_svd_lv1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, loc_svd_lv2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, alpha_dct <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>, alpha_svd <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>):
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mixed_embedding</span>(<span style="color:#f92672">....</span>):
 
     <span style="color:#75715e">#dwt </span>
     coefficient <span style="color:#f92672">=</span> pywt<span style="color:#f92672">.</span>dwt2(original, wavelet<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;haar&#39;</span>)
@@ -116,7 +116,7 @@ DWT-SVD_DWT-DCT-image-watermaking | Niccolò Parlanti
 
 <span style="color:#75715e">#SVD SU TERZO LIVELLO</span>
     coefficient3_svd <span style="color:#f92672">=</span> pywt<span style="color:#f92672">.</span>dwt2(quadrants2_svd[loc_svd_lv1], wavelet<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;haar&#39;</span>)
-    quadrants3_svd <span style="color:#f92672">=</span> [coefficient3_svd[<span style="color:#ae81ff">0</span>],<span style="color:#f92672">*</span>coefficient3_svd[<span style="color:#ae81ff">1</span>]]
+    quadrants3_svd <span style="color:#f92672">=</span> [coefficient3_svd[<span style="color:#ae81ff">0</span>],<span style="color:#f92672">*</span>coefficient3_svd[<span style="color:#ae81ff">1</span>]
 
     size <span style="color:#f92672">=</span> quadrants2_dct[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]
     size_svd <span style="color:#f92672">=</span> quadrants3_svd[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>]
