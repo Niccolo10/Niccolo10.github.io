@@ -35,6 +35,15 @@
     </item>
     
     <item>
+      <title>Kruskal Algorithm </title>
+      <link>http://Niccolo10.github.io/projects/kruskal/</link>
+      <pubDate>Wed, 08 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/projects/kruskal/</guid>
+      <description>&lt;p&gt;Theoretical report on connected components and kruskal algorithm, with tests and related analysis.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Edit-Distance wiht/without N-Gram</title>
       <link>http://Niccolo10.github.io/projects/editdistance/</link>
       <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
