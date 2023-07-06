@@ -6,11 +6,11 @@
     <description>Recent content in Tags on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 03 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 18 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Python</title>
       <link>http://Niccolo10.github.io/tags/python/</link>
-      <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 18 Oct 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/python/</guid>
       <description></description>
@@ -19,7 +19,7 @@
     <item>
       <title>steganography</title>
       <link>http://Niccolo10.github.io/tags/steganography/</link>
-      <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 18 Oct 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/steganography/</guid>
       <description></description>
@@ -28,34 +28,16 @@
     <item>
       <title>watermark</title>
       <link>http://Niccolo10.github.io/tags/watermark/</link>
-      <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 18 Oct 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/watermark/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>algorithm</title>
-      <link>http://Niccolo10.github.io/tags/algorithm/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/tags/algorithm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>C&#43;&#43;</title>
-      <link>http://Niccolo10.github.io/tags/c&#43;&#43;/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/tags/c&#43;&#43;/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>CSS</title>
       <link>http://Niccolo10.github.io/tags/css/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 15 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/css/</guid>
       <description></description>
@@ -64,7 +46,7 @@
     <item>
       <title>HTML</title>
       <link>http://Niccolo10.github.io/tags/html/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 15 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/html/</guid>
       <description></description>
@@ -73,18 +55,27 @@
     <item>
       <title>JavaScript</title>
       <link>http://Niccolo10.github.io/tags/javascript/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 15 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/javascript/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Kruskal</title>
-      <link>http://Niccolo10.github.io/tags/kruskal/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
+      <title>C&#43;&#43;</title>
+      <link>http://Niccolo10.github.io/tags/c&#43;&#43;/</link>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
       
-      <guid>http://Niccolo10.github.io/tags/kruskal/</guid>
+      <guid>http://Niccolo10.github.io/tags/c&#43;&#43;/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>algorithm</title>
+      <link>http://Niccolo10.github.io/tags/algorithm/</link>
+      <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/tags/algorithm/</guid>
       <description></description>
     </item>
     

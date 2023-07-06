@@ -6,7 +6,7 @@
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 03 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 18 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>About</title>
       <link>http://Niccolo10.github.io/about/</link>
@@ -20,46 +20,37 @@ During my Bachelor&amp;rsquo;s degree at the University of Firenze in Italy, I d
     <item>
       <title>DWT-SVD_DWT-DCT-image-watermaking</title>
       <link>http://Niccolo10.github.io/projects/watermarking/</link>
-      <pubDate>Mon, 03 Jul 2023 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 18 Oct 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/projects/watermarking/</guid>
       <description>&lt;p&gt;Embedding of a watermak using DWT-SVD and a DWT-DCT tranform.&lt;/p&gt;</description>
     </item>
     
     <item>
-      <title>Edit-Distance wiht/without N-Gram</title>
-      <link>http://Niccolo10.github.io/projects/editdistance/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/projects/editdistance/</guid>
-      <description>&lt;p&gt;This project implements the Edit Distance algorithm with and without N-Gram support, providing a versatile tool for string similarity and comparison tasks in various domains.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
       <title>FastTicket Web App </title>
       <link>http://Niccolo10.github.io/projects/fastticket_webapp/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 15 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/projects/fastticket_webapp/</guid>
       <description>&lt;p&gt;A site that shows ticket offices, bus stops and tramway stops in the Florence area, using geolocation and routing programs to guide the user to the chosen destination.&lt;/p&gt;</description>
     </item>
     
     <item>
-      <title>Kruskal Algorithm </title>
-      <link>http://Niccolo10.github.io/projects/kruskal/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/projects/kruskal/</guid>
-      <description>&lt;p&gt;Theoretical report on connected components and kruskal algorithm, with tests and related analysis.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
       <title>Todo List </title>
       <link>http://Niccolo10.github.io/projects/todolist/</link>
-      <pubDate>Sat, 08 Apr 2023 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 24 Oct 2021 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/projects/todolist/</guid>
       <description>&lt;p&gt;TodoApp is a user-friendly and feature-rich task management application that helps users stay organized, increase productivity, and effortlessly manage their tasks and to-do lists.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Edit-Distance wiht/without N-Gram</title>
+      <link>http://Niccolo10.github.io/projects/editdistance/</link>
+      <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/projects/editdistance/</guid>
+      <description>&lt;p&gt;This project implements the Edit Distance algorithm with and without N-Gram support, providing a versatile tool for string similarity and comparison tasks in various domains.&lt;/p&gt;</description>
     </item>
     
   </channel>
