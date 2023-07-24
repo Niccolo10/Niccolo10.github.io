@@ -7,21 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="http://Niccolo10.github.io/tags/index/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Writeups</title>
+      <link>http://Niccolo10.github.io/writeups/</link>
+      <pubDate>Mon, 05 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/writeups/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Projects</title>
       <link>http://Niccolo10.github.io/projects/</link>
       <pubDate>Tue, 18 Oct 2022 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/projects/</guid>
       <description></description>
-    </item>
-    
-    <item>
-      <title>Writeups</title>
-      <link>http://Niccolo10.github.io/writeups/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/writeups/</guid>
-      <description>Work in Progress</description>
     </item>
     
   </channel>

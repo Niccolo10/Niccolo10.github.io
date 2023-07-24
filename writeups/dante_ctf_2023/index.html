@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+Dante CTF Writeups - Forensics | Niccolò Parlanti
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="http://Niccolo10.github.io/writeups/dante_ctf_2023/" >
+<link href="/sass/main.min.a8be33730f01e46b6e968a84ed6b211a9d1286d34f7e143c012da9c14cd56400.css" rel="stylesheet">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NHDH4QVJC1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NHDH4QVJC1');
+</script>
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a href="http://Niccolo10.github.io/">
+                <span class="terminal">niccoloparlanti@cybersec ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu"/>
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/projects" title="" >
+                        ~/projects</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/writeups" title="" >
+                        ~/writeups</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>Dante CTF Writeups - Forensics</h1>
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/ctf/">#CTF</a><span></span>
+    <a href="/tags/forensics/">#Forensics</a><span></span>
+    <a href="/tags/dante-ctf-2023/">#Dante-CTF-2023</a></dd>
+            
+            
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2023-05-05">May 5, 2023</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>5 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p>Writeups of the Dante CTF 2023 - Forensics</p>
+<p> </p>
+<h1 id="forensics">FORENSICS</h1>
+<h2 id="dirty-checkerboard">Dirty Checkerboard</h2>
+<p>🏆 Challenge Description</p>
+<p><em>I bought a new chessboard but every time I use it I have this feeling… Like it’s dirty or something.</em></p>
+<hr>
+<p>The attached image indeed had a square of &ldquo;dirt&rdquo; in the lower left corner of the square with coordinates B2:</p>
+<p><img src="/images/DirtyCheckboard.png" alt="the &ldquo;dirty&rdquo; spot"></p>
+<p>Since the image was grayscale, those &ldquo;digital&rdquo; pixels in an &ldquo;analogue&rdquo; picture could be easily decoded as 1-byte values with a couple of lines of code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> PIL <span style="color:#f92672">import</span> Image
+
+offset <span style="color:#f92672">=</span> (<span style="color:#ae81ff">359</span>, <span style="color:#ae81ff">2031</span>)
+
+img <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(<span style="color:#e6db74">&#34;DirtyCheckerboard.bmp&#34;</span>)
+<span style="color:#66d9ef">for</span> w <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">15</span>):
+    <span style="color:#66d9ef">for</span> h <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>):
+        coords <span style="color:#f92672">=</span> (offset[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> w, offset[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> h)
+        print(chr(img<span style="color:#f92672">.</span>getpixel(coords)), end<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>)
+</code></pre></div><p>🏁 DANTE{ch3ck_0ut_abmagick}
+ </p>
+<p> </p>
+<h2 id="do-you-know-gif">Do You Know GIF?</h2>
+<p>🏆 Challenge Description</p>
+<p><em>Ah, Dante! He appears in poems, videogames… He wrote about a lot of people but few have something meaningful to say about him nowadays.</em></p>
+<hr>
+<p>Here you have two options:</p>
+<ol>
+<li>Hope in a reverse image search, find the original GIF, and compare the hexdump of the two.</li>
+<li>Use strings<code>or the more sophisticated</code>exiftool`.</li>
+</ol>
+<p>The easiest way for me to solve it is to use <code>exiftool</code> :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ exiftool -a dante.gif | grep Comment
+
+Comment: Hey look, a comment!
+Comment: These comments sure <span style="color:#66d9ef">do</span> look useful
+Comment: I wonder what <span style="color:#66d9ef">else</span> I could <span style="color:#66d9ef">do</span> with them?
+Comment: 44414e54457b673166355f --&amp;gt; DANTE<span style="color:#f92672">{</span>g1f5_
+Comment: 3472335f6d3464335f6279 --&amp;gt; 4r3_m4d3_by
+Comment: 5f626c30636b357d --&amp;gt; _bl0ck5<span style="color:#f92672">}</span>
+Comment: At the edges of the map lies the void
+</code></pre></div><p>Decoding those three blocks from hex to ASCII would have given you the flag.<br>
+It&rsquo;s also possible to complete this challenge using a simple parser:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> re
+<span style="color:#f92672">import</span> binascii
+
+comment_block_marker <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;0021fe&#39;</span>  <span style="color:#75715e"># &#34;00&#34; is the end of a previous block and &#34;21 FE&#34; is the start of a comment block</span>
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#34;dante.gif&#34;</span>, <span style="color:#e6db74">&#34;rb&#34;</span>) <span style="color:#66d9ef">as</span> f:
+    <span style="color:#75715e"># Read the GIF as literal hex (remember that 1 hex byte = 2 ASCII chars here)</span>
+    hexdata <span style="color:#f92672">=</span> binascii<span style="color:#f92672">.</span>hexlify(f<span style="color:#f92672">.</span>read())
+
+    <span style="color:#75715e"># Find all comment blocks</span>
+    <span style="color:#66d9ef">for</span> match <span style="color:#f92672">in</span> re<span style="color:#f92672">.</span>finditer(comment_block_marker, hexdata):
+        <span style="color:#75715e"># Find the (ASCII hex string) offset of the comment length byte</span>
+        length_offset <span style="color:#f92672">=</span> match<span style="color:#f92672">.</span>start() <span style="color:#f92672">+</span> len(comment_block_marker)
+        <span style="color:#75715e"># The actual comment starts at the next hex byte (two ASCII chars)</span>
+        comment_offset <span style="color:#f92672">=</span> length_offset <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>
+
+        <span style="color:#75715e"># Parse the comment length byte (the next two ASCII chars = 1 hex byte) and double its value since we are reading ASCII offsets, not hex bytes</span>
+        comment_length <span style="color:#f92672">=</span> int(hexdata[length_offset:comment_offset], <span style="color:#ae81ff">16</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+
+        <span style="color:#75715e"># Extract the comment data itself</span>
+        comment <span style="color:#f92672">=</span> hexdata[comment_offset:comment_offset <span style="color:#f92672">+</span> comment_length]
+        decoded_comment <span style="color:#f92672">=</span> bytearray<span style="color:#f92672">.</span>fromhex(comment<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#34;ascii&#34;</span>))<span style="color:#f92672">.</span>decode()
+
+        <span style="color:#75715e"># If the comment&#39;s contents look like hex, decode them again</span>
+        <span style="color:#66d9ef">if</span> re<span style="color:#f92672">.</span>match(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;^[a-z0-9]+$&#39;</span>, decoded_comment):
+            decoded_comment <span style="color:#f92672">+=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34; --&amp;gt; </span><span style="color:#e6db74">{</span>bytearray<span style="color:#f92672">.</span>fromhex(decoded_comment)<span style="color:#f92672">.</span>decode()<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+
+        <span style="color:#75715e"># Decode and print the comment</span>
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;offset </span><span style="color:#e6db74">{</span>match<span style="color:#f92672">.</span>start()<span style="color:#e6db74">}</span><span style="color:#e6db74"> length </span><span style="color:#e6db74">{</span>comment_length<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>decoded_comment<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;&#39;</span>)
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">offset 337940 length 40:	&#34;Hey look, a comment!&#34;
+offset 2672040 length 68:	&#34;These comments sure do look useful&#34;
+offset 9736542 length 80:	&#34;I wonder what else I could do with them?&#34;
+offset 15786384 length 44:	&#34;44414e54457b673166355f --&amp;gt; DANTE{g1f5_&#34;
+offset 17808476 length 44:	&#34;3472335f6d3464335f6279 --&amp;gt; 4r3_m4d3_by&#34;
+offset 21718496 length 32:	&#34;5f626c30636b357d --&amp;gt; _bl0ck5}&#34;
+offset 26133830 length 74:	&#34;At the edges of the map lies the void&#34;
+</code></pre></div><p>🏁 <!-- raw HTML omitted -->DANTE{g1f5_4r3_m4d3_by_bl0ck5}<!-- raw HTML omitted --></p>
+<p> </p>
+<p> </p>
+<h2 id="imago-qualitatis">Imago Qualitatis</h2>
+<p>🏆 Challenge Description</p>
+<p>A wondrous electromagnetic wave was captured by a metal-stick-handed devil.
+“But.. What? No, not this way. Maybe, if I turn around like this… Aha!”</p>
+<hr>
+<p>If a player dared to download and decompress the ~800MB archive a file named gqrx_20230421_133330_433000000_1800000_fc.raw would have appeared.</p>
+<p>The first word in the filename suggested that it had something to do with Gqrx SDR, “an open-source software-defined radio receiver (SDR) powered by the GNU Radio and the Qt graphical toolkit” created by Alexandru Csete (OZ9AEC ham radio callsign). The file was indeed a raw radio signal capture represented as IQ data, a way to store a signal’s characteristics way more accurate than just sampling its amplitude at predefined intervals.</p>
+<p>Opening the file in Gqrx and playing it back (here’s a simple tutorial) actually revealed the flag.</p>
+<p><img src="/images/gqrx.jpg" alt="gqrx waterfall showing a portion of the flag"></p>
+<p>🏁 <!-- raw HTML omitted -->DANTE{n3w_w4v35_0ld_5ch00l}<!-- raw HTML omitted --></p>
+<p> </p>
+<p> </p>
+<h2 id="who-can-haz-flag">Who Can Haz Flag</h2>
+<p>🏆 Challenge Description</p>
+<p>A little spirit spied on this mortal transmission. He noticed that the human was after something, but what was it?</p>
+<p>Among the TLS-encrypted noise a little less than 30 ARP requests stood out. The peculiar thing about them was that they were all probes/requests for the same CIDR: 102.108.103.0/24. The last octet of the requested address was the only thing that changed between those packets, and decoding it as an ASCII character gave out the characters of the flag.</p>
+<p>Here’s an example of an extraction script:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> ipaddress <span style="color:#f92672">import</span> ip_address, ip_network
+<span style="color:#f92672">from</span> scapy.all <span style="color:#f92672">import</span> Ether, ARP, rdpcap
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">filter_packet</span>(pkt):
+    <span style="color:#66d9ef">return</span> \
+        ARP <span style="color:#f92672">in</span> pkt <span style="color:#f92672">and</span> \
+        ip_address(pkt[ARP]<span style="color:#f92672">.</span>pdst) <span style="color:#f92672">in</span> ip_network(<span style="color:#e6db74">&#39;102.108.103.0/24&#39;</span>)
+
+
+packets <span style="color:#f92672">=</span> rdpcap(<span style="color:#e6db74">&#34;WhoCanHazFlag.pcapng&#34;</span>)
+arps <span style="color:#f92672">=</span> [p <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> packets <span style="color:#66d9ef">if</span> filter_packet(p)]
+
+flag <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> pkt <span style="color:#f92672">in</span> arps:
+    ip_dst <span style="color:#f92672">=</span> pkt[ARP]<span style="color:#f92672">.</span>pdst
+    ip_last_octet <span style="color:#f92672">=</span> int(ip_dst<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;.&#39;</span>)[<span style="color:#ae81ff">3</span>])
+    flag_char <span style="color:#f92672">=</span> chr(ip_last_octet)
+    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>pkt<span style="color:#f92672">.</span>summary()<span style="color:#e6db74">}</span><span style="color:#e6db74"> ==&amp;gt; </span><span style="color:#e6db74">{</span>ip_dst<span style="color:#e6db74">}</span><span style="color:#e6db74"> --&amp;gt; </span><span style="color:#e6db74">{</span>ip_last_octet<span style="color:#e6db74">}</span><span style="color:#e6db74"> = &#39;</span><span style="color:#e6db74">{</span>flag_char<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;&#34;</span>)
+
+    flag<span style="color:#f92672">.</span>append(flag_char)
+print(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&#39;</span><span style="color:#f92672">.</span>join(flag))
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">
+Ether / ARP who has 102.108.103.68 says 255.255.255.0 ==&amp;gt; 102.108.103.68 --&amp;gt; 68 = &#39;D&#39;
+Ether / ARP who has 102.108.103.65 says 255.255.255.0 ==&amp;gt; 102.108.103.65 --&amp;gt; 65 = &#39;A&#39;
+Ether / ARP who has 102.108.103.78 says 255.255.255.0 ==&amp;gt; 102.108.103.78 --&amp;gt; 78 = &#39;N&#39;
+Ether / ARP who has 102.108.103.84 says 255.255.255.0 ==&amp;gt; 102.108.103.84 --&amp;gt; 84 = &#39;T&#39;
+Ether / ARP who has 102.108.103.69 says 255.255.255.0 ==&amp;gt; 102.108.103.69 --&amp;gt; 69 = &#39;E&#39;
+Ether / ARP who has 102.108.103.123 says 255.255.255.0 ==&amp;gt; 102.108.103.123 --&amp;gt; 123 = &#39;{&#39;
+[...]
+Ether / ARP who has 102.108.103.125 says 255.255.255.0 ==&amp;gt; 102.108.103.125 --&amp;gt; 125 = &#39;}&#39;
+</code></pre></div><p>🏁 <!-- raw HTML omitted -->DANTE{wh0_h4s_fl4g_ju5t_45k}<!-- raw HTML omitted --></p>
+<p> </p>
+<p> </p>
+<h2 id="routes-mark-the-spot">Routes Mark The Spot</h2>
+<p>🏆 Challenge Description</p>
+<p>Aha, the little spirit says that the human became more ingenious! What a weird way to transmit something, though.</p>
+<hr>
+<p>Like the previous forensics challenge, among the TLS-encrypted noise some widely spaced IPv6 packets stood out. Their payload seemed random or somehow encoded, but, in truth, they all matched the same format: [A-Za-z0-9]{64,128}:FLAG_CHAR:[A-Za-z0-9]{64,128}.</p>
+<p>Thus by filtering the packets in that IPv6 “conversation” and extracting the characters between the colons, something that vaguely resembled a flag could be extracted:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">n_nD71}n3{_mlmb4_cEysAg54434lN_hnT
+</code></pre></div><p>The final step was indeed to reorder the packets basing on their flow label field, the only other difference that existed between them. Here’s an example of a an extraction script that does that:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> re
+<span style="color:#f92672">from</span> scapy.all <span style="color:#f92672">import</span> Ether, IPv6, rdpcap
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">filter_packet</span>(pkt):
+    <span style="color:#66d9ef">return</span> \
+        IPv6 <span style="color:#f92672">in</span> pkt <span style="color:#f92672">and</span> \
+        pkt[IPv6]<span style="color:#f92672">.</span>src <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;526c:54da:4326:f2fa:eb05:8f48:5bd8:e856&#34;</span> <span style="color:#f92672">and</span> \
+        pkt[IPv6]<span style="color:#f92672">.</span>dst <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;7fa1:f44b:d702:3f7a:35db:de1d:1576:2799&#34;</span>
+
+
+packets <span style="color:#f92672">=</span> rdpcap(<span style="color:#e6db74">&#34;RoutesMarkTheSpot.pcapng&#34;</span>)
+ipv6 <span style="color:#f92672">=</span> [p <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> packets <span style="color:#66d9ef">if</span> filter_packet(p)]
+ipv6<span style="color:#f92672">.</span>sort(key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> pkt: pkt[IPv6]<span style="color:#f92672">.</span>fl)  <span style="color:#75715e"># Sort by Flow Label</span>
+
+flag <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> pkt <span style="color:#f92672">in</span> ipv6:
+    flow_label <span style="color:#f92672">=</span> pkt[IPv6]<span style="color:#f92672">.</span>fl
+    payload <span style="color:#f92672">=</span> pkt[IPv6]<span style="color:#f92672">.</span>payload<span style="color:#f92672">.</span>load<span style="color:#f92672">.</span>decode(<span style="color:#e6db74">&#39;ascii&#39;</span>)
+    flag_char <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>search(<span style="color:#e6db74">&#39;:(.*):&#39;</span>, payload)<span style="color:#f92672">.</span>group(<span style="color:#ae81ff">1</span>)
+    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>pkt<span style="color:#f92672">.</span>summary()<span style="color:#e6db74">}</span><span style="color:#e6db74"> ==&amp;gt; </span><span style="color:#e6db74">{</span>flow_label<span style="color:#e6db74">}</span><span style="color:#e6db74"> --&amp;gt; </span><span style="color:#e6db74">{</span>payload<span style="color:#e6db74">}</span><span style="color:#e6db74"> = &#39;</span><span style="color:#e6db74">{</span>flag_char<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;&#34;</span>)
+
+    flag<span style="color:#f92672">.</span>append(flag_char)
+print(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&#39;</span><span style="color:#f92672">.</span>join(flag))
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">Ether / [...] &amp;gt; [...] / Raw ==&amp;gt; 0 --&amp;gt; niEmoDOq9oRAvpi5fY4UndN1ofA1I5GVi4eHjuxLCzEuIoxG2LgW4YOohBlFVPQHKfK6rq13Grcyx6x9ZYtrawcyFbvJ8:D:R0CgOtT1UkbJaR6OIJ5KW2bmHHMKcQm8hB2ZEW15Y0ZV7umS5IwGiMaImomOORDGqzRBggvyPN = &#39;D&#39;
+Ether / [...] &amp;gt; [...] / Raw ==&amp;gt; 1 --&amp;gt; 67ZvMEolTtKmTSOZldsxTGqI6oiXr2Y2zPsJhkhGgXSnEdEDZlcNZmBS0w3AgnSrM9vpYXPi0BlPsZyY:A:UYd7TVQ1Zh6yofJJXo35GrSq6qgfH5NG9E87v8M3eSnT4JruZTbHCbZ0qNaggvsFTs9k5vtUhgVq44u51dtvdCGJuwso9aIDeuYccGen6Opn8q1UrYk = &#39;A&#39;
+[...]
+</code></pre></div><p>🏁 <!-- raw HTML omitted -->DANTE{l4b3l5_c4n_m34n_m4ny_7h1ngs}<!-- raw HTML omitted --></p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2023 Niccolò Parlanti | Download my 
+            <a href="http://Niccolo10.github.io/docs/CV_nc.pdf" target="_blank">Resume</a>
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>
