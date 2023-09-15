@@ -8,21 +8,21 @@
     <language>en-us</language>
     <lastBuildDate>Mon, 05 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/dante-ctf-2023/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Dante CTF Writeups - Forensics</title>
+      <link>http://Niccolo10.github.io/writeups/dante_ctf_2023/</link>
+      <pubDate>Mon, 05 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/writeups/dante_ctf_2023/</guid>
+      <description>&lt;p&gt;Writeups of the Dante CTF 2023 - Forensics&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Dante CTF Writeups - Web</title>
       <link>http://Niccolo10.github.io/writeups/dante_ctf_2023_web/</link>
       <pubDate>Mon, 05 Jun 2023 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/writeups/dante_ctf_2023_web/</guid>
       <description>&lt;p&gt;Writeups of the Dante CTF 2023 - WEB&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Dante CTF Writeups - Forensics</title>
-      <link>http://Niccolo10.github.io/writeups/dante_ctf_2023/</link>
-      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/writeups/dante_ctf_2023/</guid>
-      <description>&lt;p&gt;Writeups of the Dante CTF 2023 - Forensics&lt;/p&gt;</description>
     </item>
     
   </channel>

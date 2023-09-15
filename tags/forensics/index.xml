@@ -6,11 +6,20 @@
     <description>Recent content in Forensics on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 05 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/forensics/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 10 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/forensics/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>THS Challenges Writeups - Misc</title>
+      <link>http://Niccolo10.github.io/writeups/ths_challenge/</link>
+      <pubDate>Sun, 10 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/writeups/ths_challenge/</guid>
+      <description>&lt;p&gt;Writeups of the challenges of THS  - Misc&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Dante CTF Writeups - Forensics</title>
       <link>http://Niccolo10.github.io/writeups/dante_ctf_2023/</link>
-      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 05 Jun 2023 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/writeups/dante_ctf_2023/</guid>
       <description>&lt;p&gt;Writeups of the Dante CTF 2023 - Forensics&lt;/p&gt;</description>

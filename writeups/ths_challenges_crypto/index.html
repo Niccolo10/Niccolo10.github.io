@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+THS Challenges Writeups - Crypto | Niccolò Parlanti
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="http://Niccolo10.github.io/writeups/ths_challenges_crypto/" >
+<link href="/sass/main.min.a8be33730f01e46b6e968a84ed6b211a9d1286d34f7e143c012da9c14cd56400.css" rel="stylesheet">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NHDH4QVJC1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NHDH4QVJC1');
+</script>
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a href="http://Niccolo10.github.io/">
+                <span class="terminal">niccoloparlanti@cybersec ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu"/>
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/projects" title="" >
+                        ~/projects</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/writeups" title="" >
+                        ~/writeups</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>THS Challenges Writeups - Crypto</h1>
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/ctf/">#CTF</a><span></span>
+    <a href="/tags/crypto/">#Crypto</a><span></span>
+    <a href="/tags/ths/">#THS</a></dd>
+            
+            
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2023-09-12">September 12, 2023</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>10 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p>Writeups of the challenges of THS  - Crypto</p>
+<p> </p>
+<h1 id="crypto">Crypto</h1>
+<h2 id="rsa-with-weak-key-generation">RSA with Weak Key Generation</h2>
+<p>RSA with public key (n, e), where n is the modulus and e is the public exponent, has been used to encrypt a message (c). Break the encryption and retrieve the flag!</p>
+<h3 id="solution">Solution</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sympy
+<span style="color:#f92672">from</span> Crypto.Util.number <span style="color:#f92672">import</span> long_to_bytes
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">factorize_rsa</span>(n, e):
+    <span style="color:#75715e"># Factorize n</span>
+    p, q <span style="color:#f92672">=</span> sympy<span style="color:#f92672">.</span>factorint(n)
+    phi_n <span style="color:#f92672">=</span> (p <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> (q <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)
+    d <span style="color:#f92672">=</span> sympy<span style="color:#f92672">.</span>mod_inverse(e, phi_n)
+    <span style="color:#66d9ef">return</span> p, q, d
+
+n<span style="color:#f92672">=</span><span style="color:#ae81ff">61886745084257631376488227331867711713709402213271607752836119943649359023667208312483665009582971079823046811338833406961794657413393778092534084222138475089147141696179355977692335422731845770908312945444299254259133792282993335641429805931242152085766033674121178257768597630195914815454715609367808317869</span>
+e<span style="color:#f92672">=</span><span style="color:#ae81ff">65537</span>
+c<span style="color:#f92672">=</span><span style="color:#ae81ff">29184854329273146705082304498278279007891632368627171242276651126149934346884387033845388118635683203163310791789528451430981802738727935419627068963524759975113719613080593449715622314139734404660709392180503270726011733745509304350413748188026452571306638146400806346222379626392181072620190074397326311078</span>
+
+<span style="color:#75715e"># Brute force approach to factorize n</span>
+p, q, d <span style="color:#f92672">=</span> factorize_rsa(n, e)
+
+plaintext <span style="color:#f92672">=</span> long_to_bytes(pow(c, d, n))
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Decrypted plaintext: </span><span style="color:#e6db74">{</span>plaintext<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</code></pre></div><h3 id="explanation">Explanation</h3>
+<p>The provided code is an implementation of RSA factorization to decrypt a given ciphertext (<code>c</code>) using the modulus (<code>n</code>) and the public exponent (<code>e</code>). Here&rsquo;s a step-by-step explanation of the code:</p>
+<ol>
+<li><strong>Import Libraries:</strong>
+<ul>
+<li><code>sympy</code>: A Python library for symbolic mathematics, including functions for factorization.</li>
+<li><code>Crypto.Util.number</code>: A module from the <code>Crypto</code> library used for cryptographic operations.</li>
+</ul>
+</li>
+<li><strong>Define a Function to Factorize RSA:</strong>
+<ul>
+<li><code>factorize_rsa(n, e)</code> is a function that factors the modulus <code>n</code> into its prime factors (<code>p</code> and <code>q</code>), calculates the Euler&rsquo;s totient function (<code>phi_n</code>), and computes the private exponent (<code>d</code>) using the provided public exponent (<code>e</code>).</li>
+</ul>
+</li>
+<li><strong>Given RSA Parameters:</strong>
+<ul>
+<li><code>n</code>: The RSA modulus.</li>
+<li><code>e</code>: The public exponent.</li>
+<li><code>c</code>: The ciphertext to be decrypted.</li>
+</ul>
+</li>
+<li><strong>Factorize RSA Modulus (Brute-Force Approach):</strong>
+<ul>
+<li>Call the <code>factorize_rsa</code> function to obtain the prime factors (<code>p</code> and <code>q</code>) and the private exponent (<code>d</code>) using a brute-force factorization approach.</li>
+</ul>
+</li>
+<li><strong>Decrypt the Ciphertext:</strong>
+<ul>
+<li>Use the RSA decryption formula: plaintext = ciphertext^d mod n to obtain the decrypted plaintext.</li>
+</ul>
+</li>
+</ol>
+<h3 id="problem-to-exploit">Problem to Exploit</h3>
+<p>The vulnerability in this challenge lies in the weak generation of the RSA key pairs. The key generation did not follow best practices, allowing <code>p</code> and <code>q</code> to be factorized using a brute-force approach. A strong RSA key pair generation process would ensure that <code>p</code> and <code>q</code> are large, random, and distinct primes, making brute-force attacks infeasible.</p>
+<p>By exploiting this weakness, an attacker can easily factorize <code>n</code> and obtain the private exponent <code>d</code>, enabling the decryption of the ciphertext <code>c</code>.</p>
+<p> </p>
+<p> </p>
+<h2 id="rsa-with-close-primes">RSA with Close Primes</h2>
+<p>RSA with public key (n, e), where n is the modulus and e is the public exponent, has been used to encrypt a message (c). Break the encryption and retrieve the flag!</p>
+<h3 id="solution-1">Solution</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sympy
+<span style="color:#f92672">from</span> Crypto.Util.number <span style="color:#f92672">import</span> long_to_bytes
+
+<span style="color:#75715e"># Function to factorize RSA</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">factorize_rsa</span>(n, e):
+    <span style="color:#75715e"># Factorize n</span>
+    p, q <span style="color:#f92672">=</span> sympy<span style="color:#f92672">.</span>factorint(n)  
+    phi_n <span style="color:#f92672">=</span> (p <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> (q <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)
+    d <span style="color:#f92672">=</span> sympy<span style="color:#f92672">.</span>mod_inverse(e, phi_n)
+    <span style="color:#66d9ef">return</span> p, q, d
+
+n<span style="color:#f92672">=</span><span style="color:#ae81ff">48706743526456110909428995124449408863187502680671706144671247865632703597785484902782407848707211100406427544099273968655959926749210447499225035943265124025648199091660367526030690917367663667107925476791028825151493494621282112817554558981244752772243791642631132895597905737204721830373839441463773763961</span>
+e<span style="color:#f92672">=</span><span style="color:#ae81ff">65537</span>
+c<span style="color:#f92672">=</span><span style="color:#ae81ff">17494215219452418410735376548777416672918857860269874380125017320239219944217737827971553197914209737210660246817471880119097142967110758156891959698116796855064386986723057380756325429190521798810246080683688121106799846172205318734520267225783976882420050682350087876912575488787283094615360025293044048739</span>
+
+<span style="color:#75715e"># Factorize RSA modulus</span>
+p, q, d <span style="color:#f92672">=</span> factorize_rsa(n, e)
+
+<span style="color:#75715e"># Decrypt the ciphertext</span>
+plaintext <span style="color:#f92672">=</span> long_to_bytes(pow(c, d, n))
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Decrypted plaintext: </span><span style="color:#e6db74">{</span>plaintext<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</code></pre></div><h3 id="explanation-1">Explanation</h3>
+<p>The provided code is an implementation of RSA factorization to decrypt a given ciphertext (<code>c</code>) using the modulus (<code>n</code>) and the public exponent (<code>e</code>). Here&rsquo;s a step-by-step explanation of the code:</p>
+<ol>
+<li><strong>Import Libraries:</strong>
+<ul>
+<li><code>sympy</code>: A Python library for symbolic mathematics, including functions for factorization.</li>
+<li><code>Crypto.Util.number</code>: A module from the <code>Crypto</code> library used for cryptographic operations.</li>
+</ul>
+</li>
+<li><strong>Define a Function to Factorize RSA:</strong>
+<ul>
+<li><code>factorize_rsa(n, e)</code> is a function that factors the modulus <code>n</code> into its prime factors (<code>p</code> and <code>q</code>), calculates the Euler&rsquo;s totient function (<code>phi_n</code>), and computes the private exponent (<code>d</code>) using the provided public exponent (<code>e</code>).</li>
+</ul>
+</li>
+<li><strong>Given RSA Parameters:</strong>
+<ul>
+<li><code>n</code>: The RSA modulus.</li>
+<li><code>e</code>: The public exponent.</li>
+<li><code>c</code>: The ciphertext to be decrypted.</li>
+</ul>
+</li>
+<li><strong>Factorize RSA Modulus:</strong>
+<ul>
+<li>Call the <code>factorize_rsa</code> function to obtain the prime factors (<code>p</code> and <code>q</code>) and the private exponent (<code>d</code>) using the provided <code>n</code> and <code>e</code>.</li>
+</ul>
+</li>
+<li><strong>Decrypt the Ciphertext:</strong>
+<ul>
+<li>Use the RSA decryption formula: plaintext = ciphertext^d mod n to obtain the decrypted plaintext.</li>
+</ul>
+</li>
+</ol>
+<h3 id="problem-to-exploit-1">Problem to Exploit</h3>
+<p>Given the small difference between <code>p</code> and <code>q</code> in this challenge, traditional factorization algorithms can be employed to efficiently factorize <code>n</code> into <code>p</code> and <code>q</code>. This undermines the security of the RSA encryption and allows an attacker to obtain the private exponent <code>d</code>, subsequently leading to the decryption of the ciphertext <code>c</code>.</p>
+<p> </p>
+<p> </p>
+<h2 id="rsa-with-low-public-exponent">RSA with Low Public Exponent</h2>
+<p>RSA with public key (n, e), where n is the modulus and e is the public exponent, has been used to encrypt a message (c). Break the encryption and retrieve the flag!</p>
+<h3 id="solution-2">Solution</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> gmpy2 <span style="color:#f92672">import</span> iroot
+<span style="color:#f92672">from</span> Crypto.Util.number <span style="color:#f92672">import</span> long_to_bytes
+
+<span style="color:#75715e"># Given RSA parameters</span>
+n<span style="color:#f92672">=</span><span style="color:#ae81ff">157403096125982580243517971785240979426378156189291161074203023308369585977650302735904992519425671267015982772445200003227356999669208283493063856013366034601719281545339053459985262254286856036985424437020056829886845534373553739163622586736178743458885820804631465446973115761187478772456859249378193759871</span>
+e<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+c<span style="color:#f92672">=</span><span style="color:#ae81ff">73642555357189624726271241819566304380058839628677760958794990200642872060081404255864431749783264544323825228853106361018373004664113167960293820852713779572805351991923351604771227715639094802857818671608378375877219115547654818778969234293720241524489737123617125</span>
+
+<span style="color:#75715e"># Use low public exponent attack to obtain the plaintext</span>
+plaintext <span style="color:#f92672">=</span> long_to_bytes(iroot(c, e)[<span style="color:#ae81ff">0</span>])
+
+print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Decrypted plaintext: </span><span style="color:#e6db74">{</span>plaintext<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</code></pre></div><h3 id="explanation-2">Explanation</h3>
+<p>The provided code demonstrates an RSA encryption with a low public exponent <code>e</code> and a corresponding ciphertext <code>c</code> that is much smaller than the modulus <code>n</code>. Here&rsquo;s a step-by-step explanation of the code:</p>
+<ol>
+<li>
+<p><strong>Import Libraries:</strong></p>
+<ul>
+<li><code>gmpy2</code>: A Python library for arbitrary-precision arithmetic.</li>
+<li><code>Crypto.Util.number</code>: A module from the <code>Crypto</code> library used for cryptographic operations.</li>
+</ul>
+</li>
+<li>
+<p><strong>Given RSA Parameters:</strong></p>
+<ul>
+<li><code>n</code>: The RSA modulus.</li>
+<li><code>e</code>: The low public exponent.</li>
+<li><code>c</code>: The ciphertext to be decrypted.</li>
+</ul>
+</li>
+<li>
+<p><strong>Low Public Exponent Attack:</strong></p>
+<ul>
+<li>
+<p>The code uses a low public exponent attack exploiting the fact that (c^{1/e}) is approximately equal to the plaintext. The function <code>iroot(c, e)[0]</code> calculates this value.</p>
+<p>(c^{1/e})</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Decrypt the Ciphertext:</strong></p>
+<ul>
+<li>Use the low public exponent attack to obtain an approximation of the plaintext.</li>
+</ul>
+</li>
+</ol>
+<h3 id="problem-to-exploit-2">Problem to Exploit</h3>
+<p>The vulnerability in this challenge is the use of a low public exponent <code>e</code> (in this case, (e=3)) and a ciphertext <code>c</code> that is much smaller than the modulus <code>n</code>. This makes the RSA encryption susceptible to a low public exponent attack. Using this weakness, an attacker can efficiently approximate the plaintext using (c^{1/e}), undermining the security of the encryption.</p>
+<p> </p>
+<p> </p>
+<h1 id="rsa-with-gcd-between-n">RSA with GCD between n</h1>
+<p>RSA was used to encrypt many messages, but apparently the randomness was a bit flawed.</p>
+<h3 id="solution-3">Solution</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sympy
+<span style="color:#f92672">from</span> Crypto.Util.number <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+
+<span style="color:#75715e"># Given RSA Parameters</span>
+n_values <span style="color:#f92672">=</span> [ <span style="color:#f92672">...</span> ]
+ciphertexts <span style="color:#f92672">=</span> [ <span style="color:#f92672">...</span> ]
+e <span style="color:#f92672">=</span> <span style="color:#ae81ff">65537</span>
+result_gcd <span style="color:#f92672">=</span> []
+
+<span style="color:#75715e"># Function to calculate GCD using Euclidean algorithm</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">euclid_gcd</span>(x, y):
+    <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&lt;</span> y:
+        <span style="color:#66d9ef">return</span> euclid_gcd(y, x)
+    <span style="color:#66d9ef">while</span> y <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+        (x, y) <span style="color:#f92672">=</span> (y, x <span style="color:#f92672">%</span> y)
+    <span style="color:#66d9ef">return</span> x
+
+<span style="color:#75715e"># Iterate through n_values to find common factors</span>
+<span style="color:#66d9ef">for</span> a <span style="color:#f92672">in</span> n_values:
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> n_values:
+        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">!=</span> a:
+            result <span style="color:#f92672">=</span> euclid_gcd(a, i)
+            <span style="color:#66d9ef">if</span> result <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>:
+                result_gcd<span style="color:#f92672">.</span>extend([a, result])
+        <span style="color:#66d9ef">break</span>
+
+<span style="color:#75715e"># Obtain the shared modulus n and its prime factors p, q</span>
+print(result_gcd)
+n <span style="color:#f92672">=</span> result_gcd[<span style="color:#ae81ff">0</span>]
+p <span style="color:#f92672">=</span> result_gcd[<span style="color:#ae81ff">1</span>]
+q <span style="color:#f92672">=</span> n <span style="color:#f92672">//</span> p
+print(q)
+
+phi_n <span style="color:#f92672">=</span> (p <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> (q <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>)
+d <span style="color:#f92672">=</span> sympy<span style="color:#f92672">.</span>mod_inverse(e, phi_n)
+
+<span style="color:#75715e"># Decrypt ciphertexts and check for the flag</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(ciphertexts)):
+    plaintext <span style="color:#f92672">=</span> long_to_bytes(pow(ciphertexts[i], d, n))
+    <span style="color:#66d9ef">if</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;THS&#39;</span> <span style="color:#f92672">in</span> plaintext:
+        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Decrypted plaintext: </span><span style="color:#e6db74">{</span>plaintext<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</code></pre></div><h3 id="explanation-3">Explanation</h3>
+<p>The provided code demonstrates an RSA encryption scenario where multiple ciphertexts share a common modulus <code>n</code>. Here&rsquo;s a step-by-step explanation of the code:</p>
+<ol>
+<li><strong>Import Libraries:</strong>
+<ul>
+<li><code>sympy</code>: A Python library for symbolic mathematics, including functions for prime number generation and modular inverse.</li>
+<li><code>Crypto.Util.number</code>: A module from the <code>Crypto</code> library used for cryptographic operations.</li>
+</ul>
+</li>
+<li><strong>Given RSA Parameters:</strong>
+<ul>
+<li><code>e</code>: The public exponent (common for all ciphertexts).</li>
+<li><code>ciphertexts</code>: A list of ciphertexts.</li>
+<li><code>n_values</code>: A list of modulus values.</li>
+</ul>
+</li>
+<li><strong>Calculate Greatest Common Divisor (GCD):</strong>
+<ul>
+<li>Define a function <code>euclid_gcd</code> to calculate the greatest common divisor (GCD) between two numbers.</li>
+</ul>
+</li>
+<li><strong>Find Common Factors:</strong>
+<ul>
+<li>Iterate through the <code>n_values</code> to find pairs with a common factor using the <code>euclid_gcd</code> function.</li>
+</ul>
+</li>
+<li><strong>Obtain the Shared Modulus n and its Prime Factors p, q:</strong>
+<ul>
+<li>Use the found common divisor between n values to determine the shared modulus <code>n</code> and calculate its prime factors <code>p</code> and <code>q</code>.</li>
+</ul>
+</li>
+<li><strong>Calculate Private Exponent d:</strong>
+<ul>
+<li>Calculate the private exponent <code>d</code> using one of the modulus <code>n</code> and its prime factors <code>p</code> and <code>q</code>.</li>
+</ul>
+</li>
+<li><strong>Decrypt Ciphertexts:</strong>
+<ul>
+<li>Decrypt one of the ciphertexts using the calculated private exponent <code>d</code> and the corresponding modulus <code>n</code>.</li>
+</ul>
+</li>
+</ol>
+<h3 id="problem-to-exploit-3">Problem to Exploit</h3>
+<p>The vulnerability in this challenge is the possibility of finding a common divisor between two distinct modulus values <code>n</code>. By exploiting this vulnerability, one can calculate the private key and decrypt the ciphertext associated with one of the moduli.</p>
+<p>The common modulus <code>n</code> is a weakness in this scenario. When the modulus <code>n</code> is shared across multiple RSA instances, it allows for the possibility of calculating the greatest common divisor (GCD) between these moduli. If a non-trivial GCD is found, it indicates that the two moduli share a common prime factor. This can be used to factorize the moduli and obtain the private key, ultimately leading to decryption of ciphertexts.</p>
+<p> </p>
+<p> </p>
+<h2 id="rsa-with-common-modulus">RSA with Common Modulus</h2>
+<p>In a company, all the employees are associated with a RSA public key. The cybersecurity guy who is in charge is too lazy to generate a completely new public key for each new employee. So he decided to recycle the same modulus n for everyone, changing only the public exponent. At some point, a message m is broadcasted in encrypted form to all the employee of the company. The information you have is the common public modulus n and the data associated to two employees, i.e. their public keys e1, e2 and the ciphertexts c1, c2 corresponding to m. Are you able to find out the original message m?</p>
+<h3 id="solution-4">Solution</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> gmpy2
+<span style="color:#f92672">from</span> Crypto.Util.number <span style="color:#f92672">import</span> long_to_bytes
+
+<span style="color:#75715e"># Given values</span>
+n <span style="color:#f92672">=</span> <span style="color:#ae81ff">54091136062731189097684838662133730287805248616280945524818499074174178792921107970338405562623800475671952250241219301481555035985163774303923971007210358200895011198122865359958581567527848886246719199618581799287912557968141059152021173457855601404027408448802610510064740223784290948744501305515730596997</span>
+e1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1865575455884331305675554729885762114935344119504545880670853799431652817950448203252572257</span>
+e2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1312243660361784808275488430749762831225040489432564480368052176946960407384352742950812177</span>
+c1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">17388944013212914709111843302373363154177810314909226069833458440142999382506980558537758425521552507465344517971486052354978300372605259672815020783196035462386299618047720964517867551193923325437684543772519253451584390962031497382020739845600737725890176948987014875085558953291018803210239123619775482932</span>
+c2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">33250791921906562143753311787247221381260546987912195950044761388182931039632232256265471306279253936021807284695159322620020776657098775913521016551805253075107986592397891820718524215746314165431201429215309566146400402509358680223349076052610642879947434103437190444964383660138126171417916846643510769415</span>
+
+<span style="color:#75715e"># Calculate the coefficients (x, y) for e1*x + e2*y = 1</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">gcdExtended</span>(a, b):
+    <span style="color:#66d9ef">if</span> a <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">return</span> b, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>
+    gcd, x1, y1 <span style="color:#f92672">=</span> gcdExtended(b <span style="color:#f92672">%</span> a, a)
+    x <span style="color:#f92672">=</span> y1 <span style="color:#f92672">-</span> (b <span style="color:#f92672">//</span> a) <span style="color:#f92672">*</span> x1
+    y <span style="color:#f92672">=</span> x1
+    <span style="color:#66d9ef">return</span> gcd, x, y
+
+<span style="color:#75715e"># Calculate the coefficients for e1*x + e2*y = 1</span>
+g, x, y <span style="color:#f92672">=</span> gcdExtended(e1, e2)
+
+<span style="color:#75715e"># Calculate the inverse of c2 modulo n</span>
+i <span style="color:#f92672">=</span> gmpy2<span style="color:#f92672">.</span>invert(c2, n)
+
+<span style="color:#75715e"># Decrypt the ciphertexts using the private exponents</span>
+decrypted_with_e1 <span style="color:#f92672">=</span> pow(c1, x, n)
+decrypted_with_e2 <span style="color:#f92672">=</span> pow(i, int(<span style="color:#f92672">-</span>y), n)
+
+<span style="color:#75715e"># Obtain the plaintext message</span>
+m <span style="color:#f92672">=</span> decrypted_with_e1 <span style="color:#f92672">*</span> decrypted_with_e2 <span style="color:#f92672">%</span> n
+
+<span style="color:#75715e"># Convert the plaintext to bytes</span>
+plaintext <span style="color:#f92672">=</span> long_to_bytes(m)
+
+print(<span style="color:#e6db74">&#34;Decrypted plaintext:&#34;</span>, plaintext)
+</code></pre></div><h3 id="explanation-4">Explanation</h3>
+<p>The provided code demonstrates an RSA encryption scenario where multiple ciphertexts share a common modulus <code>n</code> but have different public exponents <code>e1</code> and <code>e2</code>. Here&rsquo;s a step-by-step explanation of the code:</p>
+<ol>
+<li><strong>Given RSA Parameters:</strong>
+<ul>
+<li><code>n</code>: The RSA modulus (common for all ciphertexts).</li>
+<li><code>e1</code> and <code>e2</code>: The public exponents for different ciphertexts.</li>
+<li><code>c1</code> and <code>c2</code>: The ciphertexts corresponding to the respective public exponents.</li>
+</ul>
+</li>
+<li><strong>Calculate Coefficients (x) and (y):</strong>
+<ul>
+<li>The function <code>gcdExtended</code> calculates the coefficients (x) and (y) for the equation (e1 \times x + e2 \times y = 1).</li>
+</ul>
+</li>
+<li><strong>Invert (c2) modulo (n):</strong>
+<ul>
+<li>Calculate the modular inverse of (c2) modulo (n) using <code>gmpy2</code>.</li>
+</ul>
+</li>
+<li><strong>Decrypt Ciphertexts:</strong>
+<ul>
+<li>Decrypt each ciphertext using the respective private exponents (x) and (y).</li>
+</ul>
+</li>
+<li><strong>Obtain the Plaintext Message:</strong>
+<ul>
+<li>Calculate the product of the decrypted ciphertexts modulo (n) to obtain the plaintext message.</li>
+</ul>
+</li>
+<li><strong>Convert to Bytes:</strong>
+<ul>
+<li>Convert the obtained plaintext to bytes.</li>
+</ul>
+</li>
+</ol>
+<h3 id="problem-to-exploit-4">Problem to Exploit</h3>
+<p>The vulnerability in this challenge is the usage of a common modulus (n) with different public exponents (e1) and (e2). By exploiting the coefficients (x) and (y) such that (e1 \times x + e2 \times y = 1), we can efficiently calculate the plaintext message from the given ciphertexts.</p>
+<p>The shared modulus (n) is a vulnerability because when two public keys share the same modulus, the greatest common divisor (GCD) of their public exponents is not 1. This allows us to calculate (x) and (y) such that (e1 \times x + e2 \times y = 1). Using this property, we can efficiently calculate the original message (m) from the given ciphertexts (c1) and (c2).</p>
+<p> </p>
+<p> </p>
+<h2 id="rsa-with-chinese-reminder-theorem">RSA with Chinese Reminder Theorem</h2>
+<p>Three RSA public keys have been used to encrypt the same message m. The three public keys have the same exponent e=3 but different moduli, i.e. (n1, 3), (n2, 3), (n3, 3). Given c1, c2, c3 encryption of m under each key, are you able to find out the original message m? The flag format is THS{m_in_base_10}</p>
+<h3 id="solution-5">Solution</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sympy
+<span style="color:#f92672">from</span> gmpy2 <span style="color:#f92672">import</span> iroot
+
+<span style="color:#75715e"># Given values</span>
+n1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">85667815574861619903823020734533014758497517129884920616214802541098363447680440172184486722087145209053447848996237848934244008599360860637027022690716373111251917149818843329284837276342823124988862132327437056204754198531063993808031061018616042619216387796979644142647922795828529235261286375252354390063</span>
+n2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">146825997036352110245960059001360194347948188573286974674641344811517602727223717209837808109729490159701434527698628570575321775660553998994589424821168562205858458354384116767308355332092559541524922140124107506966027111051071572911755705349514694449804245783590573764095514071122982302155622677270073579393</span>
+n3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">126544077525498025320598712777907896955205564795328624870301965015430682262467340470541178431837985468584094637225798274404278743227923491443245955862615159873284856215560581071498437573890782583365748146854546320263620393749915310571726480907686382214711241661860512785774497778808223771838053406539416576479</span>
+c1 <span style="color:#f92672">=</span> <span style="color:#ae81ff">45512244749960737068762928598042488637828624542043307040990197747313444784018535834815887416147740125294323994588261583522452852456068856863379250538376048332923364458763172479458691661588110286726710567698648374134511145284452830756712535784097058446561842278071719514607192557768101864770873294674384094465</span>
+c2 <span style="color:#f92672">=</span> <span style="color:#ae81ff">123588398908311767727101679376457828849663963115288179775711742629380839446592473764338993671478334873446178318004409923292465225389810454413006911399858642047006099581825255346445514571891529369799000388707048554582114937936722673420025235592403007724208657309233083747811960480630198049806825599634022878798</span>
+c3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">112175491066960361570409951547003985463067829151083921740671033347833502662682014450106279649923202079324172182162545693708582829214404116395393681198229804355301311901211214418659038661959928829326341589776070076629631491939911273164128605630101357046542494238831195406755324135589154844551960532164332662226</span>
+e <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+
+<span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> reduce
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">chinese_remainder</span>(n, a):
+    sum<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    prod<span style="color:#f92672">=</span>reduce(<span style="color:#66d9ef">lambda</span> a, b: a<span style="color:#f92672">*</span>b, n)
+    <span style="color:#66d9ef">for</span> n_i, a_i <span style="color:#f92672">in</span> zip(n,a):
+        p<span style="color:#f92672">=</span>prod<span style="color:#f92672">//</span>n_i
+        sum <span style="color:#f92672">+=</span> a_i<span style="color:#f92672">*</span> mul_inv(p, n_i)<span style="color:#f92672">*</span>p
+    <span style="color:#66d9ef">return</span> sum <span style="color:#f92672">%</span> prod
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mul_inv</span>(a, b):
+    b0<span style="color:#f92672">=</span> b
+    x0, x1<span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">if</span> b<span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>: <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">while</span> a<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">1</span> :
+        q<span style="color:#f92672">=</span>a<span style="color:#f92672">//</span> b
+        a, b<span style="color:#f92672">=</span> b, a<span style="color:#f92672">%</span>b
+        x0, x1<span style="color:#f92672">=</span>x1 <span style="color:#f92672">-</span>q <span style="color:#f92672">*</span>x0, x0
+    <span style="color:#66d9ef">if</span> x1<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">0</span> : x1<span style="color:#f92672">+=</span> b0
+    <span style="color:#66d9ef">return</span> x1
+
+n<span style="color:#f92672">=</span>[n1,n2,n3]
+a<span style="color:#f92672">=</span>[c1,c2,c3]
+print(iroot(chinese_remainder(n,a), <span style="color:#ae81ff">3</span>))
+</code></pre></div><h3 id="explanation-5">Explanation</h3>
+<p>The provided Python script reveals a vulnerability in RSA encryption due to the narrow gap between the prime factors p and q of the modulus n. Here&rsquo;s a step-by-step breakdown:</p>
+<ol>
+<li><strong>Given RSA Parameters:</strong>
+<ul>
+<li>n1, n2, n3: Modulus for the respective ciphertexts.</li>
+<li>c1, c2, c3: Corresponding ciphertexts.</li>
+<li>e: The public exponent.</li>
+</ul>
+</li>
+<li><strong>Chinese Remainder Theorem (CRT):</strong>
+<ul>
+<li>The script implements the Chinese Remainder Theorem to efficiently combine the results from different moduli.</li>
+</ul>
+</li>
+<li><strong>Modular Inverse Calculation:</strong>
+<ul>
+<li>The script also calculates the modular inverse necessary for the CRT computation.</li>
+</ul>
+</li>
+<li><strong>Combining Results:</strong>
+<ul>
+<li>Utilizing the Chinese Remainder Theorem and modular inverse, the script combines the decrypted results to recover the original message.</li>
+</ul>
+</li>
+</ol>
+<h3 id="problem-to-exploit-5">Problem to Exploit</h3>
+<p>The vulnerability in this challenge lies in the small difference between the prime factors p and q of n. This small difference makes the factorization of n into p and q feasible using traditional factorization algorithms. Once p and q are obtained, an attacker can deduce the private exponent d, enabling the decryption of the ciphertext c.</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2023 Niccolò Parlanti | Download my 
+            <a href="http://Niccolo10.github.io/docs/CV_nc.pdf" target="_blank">Resume</a>
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

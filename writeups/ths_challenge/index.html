@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+THS Challenges Writeups - Misc | Niccolò Parlanti
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="http://Niccolo10.github.io/writeups/ths_challenge/" >
+<link href="/sass/main.min.a8be33730f01e46b6e968a84ed6b211a9d1286d34f7e143c012da9c14cd56400.css" rel="stylesheet">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NHDH4QVJC1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NHDH4QVJC1');
+</script>
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a href="http://Niccolo10.github.io/">
+                <span class="terminal">niccoloparlanti@cybersec ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu"/>
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/projects" title="" >
+                        ~/projects</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/writeups" title="" >
+                        ~/writeups</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>THS Challenges Writeups - Misc</h1>
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/ctf/">#CTF</a><span></span>
+    <a href="/tags/forensics/">#Forensics</a><span></span>
+    <a href="/tags/ths/">#THS</a></dd>
+            
+            
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2023-09-10">September 10, 2023</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>5 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p>Writeups of the challenges of THS  - Misc</p>
+<p> </p>
+<h1 id="misc">Misc</h1>
+<h2 id="embark-on-a-cookie-quest">Embark on a Cookie Quest!</h2>
+<p>Indulging in the delightful world of internet browsing, one can&rsquo;t deny the joy that comes from the delectable cookies on every website. And now, we&rsquo;ve crafted a special realm just for you to amass a multitude of these cookies. Can you gather them all before they lose their freshness?</p>
+<figure><img src="/images/cookei1.png"
+         alt="the &#39;dirty&#39; spot" width="900"/>
+</figure>
+
+<figure><img src="/images/cookie2.png"
+         alt="the &#39;dirty&#39; spot" width="900"/>
+</figure>
+
+<figure><img src="/images/cookie3.png"
+         alt="the &#39;dirty&#39; spot" width="900"/>
+</figure>
+
+<p>Seems like we need to be faster in order not to let the cookie espire.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> requests
+
+url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://ths.eemcs.utwente.nl:33109/&#39;</span>
+
+cookies <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;password&#39;</span>: <span style="color:#e6db74">&#39;I_LOVE_COOKIES&lt;3&#39;</span>}
+response <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(url<span style="color:#f92672">+</span><span style="color:#e6db74">&#39;/cookie&#39;</span>, cookies<span style="color:#f92672">=</span>cookies)
+
+password <span style="color:#f92672">=</span> str(response<span style="color:#f92672">.</span>content)[<span style="color:#ae81ff">1044</span>:<span style="color:#ae81ff">1069</span>]
+
+<span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">True</span>):
+    cookies <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;password&#39;</span>: password}
+    response <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>get(url<span style="color:#f92672">+</span><span style="color:#e6db74">&#39;/cookie&#39;</span>, cookies<span style="color:#f92672">=</span>cookies)
+    password <span style="color:#f92672">=</span> str(response<span style="color:#f92672">.</span>content)[<span style="color:#ae81ff">1044</span>:<span style="color:#ae81ff">1069</span>]
+    <span style="color:#66d9ef">if</span> password[:<span style="color:#ae81ff">4</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;THS{&#39;</span>:
+        <span style="color:#66d9ef">break</span>
+
+print(<span style="color:#e6db74">&#39;Flag:&#39;</span>, password)
+</code></pre></div><p>🚀 <strong>Flag Retrieval</strong></p>
+<p>These are the passage to retrieve the flag:</p>
+<ol>
+<li>
+<p><strong>Preparation</strong>:
+We arm ourselves with a special cookie, confessing our love for cookies.</p>
+</li>
+<li>
+<p><strong>Initial Expedition</strong>:
+We make our first move, sending a daring GET request to the web address, equipped with our cookie.</p>
+</li>
+<li>
+<p><strong>Decrypting Clues</strong>:
+The response received holds hidden clues, and we diligently extract a series of characters, hoping to uncover the password.</p>
+</li>
+<li>
+<p><strong>Cracking the Code</strong>:
+With the extracted characters in hand, we craft a loop to continuously test new cookies. Each attempt propels us closer to the coveted flag.</p>
+</li>
+<li>
+<p><strong>Victory Revealed</strong>:
+After numerous trials, we triumphantly unveil the flag.</p>
+</li>
+</ol>
+<h2 id="nyte-encodings">Nyte Encodings</h2>
+<p>The conventional byte consists of 8 bits, chosen primarily because it is a power of 2. However, for this challenge, we&rsquo;re embracing a different approach - the 9-bit byte, aptly named the <code>nyte</code>. We believe it&rsquo;s much cooler! The string provided below is a hexadecimal encoding of our flag represented as ASCII characters in <code>nytes</code>. Can you decipher the flag?</p>
+<h3 id="encoded-flag">Encoded Flag</h3>
+<p>The following string represents the flag in hexadecimal encoding:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">2a120a67b371e4e8653997cc2723297cc4332a15066722f9d0d0403717cc4793a194e67d
+</code></pre></div><h3 id="python-code-for-decoding">Python Code for Decoding</h3>
+<p>Here&rsquo;s a Python script that will guide you in decoding the flag from the given hexadecimal string:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">flag <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+
+<span style="color:#75715e"># Provided hexadecimal string</span>
+hexadecimal <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2a120a67b371e4e8653997cc2723297cc4332a15066722f9d0d0403717cc4793a194e67d&#39;</span>
+print(<span style="color:#e6db74">&#39;hex:&#39;</span>, hexadecimal)
+
+<span style="color:#75715e"># Transform it into decimal</span>
+decimal <span style="color:#f92672">=</span> int(hexadecimal, <span style="color:#ae81ff">16</span>)
+print(<span style="color:#e6db74">&#39;decimal:&#39;</span>, decimal)
+
+<span style="color:#75715e"># Transform it into binary</span>
+binary <span style="color:#f92672">=</span> bin(decimal)
+print(<span style="color:#e6db74">&#39;binary:&#39;</span>, binary)
+
+<span style="color:#75715e"># Split it into chunks of 9 (instead of 8)</span>
+sequence <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(binary)<span style="color:#f92672">//</span><span style="color:#ae81ff">9</span>):
+    flag <span style="color:#f92672">+=</span> chr(int(binary[sequence:sequence<span style="color:#f92672">+</span><span style="color:#ae81ff">9</span>], <span style="color:#ae81ff">2</span>))
+    sequence <span style="color:#f92672">+=</span> <span style="color:#ae81ff">9</span>
+print(<span style="color:#e6db74">&#39;Decoded Flag:&#39;</span>, flag)
+</code></pre></div><p>The challenge lies in the unconventional use of a 9-bit byte (nyte), deviating from the standard 8-bit byte, making the flag decoding process more intricate. Feel free to explore and use this Python script to retrieve the flag from the given hexadecimal encoding.</p>
+<p> </p>
+<p> </p>
+<h2 id="whistleblower">WhistleBlower</h2>
+<p>Alice stumbled upon the identity of the whistleblower in her company while going through some files. She needed to inform Eve but was cautious about her communications being monitored. To conceal the message, she hid it within a seemingly innocent email. Can you uncover who betrayed the company?</p>
+<h3 id="challenge-description">Challenge Description</h3>
+<p>Alice found a suspiciously formatted email and suspected that it contained a hidden message. The content of the file is provided below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-plaintext" data-lang="plaintext">Dear Eve,       	
+ 	 	 	  
+Thank you for your email informing me of your absence. I hope you feel better soon. Do not worry about your presentation with the Stegno Space Ltd. I can cover for you. Could you please send me your notes for that. 	  	   
+ 	 	  		
+Thank you, 				 		
+Best, 	    	 
+Alice  		    
+ 		   	 
+ 	 					
+  		   	
+ 			  		
+ 	 					
+  		   	
+ 	  	   
+  		  		
+ 	 					
+ 			 			
+  		   	
+ 			  		
+  		 			
+ 	  		  
+  		  		
+ 	 					
+ 	    	 
+ 		 		  
+  		    
+ 			 			
+  		  		
+ 			  	 
+ 					 	
+</code></pre></div><h3 id="analysis-and-decoding">Analysis and Decoding</h3>
+<p>Upon analyzing the file, Alice noticed unusual spaces and tabs at the end of the email. She suspected that a secret message was hidden there.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat -T Dear_Eve.txt
+</code></pre></div><p>Alice used this command to visualize tabs and spaces in the file:</p>
+<p>Dear Eve,       ^I
+^I ^I ^I<br>
+&hellip; (output truncated for brevity)</p>
+<p>She then mapped each tab and space to binary (0s and 1s) and decoded them, using space as the delimiter and employing different byte lengths. Through this decoding, Alice found what seemed to be a piece of the flag.</p>
+<h3 id="decoding-results">Decoding Results</h3>
+<p>Decoding using 7 as byte length:</p>
+<pre tabindex="0"><code>input: 1100010 1011111 0110001 1110011 1011111 0110001 1001000 0110011 1011111 1110111 0110001 1110011 0110111 1001100 0110011 1011111 1000010 1101100 0110000 1110111 0110011 1110010 1111101
+output: b_1s_1H3_w1s7L3_Bl0w3r}
+</code></pre><p>Decoding using 8 byte lenght:</p>
+<pre tabindex="0"><code>input: 00000001 01010100 01001000 01010011 01111011 01000010 00110000
+output: THS{B0
+</code></pre><p>Alice retrieved the flag by concatenating the decoded strings:</p>
+<pre tabindex="0"><code>THS{B0b_1s_1H3_w1s7L3_Bl0w3r}
+</code></pre><p>The challenge lies in decoding the hidden message concealed within the formatting of the email, providing a glimpse into the identity of the whistleblower.</p>
+<p>For an easier solve i wrote this code :</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;&#39;^I ^I ^I  
+</span><span style="color:#e6db74">^I  ^I   
+</span><span style="color:#e6db74">^I ^I  ^I^I
+</span><span style="color:#e6db74">^I^I^I^I ^I^I
+</span><span style="color:#e6db74">^I    ^I 
+</span><span style="color:#e6db74">^I^I    
+</span><span style="color:#e6db74">^I^I   ^I 
+</span><span style="color:#e6db74">^I ^I^I^I^I^I
+</span><span style="color:#e6db74"> ^I^I   ^I
+</span><span style="color:#e6db74">^I^I^I  ^I^I
+</span><span style="color:#e6db74">^I ^I^I^I^I^I
+</span><span style="color:#e6db74"> ^I^I   ^I
+</span><span style="color:#e6db74">^I  ^I   
+</span><span style="color:#e6db74"> ^I^I  ^I^I
+</span><span style="color:#e6db74">^I ^I^I^I^I^I
+</span><span style="color:#e6db74">^I^I^I ^I^I^I
+</span><span style="color:#e6db74"> ^I^I   ^I
+</span><span style="color:#e6db74">^I^I^I  ^I^I
+</span><span style="color:#e6db74"> ^I^I ^I^I^I
+</span><span style="color:#e6db74">^I  ^I^I  
+</span><span style="color:#e6db74"> ^I^I  ^I^I
+</span><span style="color:#e6db74">^I ^I^I^I^I^I
+</span><span style="color:#e6db74">^I    ^I 
+</span><span style="color:#e6db74">^I^I ^I^I  
+</span><span style="color:#e6db74"> ^I^I    
+</span><span style="color:#e6db74">^I^I^I ^I^I^I
+</span><span style="color:#e6db74"> ^I^I  ^I^I
+</span><span style="color:#e6db74">^I^I^I  ^I 
+</span><span style="color:#e6db74">^I^I^I^I^I ^I&#39;&#39;&#39;</span>
+
+l <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">for</span> sol <span style="color:#f92672">in</span> l:
+    sol <span style="color:#f92672">=</span> sol<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;^I&#39;</span>, <span style="color:#e6db74">&#39;1&#39;</span>)
+    sol <span style="color:#f92672">=</span> sol<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39; &#39;</span>, <span style="color:#e6db74">&#39;0&#39;</span>)
+    print(chr(int(sol, <span style="color:#ae81ff">2</span>)), end<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&#39;</span>)
+</code></pre></div><p> </p>
+<p> </p>
+<h2 id="ford-automotive-challenge">Ford Automotive Challenge</h2>
+<p>An American car manufacturer maintains a database containing the mileage of their sold vehicles, ranging from <code>0</code> to <code>10,000,000</code>. Ben, a new employee, has devised an algorithm to detect fake or anomalous mileage entries in this database. To showcase the effectiveness of his algorithm, he&rsquo;s willing to provide the flag to anyone who can submit 1,000 automatically generated mileage values that pass his anomaly check.</p>
+<h3 id="challenge-details">Challenge Details</h3>
+<p>The server expects data in the form of a JSON list containing 1,000 mileage values:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Import requests</span>
+<span style="color:#f92672">import</span> requests
+
+<span style="color:#75715e"># Send message to server to retrieve response</span>
+response <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>post(
+    <span style="color:#e6db74">&#34;http://ths.eemcs.utwente.nl:&lt;docker_port&gt;/&#34;</span>,
+    json<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;mileage&#39;</span>: [<span style="color:#f92672">&lt;</span>integer_value_1<span style="color:#f92672">&gt;</span>, <span style="color:#f92672">...</span>, <span style="color:#f92672">&lt;</span>integer_value_1000<span style="color:#f92672">&gt;</span>]},
+)
+
+<span style="color:#75715e"># Get response from JSON format</span>
+print(response<span style="color:#f92672">.</span>json())
+</code></pre></div><h3 id="data-collection-and-submission">Data Collection and Submission</h3>
+<p>To generate the 1,000 mileage values and submit them for the challenge, the provided Python script utilizes a dataset of cars for sale. The script extracts the mileage values from the dataset and sends them via a POST request to the server endpoint.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> requests
+
+<span style="color:#75715e"># Sample dataset of cars with mileage information</span>
+data <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">Fiesta,2017,12000,Automatic,15944,Petrol,150,57.7,1.0
+</span><span style="color:#e6db74">Focus,2018,14000,Manual,9083,Petrol,150,57.7,1.0
+</span><span style="color:#e6db74">... (data truncated for brevity) ...
+</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+
+<span style="color:#75715e"># Split data into lines</span>
+lines <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#75715e"># Extract mileage values from the dataset</span>
+mileage_values <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> lines:
+    parts <span style="color:#f92672">=</span> line<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;,&#39;</span>)
+    mileage <span style="color:#f92672">=</span> int(parts[<span style="color:#ae81ff">4</span>])
+    mileage_values<span style="color:#f92672">.</span>append(mileage)
+
+<span style="color:#75715e"># Send the mileage values via a POST request</span>
+response <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>post(
+    <span style="color:#e6db74">&#34;http://ths.eemcs.utwente.nl:33115&#34;</span>,
+    json<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;mileage&#39;</span>: mileage_values}
+)
+
+<span style="color:#75715e"># Print the response in JSON format</span>
+print(response<span style="color:#f92672">.</span>json())
+</code></pre></div><h3 id="challenge-resolution">Challenge Resolution</h3>
+<p>The provided Python script processes the dataset to obtain mileage values and sends them to the specified server. Upon submission, the server checks for anomalous mileage numbers based on Ben&rsquo;s algorithm. If 1,000 valid mileage values are submitted, the server will respond with the flag.</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2023 Niccolò Parlanti | Download my 
+            <a href="http://Niccolo10.github.io/docs/CV_nc.pdf" target="_blank">Resume</a>
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

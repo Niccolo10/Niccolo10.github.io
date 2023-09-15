@@ -6,13 +6,40 @@
     <description>Recent content in Tags on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 05 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 12 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Crypto</title>
+      <link>http://Niccolo10.github.io/tags/crypto/</link>
+      <pubDate>Tue, 12 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/tags/crypto/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>CTF</title>
       <link>http://Niccolo10.github.io/tags/ctf/</link>
-      <pubDate>Mon, 05 Jun 2023 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 12 Sep 2023 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/ctf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>THS</title>
+      <link>http://Niccolo10.github.io/tags/ths/</link>
+      <pubDate>Tue, 12 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/tags/ths/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Forensics</title>
+      <link>http://Niccolo10.github.io/tags/forensics/</link>
+      <pubDate>Sun, 10 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/tags/forensics/</guid>
       <description></description>
     </item>
     
@@ -31,15 +58,6 @@
       <pubDate>Mon, 05 Jun 2023 00:00:00 +0000</pubDate>
       
       <guid>http://Niccolo10.github.io/tags/web/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Forensics</title>
-      <link>http://Niccolo10.github.io/tags/forensics/</link>
-      <pubDate>Fri, 05 May 2023 00:00:00 +0000</pubDate>
-      
-      <guid>http://Niccolo10.github.io/tags/forensics/</guid>
       <description></description>
     </item>
     
