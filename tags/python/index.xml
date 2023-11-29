@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Python on My New Hugo Site</title>
+    <title>python on My New Hugo Site</title>
     <link>http://Niccolo10.github.io/tags/python/</link>
-    <description>Recent content in Python on My New Hugo Site</description>
+    <description>Recent content in python on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 18 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 08 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cryptographically_Enforced_Access_Control</title>
+      <link>http://Niccolo10.github.io/projects/cryptographically_enforced_access_control/</link>
+      <pubDate>Wed, 08 Nov 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/projects/cryptographically_enforced_access_control/</guid>
+      <description>&lt;p&gt;Embedding of a watermak using DWT-SVD and a DWT-DCT tranform.&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>DWT-SVD_DWT-DCT-image-watermaking</title>
       <link>http://Niccolo10.github.io/projects/watermarking/</link>
