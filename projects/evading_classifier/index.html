@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>
+Evading Deepfake Classifier with Adversarial Attacks | Niccolò Parlanti
+</title>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="generator" content="Hugo 0.92.2" />
+
+
+<link rel="canonical" href="http://Niccolo10.github.io/projects/evading_classifier/" >
+<link href="/sass/main.min.a8be33730f01e46b6e968a84ed6b211a9d1286d34f7e143c012da9c14cd56400.css" rel="stylesheet">
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NHDH4QVJC1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NHDH4QVJC1');
+</script>
+
+
+
+</head>
+
+<body>
+
+    <div class="flexWrapper">
+        <header class="headerWrapper">
+    <div class="header">
+        <div>
+            <a href="http://Niccolo10.github.io/">
+                <span class="terminal">niccoloparlanti@cybersec ~ $</span>
+            </a>
+        </div>
+        <input class="side-menu" type="checkbox" id="side-menu"/>
+        <label class="hamb" for="side-menu"><span class="hamb-line"></span></label>
+        <nav class="headerLinks">
+            <ul>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/projects" title="" >
+                        ~/projects</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/writeups" title="" >
+                        ~/writeups</a>
+                </li>
+                
+                <li>
+                    <a href="http://Niccolo10.github.io/about" title="" >
+                        ~/about</a>
+                </li>
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="content">
+            <main class="main">
+                
+<div class="postWrapper">
+    <h1>Evading Deepfake Classifier with Adversarial Attacks</h1>
+    
+    <section class="postMetadata">
+        <dl>
+            
+                
+<dt>tags</dt>
+<dd><span></span>
+    <a href="/tags/cybersecurity/">#Cybersecurity</a><span></span>
+    <a href="/tags/python/">#python</a><span></span>
+    <a href="/tags/adversarial-attacks/">#Adversarial Attacks</a></dd>
+            
+            
+            
+            
+                <dt>published</dt>
+                
+                <dd><time datetime="2024-01-28">January 28, 2024</time></dd>
+            
+            
+                <dt>reading time</dt>
+                <dd>3 minutes</dd>
+            
+        </dl>
+    </section>
+    
+    <div>
+        <p>An in-depth analysis of white-box adversarial attacks against deepfake-image detectors, exploring the vulnerability of AI-driven systems.</p>
+<h2 id="project-overview">Project Overview</h2>
+<p>This project investigates the susceptibility of AI-driven deepfake-image detectors to white-box adversarial attacks, demonstrating how even well-designed models can be misled by systematically crafted input. The study is rooted in the techniques proposed by Carlini and Farid in their 2021 paper, focusing on the robustness of the ResNet-50 model.</p>
+<h3 id="key-components-and-technologies-used">Key Components and Technologies Used</h3>
+<ul>
+<li><strong>ResNet-50</strong>: A deep learning model used as the baseline for detecting manipulated images.</li>
+<li><strong>Python &amp; PyTorch</strong>: The core technologies for crafting adversarial examples and manipulating neural networks.</li>
+</ul>
+<h2 id="theoretical-background">Theoretical Background</h2>
+<p>Adversarial attacks represent a significant threat to the integrity of machine learning models. These attacks involve creating input data that is perceptually similar to the original data but contains carefully crafted distortions that cause the model to make errors.</p>
+<h3 id="distortion-minimizing-attack">Distortion-Minimizing Attack</h3>
+<p>This attack subtly alters an image in a way that minimizes visible changes while still fooling the model. The goal is to create an image that looks unchanged to humans but is classified incorrectly by the model.</p>
+<h3 id="loss-maximizing-attack">Loss-Maximizing Attack</h3>
+<p>This approach intentionally maximizes the prediction error of the model. By doing so, it exploits the model&rsquo;s vulnerabilities, causing it to misclassify the altered image with high confidence.</p>
+<h2 id="detailed-attack-process">Detailed Attack Process</h2>
+<p>The methodology for conducting these attacks involves several steps that manipulate the image data directly, aiming to explore the limits of model robustness.</p>
+<h3 id="step-1-gradient-calculation">Step 1: Gradient Calculation</h3>
+<p>The first step involves calculating the gradient of the model’s loss function with respect to the input image. This gradient tells us how to slightly alter the image to maximize the increase in loss, which correlates with an increased chance of misclassification.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Calculate gradients</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">calculate_gradients</span>(image, label, model):
+    image<span style="color:#f92672">.</span>requires_grad <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+    output <span style="color:#f92672">=</span> model(image)
+    loss <span style="color:#f92672">=</span> F<span style="color:#f92672">.</span>nll_loss(output, label)
+    model<span style="color:#f92672">.</span>zero_grad()
+    loss<span style="color:#f92672">.</span>backward()
+    data_grad <span style="color:#f92672">=</span> image<span style="color:#f92672">.</span>grad<span style="color:#f92672">.</span>data
+    <span style="color:#66d9ef">return</span> data_grad</code></pre></div>
+<h3 id="step-2-image-perturbation">Step 2: Image Perturbation</h3>
+<p>Using the gradients calculated in the first step, the image is adjusted by a small factor (epsilon), which is determined experimentally. This factor represents the intensity of the attack.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Perturb the original image</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">perturb_image</span>(original_image, epsilon, data_grad):
+    sign_data_grad <span style="color:#f92672">=</span> data_grad<span style="color:#f92672">.</span>sign()
+    perturbed_image <span style="color:#f92672">=</span> original_image <span style="color:#f92672">+</span> epsilon <span style="color:#f92672">*</span> sign_data_grad
+    perturbed_image <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>clamp(perturbed_image, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)  <span style="color:#75715e"># Ensure pixel values remain between 0 and 1</span>
+    <span style="color:#66d9ef">return</span> perturbed_image</code></pre></div>
+<h3 id="step-3-evaluating-the-attack">Step 3: Evaluating the Attack</h3>
+<p>After crafting the adversarial image, it&rsquo;s crucial to assess its effectiveness. This involves running the perturbed image through the model again and observing whether the classification has changed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Evaluate the effectiveness of the adversarial image</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_adversarial_image</span>(model, perturbed_image, true_label):
+    output <span style="color:#f92672">=</span> model(perturbed_image)
+    final_pred <span style="color:#f92672">=</span> output<span style="color:#f92672">.</span>max(<span style="color:#ae81ff">1</span>, keepdim<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)[<span style="color:#ae81ff">1</span>]  <span style="color:#75715e"># get the index of the max log-probability</span>
+    <span style="color:#66d9ef">if</span> final_pred<span style="color:#f92672">.</span>item() <span style="color:#f92672">==</span> true_label<span style="color:#f92672">.</span>item():
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>  <span style="color:#75715e"># Attack failed</span>
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>  <span style="color:#75715e"># Attack successful</span></code></pre></div>
+<h2 id="performance-analysis">Performance Analysis</h2>
+<p>Our experiments with varying values of epsilon demonstrated that even minimal perturbations can deceive sophisticated deepfake detectors. These findings emphasize the need for incorporating robustness against adversarial attacks during the training phase of these models.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This project not only highlights the effectiveness of white-box adversarial attacks but also underscores the critical need for defense mechanisms that can withstand such manipulations. Future research should focus on developing more advanced adversarial training techniques and exploring the potential of using generative adversarial networks (GANs) for strengthening model defenses.</p>
+<p>Feel free to reach out with questions or for further discussion on this critical topic!</p>
+    </div>
+</div>
+
+            </main>
+        </div>
+
+
+        <footer class="footer">
+    
+        <span>
+            © 2024 Niccolò Parlanti | Download my 
+            <a href="http://Niccolo10.github.io/docs/ParlantiCV.pdf" target="_blank">Resume</a>
+        </span>
+    
+</footer>
+    </div>
+
+</body>
+
+</html>

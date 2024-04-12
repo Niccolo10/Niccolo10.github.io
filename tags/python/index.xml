@@ -6,7 +6,16 @@
     <description>Recent content in python on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 08 Nov 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 28 Jan 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Evading Deepfake Classifier with Adversarial Attacks</title>
+      <link>http://Niccolo10.github.io/projects/evading_classifier/</link>
+      <pubDate>Sun, 28 Jan 2024 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/projects/evading_classifier/</guid>
+      <description>&lt;p&gt;An in-depth analysis of white-box adversarial attacks against deepfake-image detectors, exploring the vulnerability of AI-driven systems.&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Cryptographically_Enforced_Access_Control</title>
       <link>http://Niccolo10.github.io/projects/cryptographically_enforced_access_control/</link>

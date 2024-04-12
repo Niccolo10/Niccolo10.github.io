@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Security Testing on My New Hugo Site</title>
+    <link>http://Niccolo10.github.io/tags/security-testing/</link>
+    <description>Recent content in Security Testing on My New Hugo Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 15 Jun 2023 00:00:00 +0000</lastBuildDate><atom:link href="http://Niccolo10.github.io/tags/security-testing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Vulnerabilities Identification and Exploitation</title>
+      <link>http://Niccolo10.github.io/projects/vulnerability_assessment/</link>
+      <pubDate>Thu, 15 Jun 2023 00:00:00 +0000</pubDate>
+      
+      <guid>http://Niccolo10.github.io/projects/vulnerability_assessment/</guid>
+      <description>&lt;p&gt;An extensive report on security testing practices for identifying, assessing, and exploiting vulnerabilities in web applications, detailed with real-world data and code examples.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
