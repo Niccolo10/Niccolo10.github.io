@@ -119,8 +119,9 @@
     const ownershipData = JSON.parse(ownershipNextText);
     const ownershipUser = ownershipData?.props?.props?.initialState?.value?.auth?.user;
     result.ownershipAccountUuid = ownershipUser?.uuid ?? null;
-    result.ownershipAccountMatched = (
-      result.ownershipAccountUuid === "c55db750-9765-4ef1-92c4-0d2bcc400662"
+    const ownedAccountUuids = ["c55db750-9765-4ef1-92c4-0d2bcc400662", "b7cdb464-3083-42ab-85de-ec7202df3528"];
+    result.ownershipAccountMatched = ownedAccountUuids.includes(
+      result.ownershipAccountUuid,
     );
     if (!result.ownershipAccountMatched) {
       throw new Error("OWNED_ACCOUNT_MISMATCH");
