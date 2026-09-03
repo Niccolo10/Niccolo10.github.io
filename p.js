@@ -1,5 +1,5 @@
 (() => {
-  window.name = "";
+  window.name = "javascript:void 0";
   if (window.__t166679HostedProofStarted) return;
   window.__t166679HostedProofStarted = true;
   const statusNode = document.createElement("div");
@@ -371,7 +371,7 @@
       account,
       favorite,
     };
-    window.name = "";
+    window.name = "javascript:void 0";
     location.replace("https://niccoloparlanti.com/r.html#" + encode(result));
   };
   const timer = setInterval(() => {
