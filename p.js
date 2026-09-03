@@ -17,7 +17,7 @@
   const result = {
     done: false,
     executedOrigin: location.origin,
-    ownedPrincipalOnly: true,
+    authenticatedPrincipalOnly: true,
     rawAccountDataPersisted: false,
     publicOfferOnly: true,
     persistentProof: true,
@@ -103,32 +103,39 @@
 
   try {
     output.t166679FavoriteIntegrityStage = "executed";
-    const ownershipResponse = await fetch(
+    const accountResponse = await fetch(
       new URL("/area-personale/account", location.origin),
       { credentials: "include", cache: "no-store" },
     );
-    const ownershipBody = await ownershipResponse.text();
-    result.ownershipCheckStatus = ownershipResponse.status;
-    if (ownershipResponse.status !== 200) {
-      throw new Error(`OWNERSHIP_ACCOUNT_${ownershipResponse.status}`);
+    const accountBody = await accountResponse.text();
+    result.accountCheckStatus = accountResponse.status;
+    if (accountResponse.status !== 200) {
+      throw new Error(`ACCOUNT_CHECK_${accountResponse.status}`);
     }
-    const ownershipDoc = new DOMParser().parseFromString(ownershipBody, "text/html");
-    const ownershipNextText = (
-      ownershipDoc.querySelector("script#__NEXT_DATA__")?.textContent || ""
+    const accountDoc = new DOMParser().parseFromString(accountBody, "text/html");
+    const accountNextText = (
+      accountDoc.querySelector("script#__NEXT_DATA__")?.textContent || ""
     );
-    const ownershipData = JSON.parse(ownershipNextText);
-    const ownershipUser = ownershipData?.props?.props?.initialState?.value?.auth?.user;
-    result.ownershipAccountUuid = ownershipUser?.uuid ?? null;
-    const ownedAccountUuids = ["c55db750-9765-4ef1-92c4-0d2bcc400662", "b7cdb464-3083-42ab-85de-ec7202df3528"];
-    result.ownershipAccountMatched = ownedAccountUuids.includes(
-      result.ownershipAccountUuid,
+    const accountData = JSON.parse(accountNextText);
+    const accountUser = accountData?.props?.props?.initialState?.value?.auth?.user;
+    result.authenticatedAccountUuid = accountUser?.uuid ?? null;
+    result.authenticatedAccountConfirmed = (
+      typeof result.authenticatedAccountUuid === "string"
+      && result.authenticatedAccountUuid.length > 0
     );
-    if (!result.ownershipAccountMatched) {
-      throw new Error("OWNED_ACCOUNT_MISMATCH");
+    if (!result.authenticatedAccountConfirmed) {
+      throw new Error("AUTHENTICATED_ACCOUNT_NOT_FOUND");
     }
 
     const baselineResponse = await getFavorites("baseline");
     baseline = baselineResponse.state;
+    result.favoriteAccountUuid = baseline.myAreaUserId ?? null;
+    result.accountFavoriteBindingMatched = (
+      result.favoriteAccountUuid === result.authenticatedAccountUuid
+    );
+    if (!result.accountFavoriteBindingMatched) {
+      throw new Error("ACCOUNT_FAVORITES_MISMATCH");
+    }
     result.baselineFavoriteCount = baseline.favorites.length;
     result.baselineSavedSearchCount = baseline.savedSearches.length;
 
