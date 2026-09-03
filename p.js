@@ -129,11 +129,15 @@
 
     const baselineResponse = await getFavorites("baseline");
     baseline = baselineResponse.state;
-    result.favoriteAccountUuid = baseline.myAreaUserId ?? null;
-    result.accountFavoriteBindingMatched = (
-      result.favoriteAccountUuid === result.authenticatedAccountUuid
+    result.preWriteFavoriteAccountUuid = baseline.myAreaUserId ?? null;
+    result.preWriteFavoriteRecordPresent = (
+      typeof result.preWriteFavoriteAccountUuid === "string"
     );
-    if (!result.accountFavoriteBindingMatched) {
+    result.preWriteAccountBindingMatched = (
+      !result.preWriteFavoriteRecordPresent
+      || result.preWriteFavoriteAccountUuid === result.authenticatedAccountUuid
+    );
+    if (!result.preWriteAccountBindingMatched) {
       throw new Error("ACCOUNT_FAVORITES_MISMATCH");
     }
     result.baselineFavoriteCount = baseline.favorites.length;
@@ -191,6 +195,8 @@
       result.candidatePersisted = true;
       result.candidateAlreadyPresent = true;
       result.changedFavoriteCount = baseline.favorites.length;
+      result.postWriteFavoriteAccountUuid = result.preWriteFavoriteAccountUuid;
+      result.postWriteAccountBindingMatched = result.preWriteAccountBindingMatched;
       result.favoriteLeftSaved = true;
       finish();
       return;
@@ -207,6 +213,10 @@
     }
 
     const changed = await getFavorites("changedGet");
+    result.postWriteFavoriteAccountUuid = changed.state.myAreaUserId ?? null;
+    result.postWriteAccountBindingMatched = (
+      result.postWriteFavoriteAccountUuid === result.authenticatedAccountUuid
+    );
     result.candidatePersisted = hasCandidate(changed.state.favorites);
     result.baselineItemsStillPresent = baselineItemsPresent(changed.state.favorites);
     result.savedSearchesUnchangedAfterAdd = (
@@ -215,6 +225,9 @@
     result.changedFavoriteCount = changed.state.favorites.length;
     if (!result.candidatePersisted) {
       throw new Error("ADD_NOT_PERSISTED");
+    }
+    if (!result.postWriteAccountBindingMatched) {
+      throw new Error("POST_WRITE_ACCOUNT_FAVORITES_MISMATCH");
     }
     if (!result.baselineItemsStillPresent || !result.savedSearchesUnchangedAfterAdd) {
       throw new Error("UNEXPECTED_ACCOUNT_STATE_CHANGE");
