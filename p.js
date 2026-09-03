@@ -20,15 +20,15 @@
     ownedPrincipalOnly: true,
     rawAccountDataPersisted: false,
     publicOfferOnly: true,
+    persistentProof: true,
     mutationAttempted: false,
-    rollbackPending: false,
+    favoriteLeftSaved: false,
   };
   const apiBase = "/noleggio-auto/api/";
-  let baselineRaw = null;
+  const candidateOfferUuid = "af7c36ef-efa1-4750-b9c9-bd32bd83664c";
+  const candidateRateUuid = "5657957c-2cd2-4125-b90b-4d308e1ed8ea";
   let baseline = null;
   let candidate = null;
-  let mutationMayHaveApplied = false;
-  let rollbackRunning = false;
 
   const finish = (extra = {}) => {
     Object.assign(result, extra, { done: true });
@@ -101,46 +101,6 @@
     return response.status;
   };
 
-  const rollback = async () => {
-    if (!mutationMayHaveApplied || rollbackRunning || !candidate || !baselineRaw) {
-      return false;
-    }
-    rollbackRunning = true;
-    const status = await postFavorites(
-      "favorites/delete",
-      {
-        favorites: [{
-          offerUuid: candidate.offerUuid,
-          offerType: candidate.offerType,
-        }],
-      },
-      "rollbackDelete",
-    );
-    if (status !== 200) {
-      result.rollbackPending = true;
-      throw new Error(`ROLLBACK_DELETE_${status}`);
-    }
-    const restored = await getFavorites("rollbackGet");
-    result.candidateAbsentAfterRollback = !hasCandidate(restored.state.favorites);
-    result.favoritesExactBaseline = (
-      JSON.stringify(restored.state.favorites) === JSON.stringify(baseline.favorites)
-    );
-    result.savedSearchesExactBaseline = (
-      JSON.stringify(restored.state.savedSearches) === JSON.stringify(baseline.savedSearches)
-    );
-    result.rawResponseExactBaseline = restored.raw === baselineRaw;
-    result.responseExactBaseline = result.rawResponseExactBaseline;
-    const restoredSemantically = (
-      result.candidateAbsentAfterRollback
-      && result.favoritesExactBaseline
-      && result.savedSearchesExactBaseline
-    );
-    result.semanticRollbackComplete = restoredSemantically;
-    mutationMayHaveApplied = !restoredSemantically;
-    result.rollbackPending = mutationMayHaveApplied;
-    return restoredSemantically;
-  };
-
   try {
     output.t166679FavoriteIntegrityStage = "executed";
     const ownershipResponse = await fetch(
@@ -167,13 +127,9 @@
     }
 
     const baselineResponse = await getFavorites("baseline");
-    baselineRaw = baselineResponse.raw;
     baseline = baselineResponse.state;
     result.baselineFavoriteCount = baseline.favorites.length;
     result.baselineSavedSearchCount = baseline.savedSearches.length;
-    if (baseline.favorites.length !== 0) {
-      throw new Error("BASELINE_FAVORITES_NOT_EMPTY");
-    }
 
     const offersResponse = await request("seo-page/offers");
     const offersText = await offersResponse.text();
@@ -198,13 +154,9 @@
     result.publicOfferCount = offers.length;
     const offer = offers.find((item) => (
       item?.status === "published"
-      && typeof item?.uuid === "string"
-      && typeof item?.rate?.type === "string"
-      && typeof item?.rate?.uuid === "string"
-      && !baseline.favorites.some((favorite) => (
-        favorite?.offerUuid === item.uuid
-        && favorite?.offerType === item.rate.type
-      ))
+      && item?.uuid === candidateOfferUuid
+      && item?.rate?.type === "b2c"
+      && item?.rate?.uuid === candidateRateUuid
     ));
     if (!offer) {
       throw new Error("NO_SAFE_PUBLIC_CANDIDATE");
@@ -214,17 +166,29 @@
       offerType: offer.rate.type,
       rateUuid: offer.rate.uuid,
     };
+    result.candidate = candidate;
+    result.candidateDisplay = {
+      brand: offer.brand ?? null,
+      model: offer.model ?? null,
+      version: offer.version ?? null,
+      monthlyFee: offer.rate.monthlyFee ?? null,
+      link: offer.link ?? null,
+    };
+    result.stateVerificationPath = "/noleggio-auto/preferiti.html";
     result.candidateSha256 = await digest(
       `${candidate.offerUuid}|${candidate.offerType}|${candidate.rateUuid}`,
     );
     result.candidateWasAbsent = !hasCandidate(baseline.favorites);
     if (!result.candidateWasAbsent) {
-      throw new Error("CANDIDATE_ALREADY_PRESENT");
+      result.candidatePersisted = true;
+      result.candidateAlreadyPresent = true;
+      result.changedFavoriteCount = baseline.favorites.length;
+      result.favoriteLeftSaved = true;
+      finish();
+      return;
     }
 
     result.mutationAttempted = true;
-    result.rollbackPending = true;
-    mutationMayHaveApplied = true;
     const addStatus = await postFavorites(
       "favorites",
       { favorites: [candidate] },
@@ -247,37 +211,11 @@
     if (!result.baselineItemsStillPresent || !result.savedSearchesUnchangedAfterAdd) {
       throw new Error("UNEXPECTED_ACCOUNT_STATE_CHANGE");
     }
-
-    const restored = await rollback();
-    finish({
-      rollbackComplete: restored,
-      rollbackPending: !restored,
-    });
+    result.favoriteLeftSaved = true;
+    finish();
   } catch (error) {
     const safeError = error instanceof Error ? error.message.slice(0, 96) : "UNKNOWN";
-    if (mutationMayHaveApplied && candidate && baselineRaw) {
-      try {
-        rollbackRunning = false;
-        const restored = await rollback();
-        finish({
-          error: safeError,
-          recovered: restored,
-          rollbackComplete: restored,
-          rollbackPending: !restored,
-        });
-      } catch (rollbackError) {
-        finish({
-          error: safeError,
-          rollbackError: rollbackError instanceof Error
-            ? rollbackError.message.slice(0, 96)
-            : "UNKNOWN_ROLLBACK",
-          rollbackComplete: false,
-          rollbackPending: true,
-        });
-      }
-    } else {
-      finish({ error: safeError, rollbackPending: false });
-    }
+    finish({ error: safeError });
   }
 })();
 
