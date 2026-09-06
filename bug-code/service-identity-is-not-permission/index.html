@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>A service shall not lend its privileges to strangers. | Niccolò Parlanti</title><meta name="description" content="An unauthenticated processing API used its managed identity to access storage, and its error handler returned a readable diagnostic object."><link rel="canonical" href="https://niccoloparlanti.com/bug-code/service-identity-is-not-permission/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="theme-color" content="#f5f3ec"><meta property="og:title" content="A service shall not lend its privileges to strangers. | Niccolò Parlanti"><meta property="og:description" content="An unauthenticated processing API used its managed identity to access storage, and its error handler returned a readable diagnostic object."><meta property="og:type" content="website"><meta property="og:url" content="https://niccoloparlanti.com/bug-code/service-identity-is-not-permission/"><meta property="og:image" content="https://niccoloparlanti.com/social.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="alternate" type="application/rss+xml" title="Niccolò Parlanti | Research" href="/feed.xml"><link rel="stylesheet" href="/_astro/Base.BWTXkXq0.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header wrap"><a class="identity" href="/" aria-label="Niccolò Parlanti home"><span class="monogram">np<span>↗</span></span><span>Niccolò Parlanti<span class="identity-sub">OFFENSIVE SECURITY</span></span></a><nav aria-label="Main navigation"><a href="/bug-code/" aria-current="page">Bug Code</a><a href="/research/">Research</a><a href="/archive/">Archive</a><a href="/about/">About</a><a class="nav-contact" href="/#contact">Contact <span aria-hidden="true">↗</span></a></nav></header><main id="main"><header class="article-heading wrap code-heading"><a class="back-link mono" href="/bug-code/">← THE BUG CODE</a><div class="book-opening"><p class="book-running-title">THE BUG CODE</p><p class="book-article"><span aria-hidden="true">❧</span> ARTICLE 02 <span aria-hidden="true">❧</span></p><h1>A service shall not lend its privileges to strangers.</h1><p class="book-maxim">The service has credentials. This does not mean you do.</p><div class="book-divider" aria-hidden="true">◆</div><p class="lede">An unauthenticated processing API used its managed identity to access storage, and its error handler returned a readable diagnostic object.</p><p class="byline">Niccolò Parlanti · Technical case study</p></div></header><div class="article-layout wrap field-article code-article"><aside><dl class="case-facts"><dt>Mechanism</dt><dd>Missing API authentication / service identity misuse</dd><dt>Evidence status</dt><dd>No-auth processing and a signed diagnostic-object read documented</dd><dt>Code examples</dt><dd>HTTP requests, response excerpts, and Python models.</dd></dl><p class="eyebrow">CONTENTS</p><nav aria-label="Table of contents"><a href="#01-two-identities-one-missing-decision">01. Two identities, one missing decision</a><a href="#02-a-request-without-credentials-still-reached-the-worker">02. A request without credentials still reached the worker</a><a href="#03-the-pdf-path-borrowed-the-services-access">03. The PDF path borrowed the service’s access</a><a href="#04-what-the-two-failures-actually-established">04. What the two failures actually established</a><a href="#05-from-an-error-response-to-a-confirmed-object-read">05. From an error response to a confirmed object read</a><a href="#06-fix-the-two-authorization-boundaries">06. Fix the two authorization boundaries</a></nav></aside><article class="prose"><p>The frontend required a login. Its document-processing API did not. In the recorded test, a request with no authentication header reached the processing code, failed, and returned a signed URL. Fetching that URL returned HTTP 200 with the request data and a Python stack trace from cloud storage.</p>
+<p>The bug combined a missing API authentication check with privileged server-side storage access and an error handler that handed its caller a storage capability. A separate PDF operation accepted a container and object path from the request and attempted to retrieve that object using the service’s managed identity. <strong>The signed-link test demonstrated a diagnostic-object read. The PDF test demonstrated processing behavior, not disclosure of the original file.</strong></p>
+<p><em>Examples are adapted from the report, with identifying details and credentials removed. Python illustrates the backend logic.</em></p>
+<h2 id="01-two-identities-one-missing-decision">01. Two identities, one missing decision</h2>
+<p>A managed identity lets a cloud application access resources without embedding a long-lived storage password in its code. It establishes whether the service is allowed to access storage. It does not decide whether an HTTP caller is entitled to request that access.</p>
+<p>The frontend sent authentication information, but the API did not validate it before executing business logic. Storage consequently saw the service’s authorized identity even when the original caller had no valid session.</p>
+<figure class="case-flow"><figcaption>The request crossed two separate trust boundaries</figcaption><ol><li><strong>HTTP caller</strong><span>No API authentication enforced</span></li><li><strong>Processing service</strong><span>Uses its own managed identity</span></li><li><strong>Cloud storage</strong><span>Evaluates the service’s permissions</span></li></ol></figure>
+<p>Private storage can remain private and still be misused through an application that has access to it. The missing decision was at the API boundary.</p>
+<h2 id="02-a-request-without-credentials-still-reached-the-worker">02. A request without credentials still reached the worker</h2>
+<p>The recorded request called an image-processing operation without a cookie or <code>Authorization</code> header:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">POST</span><span style="color:#24292E"> /api/segment </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> processing.example.invalid</span></span>
+<span class="line"><span style="color:#22863A">Content-Type</span><span style="color:#D73A49">:</span><span style="color:#032F62"> application/json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#005CC5">  "function"</span><span style="color:#24292E">: </span><span style="color:#032F62">"classify_items"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "pdf_name"</span><span style="color:#24292E">: </span><span style="color:#032F62">"sample.pdf"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "username"</span><span style="color:#24292E">: </span><span style="color:#032F62">"test-user"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "project_name"</span><span style="color:#24292E">: </span><span style="color:#032F62">"test-project"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "container_name"</span><span style="color:#24292E">: </span><span style="color:#032F62">"sample-projects"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "existing_hits"</span><span style="color:#24292E">: [],</span></span>
+<span class="line"><span style="color:#005CC5">  "zones"</span><span style="color:#24292E">: [],</span></span>
+<span class="line"><span style="color:#005CC5">  "symbols"</span><span style="color:#24292E">: [],</span></span>
+<span class="line"><span style="color:#005CC5">  "page_number"</span><span style="color:#24292E">: </span><span style="color:#005CC5">1</span></span>
+<span class="line"><span style="color:#24292E">}</span></span></code></pre>
+<p>The response was HTTP 500 and contained a Python stack trace and a signed diagnostic URL. The important observation was not merely that it returned 500 rather than 401. The handler had executed application logic and generated a storage object before answering an unauthenticated caller. A generic reverse-proxy error would not demonstrate that.</p>
+<p>The request’s <code>username</code> was also just input, not an authenticated identity. The source records that changing it changed the diagnostic object’s path. That supports caller-controlled log naming; it does not establish a login as the named user.</p>
+<h2 id="03-the-pdf-path-borrowed-the-services-access">03. The PDF path borrowed the service’s access</h2>
+<p>One operation accepted a storage location from the request, downloaded the object using the service identity, and attempted to process it as a document. The report describes no caller authentication or authorization binding that location to an allowed resource.</p>
+<p>The concrete test selected an SVG for a PDF compression operation:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">POST</span><span style="color:#24292E"> /api/document </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> processing.example.invalid</span></span>
+<span class="line"><span style="color:#22863A">Content-Type</span><span style="color:#D73A49">:</span><span style="color:#032F62"> application/json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#005CC5">  "function"</span><span style="color:#24292E">: </span><span style="color:#032F62">"compress_pdf"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "container_name"</span><span style="color:#24292E">: </span><span style="color:#032F62">"sample-assets"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "compressed_type"</span><span style="color:#24292E">: </span><span style="color:#032F62">"medium"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "blob_path"</span><span style="color:#24292E">: </span><span style="color:#032F62">"catalogue/diagram.svg"</span></span>
+<span class="line"><span style="color:#24292E">}</span></span></code></pre>
+<p>The observed response was a Ghostscript error about a missing trailer dictionary while recovering a damaged file. An SVG is not a PDF, so a failure at the PDF parser is consistent with the selected object reaching that parser. The interesting input was not an exotic injection string: it was a storage reference the caller had no business authorizing.</p>
+<p>Here, <code>storage</code> is a client authenticated as the service:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># Reconstructed behavior; not original application source.</span></span>
+<span class="line"><span style="color:#D73A49">def</span><span style="color:#6F42C1"> process_vulnerable</span><span style="color:#24292E">(request, storage, parse_document):</span></span>
+<span class="line"><span style="color:#6A737D">    # No caller authentication or resource authorization here.</span></span>
+<span class="line"><span style="color:#24292E">    container </span><span style="color:#D73A49">=</span><span style="color:#24292E"> request[</span><span style="color:#032F62">"container"</span><span style="color:#24292E">]</span></span>
+<span class="line"><span style="color:#24292E">    object_path </span><span style="color:#D73A49">=</span><span style="color:#24292E"> request[</span><span style="color:#032F62">"object_path"</span><span style="color:#24292E">]</span></span>
+<span class="line"><span style="color:#24292E">    content </span><span style="color:#D73A49">=</span><span style="color:#24292E"> storage.download(container, object_path)</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> parse_document(content)</span></span></code></pre>
+<p>The problem is the ordering: caller-controlled resource selection reaches storage before the application establishes who the caller is and what they may access. The storage SDK can authenticate the service correctly while the application fails to authorize the request.</p>
+<h2 id="04-what-the-two-failures-actually-established">04. What the two failures actually established</h2>
+<p>The operation can fail before a download succeeds or after content reaches a parser:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>Request</span></span>
+<span class="line"><span>  -&gt; Download object using service identity</span></span>
+<span class="line"><span>       -&gt; Download fails: retrieval error</span></span>
+<span class="line"><span>       -&gt; Download succeeds:</span></span>
+<span class="line"><span>            -&gt; Parse document</span></span>
+<span class="line"><span>                 -&gt; Parse fails: processing error</span></span>
+<span class="line"><span>                 -&gt; Parse succeeds: normal result</span></span></code></pre>
+<p>The distinction mattered because an HTTP failure is not necessarily a failed security test. If a request reaches a document parser, the application may already have performed privileged work before producing the error. The recorded processing error was consistent with an object being downloaded and passed to that processor. It narrowed the explanation from “the service rejected the request” to “the service attempted the requested work, then failed.” The response did not return the document’s contents to the requester.</p>
+<p>A retrieval error is weaker evidence. It does not, by itself, prove a container exists or that all its objects are accessible. Different storage failures can be collapsed into the same application error.</p>
+<p>That is how to read this part of the investigation: identify which component could have produced each observation, then stop the claim at that boundary. Parser behavior supports a processing-path conclusion. A direct content response would be needed for a stronger disclosure claim. The report’s second path supplied a narrower, concrete read result instead.</p>
+<h2 id="05-from-an-error-response-to-a-confirmed-object-read">05. From an error response to a confirmed object read</h2>
+<p>A separate processing operation wrote diagnostics to storage when it failed. The response included a signed link to that diagnostic object. Such a link is a temporary capability: its holder can perform the covered operations on the covered resource until it expires.</p>
+<p>The documented sequence was:</p>
+<ol>
+<li>An unauthenticated request reached processing logic.</li>
+<li>Processing failed and created a diagnostic object containing request data and a stack trace.</li>
+<li>The error response returned a signed link for that object.</li>
+<li>Reading the link returned the diagnostic contents.</li>
+</ol>
+<p>The next request went to storage, not back through the processing API:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">GET</span><span style="color:#24292E"> /errors/test-user/test-project/run-01/Error.json?se=REDACTED&amp;sp=rt&amp;sv=2020-02-10&amp;sr=b&amp;sig=REDACTED </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> storage.example.invalid</span></span></code></pre>
+<p>Storage returned HTTP 200 with <code>FunctionName</code>, <code>args</code>, and <code>stacktrace</code>. The relevant structure was:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#005CC5">  "FunctionName"</span><span style="color:#24292E">: </span><span style="color:#032F62">"Processing / classify_items"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">  "args"</span><span style="color:#24292E">: {</span></span>
+<span class="line"><span style="color:#005CC5">    "function"</span><span style="color:#24292E">: </span><span style="color:#032F62">"classify_items"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">    "pdf_name"</span><span style="color:#24292E">: </span><span style="color:#032F62">"sample.pdf"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">    "username"</span><span style="color:#24292E">: </span><span style="color:#032F62">"test-user"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">    "project_name"</span><span style="color:#24292E">: </span><span style="color:#032F62">"test-project"</span></span>
+<span class="line"><span style="color:#24292E">  },</span></span>
+<span class="line"><span style="color:#005CC5">  "stacktrace"</span><span style="color:#24292E">: </span><span style="color:#032F62">"[Python trace omitted]"</span></span>
+<span class="line"><span style="color:#24292E">}</span></span></code></pre>
+<p>This was the direct disclosure proof: the link delivered to an unauthenticated requester retrieved stored diagnostic content. The reflected test arguments alone were not somebody else’s confidential data; the internal trace and unintended storage access are the relevant observations.</p>
+<p>This established read access to <strong>the generated diagnostic object</strong>. It did not show that the same link authorized other objects or that every object available to the service identity was downloadable by the requester.</p>
+<p>The signed link introduces a different authority from the managed identity. Storage authenticated the application during processing; later, the holder of the link could use its delegated permission. These are connected events, not interchangeable credentials. The source does not establish which SAS signing mechanism was used, so this article does not attribute the link to a particular key type.</p>
+<p>The retained query fields explain the scope: <code>sr=b</code> denotes a blob; <code>sp=rt</code> includes read and blob-tag permissions; <code>se</code> sets expiry. Only reading the object was demonstrated; tag operations were not tested. Microsoft’s <a href="https://learn.microsoft.com/en-us/rest/api/storageservices/create-service-sas#specify-the-signed-resource-blob-storage-only">SAS resource and permission tables</a> are a precise reference for interpreting these fields. This reference was checked while editing the article; the report does not record using it during discovery.</p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>What it established</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Business logic ran without authentication</td>
+<td>The API admitted an unauthenticated caller</td>
+</tr>
+<tr>
+<td>Document parsing failed after retrieval</td>
+<td>Evidence consistent with internal content processing</td>
+</tr>
+<tr>
+<td>A signed diagnostic link returned data</td>
+<td>Confirmed read of that generated object</td>
+</tr>
+</tbody>
+</table>
+<h2 id="06-fix-the-two-authorization-boundaries">06. Fix the two authorization boundaries</h2>
+<p>Authenticate the caller and resolve an authorized application resource before invoking storage. Storage locations should come from a server-controlled resource record rather than unrestricted container and path values in the request.</p>
+<p>This model uses an organization-scoped policy to illustrate the check. Real applications may need narrower permissions for individual documents.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># user comes from trusted authentication middleware.</span></span>
+<span class="line"><span style="color:#6A737D"># documents is a server-controlled resource catalog.</span></span>
+<span class="line"><span style="color:#D73A49">def</span><span style="color:#6F42C1"> process_authorized</span><span style="color:#24292E">(user, document_id, documents, storage, parse_document):</span></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> user </span><span style="color:#D73A49">is</span><span style="color:#005CC5"> None</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#D73A49">        raise</span><span style="color:#005CC5"> PermissionError</span><span style="color:#24292E">(</span><span style="color:#032F62">"Authentication required"</span><span style="color:#24292E">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">    document </span><span style="color:#D73A49">=</span><span style="color:#24292E"> documents.get(document_id)</span></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> document </span><span style="color:#D73A49">is</span><span style="color:#005CC5"> None</span><span style="color:#D73A49"> or</span><span style="color:#24292E"> document[</span><span style="color:#032F62">"organization"</span><span style="color:#24292E">] </span><span style="color:#D73A49">!=</span><span style="color:#24292E"> user[</span><span style="color:#032F62">"organization"</span><span style="color:#24292E">]:</span></span>
+<span class="line"><span style="color:#D73A49">        raise</span><span style="color:#005CC5"> PermissionError</span><span style="color:#24292E">(</span><span style="color:#032F62">"Document not available"</span><span style="color:#24292E">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">    content </span><span style="color:#D73A49">=</span><span style="color:#24292E"> storage.download(</span></span>
+<span class="line"><span style="color:#24292E">        document[</span><span style="color:#032F62">"container"</span><span style="color:#24292E">], document[</span><span style="color:#032F62">"object_path"</span><span style="color:#24292E">]</span></span>
+<span class="line"><span style="color:#24292E">    )</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> parse_document(content)</span></span></code></pre>
+<p>An unauthenticated or wrong-organization request now fails <strong>before any storage call occurs</strong>. That ordering is a useful regression test. Presenting a valid token should not unlock arbitrary storage paths.</p>
+<p>Limit the managed identity to the resources the service needs. For errors, return a correlation identifier and keep detailed traces internally. If users need diagnostic downloads, authorize them separately and constrain the signed link’s permissions and lifetime.</p>
+<aside class="code-corollary"><strong>Corollary 02.a</strong><p>An error response is still a response. Check what it hands back.</p></aside>
+<div class="article-end"><p class="mono">NEXT ARTICLE</p><a href="/bug-code/invitation-is-not-identity/">An invitation shall admit its recipient. Nobody else. →</a><a href="/bug-code/a-token-is-not-an-account/">A valid token shall speak for one account only. →</a></div></article></div></main><footer class="site-footer wrap"><p>© 2026 Niccolò Parlanti</p><p>Offensive security / Research notes</p><div><a href="https://github.com/Niccolo10">GitHub ↗</a><a href="https://www.linkedin.com/in/niccol%C3%B2-parlanti/">LinkedIn ↗</a><a href="/feed.xml">RSS</a></div></footer></body></html>

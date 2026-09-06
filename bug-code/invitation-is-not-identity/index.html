@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>An invitation shall admit its recipient. Nobody else. | Niccolò Parlanti</title><meta name="description" content="How a missing recipient check turned a pending administrator invitation into a privilege-escalation path."><link rel="canonical" href="https://niccoloparlanti.com/bug-code/invitation-is-not-identity/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="theme-color" content="#f5f3ec"><meta property="og:title" content="An invitation shall admit its recipient. Nobody else. | Niccolò Parlanti"><meta property="og:description" content="How a missing recipient check turned a pending administrator invitation into a privilege-escalation path."><meta property="og:type" content="website"><meta property="og:url" content="https://niccoloparlanti.com/bug-code/invitation-is-not-identity/"><meta property="og:image" content="https://niccoloparlanti.com/social.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="alternate" type="application/rss+xml" title="Niccolò Parlanti | Research" href="/feed.xml"><link rel="stylesheet" href="/_astro/Base.BWTXkXq0.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header wrap"><a class="identity" href="/" aria-label="Niccolò Parlanti home"><span class="monogram">np<span>↗</span></span><span>Niccolò Parlanti<span class="identity-sub">OFFENSIVE SECURITY</span></span></a><nav aria-label="Main navigation"><a href="/bug-code/" aria-current="page">Bug Code</a><a href="/research/">Research</a><a href="/archive/">Archive</a><a href="/about/">About</a><a class="nav-contact" href="/#contact">Contact <span aria-hidden="true">↗</span></a></nav></header><main id="main"><header class="article-heading wrap code-heading"><a class="back-link mono" href="/bug-code/">← THE BUG CODE</a><div class="book-opening"><p class="book-running-title">THE BUG CODE</p><p class="book-article"><span aria-hidden="true">❧</span> ARTICLE 01 <span aria-hidden="true">❧</span></p><h1>An invitation shall admit its recipient. Nobody else.</h1><p class="book-maxim">Possession of the invitation does not constitute an invitation.</p><div class="book-divider" aria-hidden="true">◆</div><p class="lede">How a missing recipient check turned a pending administrator invitation into a privilege-escalation path.</p><p class="byline">Niccolò Parlanti · Technical case study</p></div></header><div class="article-layout wrap field-article code-article"><aside><dl class="case-facts"><dt>Mechanism</dt><dd>Broken access control / invitation acceptance</dd><dt>Evidence status</dt><dd>Approved by triage; ordinary-member access and a pending admin invite required</dd><dt>Code examples</dt><dd>HTTP requests, response excerpts, and Python models.</dd></dl><p class="eyebrow">CONTENTS</p><nav aria-label="Table of contents"><a href="#01-what-the-application-was-supposed-to-do">01. What the application was supposed to do</a><a href="#02-what-an-ordinary-member-could-see">02. What an ordinary member could see</a><a href="#03-where-the-role-changed-hands">03. Where the role changed hands</a><a href="#04-what-proved-the-impact">04. What proved the impact</a><a href="#05-bind-the-permission-to-the-person">05. Bind the permission to the person</a></nav></aside><article class="prose"><p>The bug was in the handoff between an invitation and an account. An ordinary member could see invitations intended for other people. The acceptance operation then allowed a different account to receive the role attached to one of those invitations, without checking that it belonged to the intended recipient. A pending administrator invitation therefore became a way to obtain administrator privileges.</p>
+<p>Two authorization failures combined: <strong>excessive invitation visibility</strong>, followed by <strong>missing recipient validation at acceptance</strong>. The second failure converted exposed information into elevated access.</p>
+<p><em>Examples are adapted from the report, with identifying details and credentials removed. Python illustrates the backend logic.</em></p>
+<h2 id="01-what-the-application-was-supposed-to-do">01. What the application was supposed to do</h2>
+<p>An administrator invited a person to join an organization. Creating that invitation also prepared a record with the intended role. On acceptance, the application connected a user account to that record.</p>
+<p>In Example Workspace, Alex is the intended administrator; Sam is an ordinary member.</p>
+<table>
+<thead>
+<tr>
+<th>Record</th>
+<th>Before acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Organization</td>
+<td>Example Workspace</td>
+</tr>
+<tr>
+<td>Invitation</td>
+<td><code>invite-01</code>, pending</td>
+</tr>
+<tr>
+<td>Intended recipient</td>
+<td><code>alex@example.invalid</code></td>
+</tr>
+<tr>
+<td>Prepared membership</td>
+<td>Administrator role, no user attached yet</td>
+</tr>
+<tr>
+<td>Sam’s existing access</td>
+<td>Ordinary member</td>
+</tr>
+</tbody>
+</table>
+<p>The administrator role already existed in a prepared record. Accepting the invitation would determine <strong>which account received it</strong>.</p>
+<h2 id="02-what-an-ordinary-member-could-see">02. What an ordinary member could see</h2>
+<p>The report documents that the invitation-listing operation was available to ordinary members and returned pending invitations across their organization, including administrative ones.</p>
+<p>The invitation identifier did not have to be guessed: the application disclosed it through an authenticated session. This was not an outsider entering an arbitrary organization. The test began with an existing low-privilege membership.</p>
+<p>The listing request used the ordinary member’s session:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">GET</span><span style="color:#24292E"> /api/organizations/workspace-1/invitations </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> api.example.invalid</span></span>
+<span class="line"><span style="color:#22863A">Authorization</span><span style="color:#D73A49">:</span><span style="color:#032F62"> Bearer MEMBER_TOKEN_REDACTED</span></span>
+<span class="line"><span style="color:#22863A">Accept</span><span style="color:#D73A49">:</span><span style="color:#032F62"> application/json</span></span></code></pre>
+<p>The report records that the result exposed a pending administrative invitation’s UUID. It does not include the raw listing response body, so there is no invented JSON response here. The important facts are the caller’s ordinary-member role, organization-wide invitation visibility, and a pending administrator invitation.</p>
+<p>At this point, the observation was an information-access problem. The escalation depended on what acceptance would do with that information.</p>
+<h2 id="03-where-the-role-changed-hands">03. Where the role changed hands</h2>
+<p>The acceptance request supplied a user identifier. The backend attached that user to the invitation’s prepared role record without verifying that the accepting account matched the intended recipient.</p>
+<p>The recorded chain used a second researcher-controlled account. After registering it, the tester created its application user record and retrieved its user ID. That distinction matters: an identity-provider account and an application user record were separate objects. Registration made the second account usable; it did not itself grant administrative privileges.</p>
+<p>The decisive request used the <strong>second account’s token</strong>, the <strong>exposed invitation identifier</strong>, and the <strong>second account’s user ID</strong>:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">PUT</span><span style="color:#24292E"> /api/invitations/invite-01 </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> api.example.invalid</span></span>
+<span class="line"><span style="color:#22863A">Authorization</span><span style="color:#D73A49">:</span><span style="color:#032F62"> Bearer SECOND_ACCOUNT_TOKEN_REDACTED</span></span>
+<span class="line"><span style="color:#22863A">Content-Type</span><span style="color:#D73A49">:</span><span style="color:#032F62"> application/json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">{</span><span style="color:#005CC5">"user_id"</span><span style="color:#24292E">: </span><span style="color:#032F62">"second-account"</span><span style="color:#24292E">}</span></span></code></pre>
+<p>There is no <code>role: administrator</code> in that body. The administrator role was already attached to the invitation’s prepared membership record. The request changed which user received that record. The missing check was whether the authenticated account was the invitation’s intended recipient, not whether the client had typed a forbidden role name.</p>
+<p>The behavior can be reduced to this Python model:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># Reconstructed behavior; not the application's source.</span></span>
+<span class="line"><span style="color:#D73A49">def</span><span style="color:#6F42C1"> accept_vulnerable</span><span style="color:#24292E">(invite, supplied_user_id):</span></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> invite[</span><span style="color:#032F62">"status"</span><span style="color:#24292E">] </span><span style="color:#D73A49">!=</span><span style="color:#032F62"> "pending"</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#D73A49">        raise</span><span style="color:#005CC5"> ValueError</span><span style="color:#24292E">(</span><span style="color:#032F62">"Invitation is not pending"</span><span style="color:#24292E">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">    # Missing: is this the intended, verified recipient?</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> {</span></span>
+<span class="line"><span style="color:#032F62">        "user_id"</span><span style="color:#24292E">: supplied_user_id,</span></span>
+<span class="line"><span style="color:#032F62">        "organization"</span><span style="color:#24292E">: invite[</span><span style="color:#032F62">"organization"</span><span style="color:#24292E">],</span></span>
+<span class="line"><span style="color:#032F62">        "role"</span><span style="color:#24292E">: invite[</span><span style="color:#032F62">"role"</span><span style="color:#24292E">],</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span></code></pre>
+<p>The invitation has to be pending, but the function never establishes whether the account receiving its permissions is entitled to accept it. Authentication identifies a caller; it does not authorize that caller to redeem somebody else’s invitation.</p>
+<p>In the documented test, a fresh researcher-controlled account received the administrative role. The account-creation behavior made that account available; the decisive step was attaching it to the privileged record.</p>
+<figure class="case-flow"><figcaption>Authority transfer in the documented chain</figcaption><ol><li><strong>Ordinary member</strong><span>Can see another person’s pending invitation</span></li><li><strong>Acceptance operation</strong><span>Does not bind the recipient to the accepting account</span></li><li><strong>Different account</strong><span>Receives the prepared administrator role</span></li></ol></figure>
+<h2 id="04-what-proved-the-impact">04. What proved the impact</h2>
+<p>The resulting account was recognized as an administrator. Triage approved the report and explicitly considered its prerequisites: ordinary-member access and a pending administrative invitation.</p>
+<table>
+<thead>
+<tr>
+<th>Actor</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Existing test member</td>
+<td>Ordinary member</td>
+<td>Still an ordinary member</td>
+</tr>
+<tr>
+<td>Fresh test account</td>
+<td>No administrative membership</td>
+<td>Administrator in the organization</td>
+</tr>
+<tr>
+<td>Intended recipient</td>
+<td>Named on the invitation</td>
+<td>Not the account that received the role</td>
+</tr>
+</tbody>
+</table>
+<p>The original member did not need to change its own role directly. The escalation completed through a second account. The report discusses the authority associated with the administrator role; this article does not claim every possible administrative action was tested.</p>
+<h2 id="05-bind-the-permission-to-the-person">05. Bind the permission to the person</h2>
+<p>Acceptance needs a recipient check before attaching an account to the prepared membership. The user identifier must come from the authenticated session, and any email used for matching must be verified through a trusted identity flow.</p>
+<p>This model isolates that correction:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># Both fields of authenticated_user come from trusted middleware.</span></span>
+<span class="line"><span style="color:#6A737D"># verified_emails is NOT accepted from the request body.</span></span>
+<span class="line"><span style="color:#D73A49">def</span><span style="color:#6F42C1"> accept_with_recipient_check</span><span style="color:#24292E">(invite, authenticated_user):</span></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> invite[</span><span style="color:#032F62">"status"</span><span style="color:#24292E">] </span><span style="color:#D73A49">!=</span><span style="color:#032F62"> "pending"</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#D73A49">        raise</span><span style="color:#005CC5"> ValueError</span><span style="color:#24292E">(</span><span style="color:#032F62">"Invitation is not pending"</span><span style="color:#24292E">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> invite[</span><span style="color:#032F62">"recipient"</span><span style="color:#24292E">] </span><span style="color:#D73A49">not</span><span style="color:#D73A49"> in</span><span style="color:#24292E"> authenticated_user[</span><span style="color:#032F62">"verified_emails"</span><span style="color:#24292E">]:</span></span>
+<span class="line"><span style="color:#D73A49">        raise</span><span style="color:#005CC5"> PermissionError</span><span style="color:#24292E">(</span><span style="color:#032F62">"This invitation belongs to someone else"</span><span style="color:#24292E">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> {</span></span>
+<span class="line"><span style="color:#032F62">        "user_id"</span><span style="color:#24292E">: authenticated_user[</span><span style="color:#032F62">"id"</span><span style="color:#24292E">],</span></span>
+<span class="line"><span style="color:#032F62">        "organization"</span><span style="color:#24292E">: invite[</span><span style="color:#032F62">"organization"</span><span style="color:#24292E">],</span></span>
+<span class="line"><span style="color:#032F62">        "role"</span><span style="color:#24292E">: invite[</span><span style="color:#032F62">"role"</span><span style="color:#24292E">],</span></span>
+<span class="line"><span style="color:#24292E">    }</span></span></code></pre>
+<p>A full implementation must also validate expiry, organization and inviter authority, and the permitted role; create the membership and consume the invitation atomically; and use a consistent server-side identity-matching policy. Restricting invitation visibility is a separate fix. Random identifiers and single-use tokens do not replace recipient validation.</p>
+<p>The regression test: <strong>a valid invitation must still be rejected when the authenticated account is the wrong recipient</strong>. The rightful recipient should succeed, and a second redemption should fail.</p>
+<aside class="code-corollary"><strong>Corollary 01.a</strong><p>A UUID may be difficult to guess. It is not proof of identity.</p></aside>
+<div class="article-end"><p class="mono">NEXT ARTICLE</p><a href="/bug-code/service-identity-is-not-permission/">A service shall not lend its privileges to strangers. →</a><a href="/bug-code/a-token-is-not-an-account/">A valid token shall speak for one account only. →</a></div></article></div></main><footer class="site-footer wrap"><p>© 2026 Niccolò Parlanti</p><p>Offensive security / Research notes</p><div><a href="https://github.com/Niccolo10">GitHub ↗</a><a href="https://www.linkedin.com/in/niccol%C3%B2-parlanti/">LinkedIn ↗</a><a href="/feed.xml">RSS</a></div></footer></body></html>

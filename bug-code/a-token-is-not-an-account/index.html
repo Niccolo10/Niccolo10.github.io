@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>A valid token shall speak for one account only. | Niccolò Parlanti</title><meta name="description" content="Two distinct login identities resolved to the same application account. The signature was not the problem; the account lookup was."><link rel="canonical" href="https://niccoloparlanti.com/bug-code/a-token-is-not-an-account/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="theme-color" content="#f5f3ec"><meta property="og:title" content="A valid token shall speak for one account only. | Niccolò Parlanti"><meta property="og:description" content="Two distinct login identities resolved to the same application account. The signature was not the problem; the account lookup was."><meta property="og:type" content="website"><meta property="og:url" content="https://niccoloparlanti.com/bug-code/a-token-is-not-an-account/"><meta property="og:image" content="https://niccoloparlanti.com/social.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="alternate" type="application/rss+xml" title="Niccolò Parlanti | Research" href="/feed.xml"><link rel="stylesheet" href="/_astro/Base.BWTXkXq0.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header wrap"><a class="identity" href="/" aria-label="Niccolò Parlanti home"><span class="monogram">np<span>↗</span></span><span>Niccolò Parlanti<span class="identity-sub">OFFENSIVE SECURITY</span></span></a><nav aria-label="Main navigation"><a href="/bug-code/" aria-current="page">Bug Code</a><a href="/research/">Research</a><a href="/archive/">Archive</a><a href="/about/">About</a><a class="nav-contact" href="/#contact">Contact <span aria-hidden="true">↗</span></a></nav></header><main id="main"><header class="article-heading wrap code-heading"><a class="back-link mono" href="/bug-code/">← THE BUG CODE</a><div class="book-opening"><p class="book-running-title">THE BUG CODE</p><p class="book-article"><span aria-hidden="true">❧</span> ARTICLE 03 <span aria-hidden="true">❧</span></p><h1>A valid token shall speak for one account only.</h1><p class="book-maxim">Thou shalt not confuse a familiar name with a proven identity.</p><div class="book-divider" aria-hidden="true">◆</div><p class="lede">Two distinct login identities resolved to the same application account. The signature was not the problem; the account lookup was.</p><p class="byline">Niccolò Parlanti · Technical case study</p></div></header><div class="article-layout wrap field-article code-article"><aside><dl class="case-facts"><dt>Mechanism</dt><dd>Identity normalization / incorrect account binding</dd><dt>Evidence status</dt><dd>Locally documented with researcher-controlled accounts; source marked draft, not submitted</dd><dt>Code examples</dt><dd>HTTP requests, response excerpts, and Python models.</dd></dl><p class="eyebrow">CONTENTS</p><nav aria-label="Table of contents"><a href="#01-first-separate-the-two-account-systems">01. First, separate the two account systems</a><a href="#02-the-observation-that-matters">02. The observation that matters</a><a href="#03-why-normalization-cannot-establish-ownership">03. Why normalization cannot establish ownership</a><a href="#04-a-model-of-the-corrected-boundary">04. A model of the corrected boundary</a><a href="#05-impact-is-more-than-a-matching-profile">05. Impact is more than a matching profile</a></nav></aside><article class="prose"><p>The interesting part of this case happens after login. The identity provider issues a token for one person, but the application resolves it to another person’s account. Nothing in that sequence requires a forged signature. A token can be genuine and still be used incorrectly.</p>
+<p>The report documents an account-mapping discrepancy in a workforce application. Distinct provider identities were treated as the same application identity after an email-normalization step. The documented consequences included private-data access and a reversible change to an attendance record on researcher-controlled accounts.</p>
+<p><em>Examples are adapted from the report, with identifying details and credentials removed. Python illustrates the backend logic.</em></p>
+<h2 id="01-first-separate-the-two-account-systems">01. First, separate the two account systems</h2>
+<p>There are two different records in this design. The identity provider owns the login identity: credentials, authentication, and a subject identifier. The application owns the business account: organization membership, role, and access to records. A backend must connect them, but the choice of connecting key is a security decision.</p>
+<p>The reported application used an email-derived lookup where a stable provider identity was needed. The provider and application did not agree on which inputs represented the same identity. That disagreement mattered because the lookup selected an existing business account, not merely a display name.</p>
+<p>Concretely, the source describes case-sensitive login usernames at the provider, but a lowercased email lookup in the application. Using fictional addresses, <code>reader@example.invalid</code> and <code>Reader@example.invalid</code> could belong to distinct provider subjects while both became <code>reader@example.invalid</code> at the application lookup. That is the collision the earlier draft left too abstract.</p>
+<figure class="case-flow"><figcaption>Where the identity changed meaning</figcaption><ol><li><strong>Identity provider</strong><span>Authenticates a distinct subject</span></li><li><strong>Application lookup</strong><span>Collapses an email attribute</span></li><li><strong>Business account</strong><span>Returns another account's context</span></li></ol></figure>
+<p>The failure is therefore more specific than “authentication bypass.” Authentication established a provider identity; the next layer attached the wrong application privileges to it.</p>
+<h2 id="02-the-observation-that-matters">02. The observation that matters</h2>
+<p>The report records this sequence on researcher-controlled accounts: establish the original account’s identity and application profile; register a case-variant login that receives a different provider subject; authenticate that second login with its own chosen password; then use its token to request the current application user. The application returned the original user’s account. The provider auto-confirmed the new registration, and the backend did not enforce email verification before using that attribute as an account key.</p>
+<p>The relevant claims differed like this:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="json"><code><span class="line"><span style="color:#24292E">{</span></span>
+<span class="line"><span style="color:#005CC5">  "original_identity"</span><span style="color:#24292E">: {</span></span>
+<span class="line"><span style="color:#005CC5">    "sub"</span><span style="color:#24292E">: </span><span style="color:#032F62">"subject-a"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">    "email"</span><span style="color:#24292E">: </span><span style="color:#032F62">"reader@example.invalid"</span></span>
+<span class="line"><span style="color:#24292E">  },</span></span>
+<span class="line"><span style="color:#005CC5">  "second_identity"</span><span style="color:#24292E">: {</span></span>
+<span class="line"><span style="color:#005CC5">    "sub"</span><span style="color:#24292E">: </span><span style="color:#032F62">"subject-b"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#005CC5">    "email"</span><span style="color:#24292E">: </span><span style="color:#032F62">"Reader@example.invalid"</span></span>
+<span class="line"><span style="color:#24292E">  }</span></span>
+<span class="line"><span style="color:#24292E">}</span></span></code></pre>
+<p>The diagnostic request was an ordinary authenticated profile read:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">GET</span><span style="color:#24292E"> /api/account/me </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> api.example.invalid</span></span>
+<span class="line"><span style="color:#22863A">Authorization</span><span style="color:#D73A49">:</span><span style="color:#032F62"> Bearer SECOND_IDENTITY_TOKEN_REDACTED</span></span>
+<span class="line"><span style="color:#22863A">Accept</span><span style="color:#D73A49">:</span><span style="color:#032F62"> application/json</span></span></code></pre>
+<p>Its result was the original application account, despite the token’s different <code>sub</code>. The attack did not alter a JWT, know the original password, or ask the original user to approve a login. It made the application choose the wrong account after normal authentication.</p>
+<p>The decisive comparison in the source report is between the authenticated subject and the application account returned. A successful login by itself would establish very little. Even a familiar email in a response could be a presentation issue. Distinct subjects resolving to the same privileged account is the observation that crosses the security boundary.</p>
+<p>Comparing the provider subjects with the application accounts makes the mismatch clear:</p>
+<table>
+<thead>
+<tr>
+<th>Evidence field</th>
+<th>Controlled identity A</th>
+<th>Controlled identity B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Provider subject</td>
+<td><code>subject-a</code></td>
+<td><code>subject-b</code></td>
+</tr>
+<tr>
+<td>Expected application account</td>
+<td><code>account-a</code></td>
+<td>A separate account, or rejection</td>
+</tr>
+<tr>
+<td>Documented application resolution</td>
+<td><code>account-a</code></td>
+<td><code>account-a</code></td>
+</tr>
+</tbody>
+</table>
+<p>This distinguishes identity confusion from a session accidentally left open in a browser. The source records a separate authenticated subject resolving into the existing application context. It also records a difference in email-verification state that the application did not enforce. That is relevant to the trust placed in the attribute, but it is not a substitute for checking the subject-to-account binding.</p>
+<h2 id="03-why-normalization-cannot-establish-ownership">03. Why normalization cannot establish ownership</h2>
+<p>Normalization is useful for searching and displaying data. It is not evidence that two people are the same person. If two distinct provider identities collapse to one lookup key, the application needs a deliberate account-linking policy; silently selecting an existing account supplies that policy accidentally.</p>
+<p>The important review question is not whether lowercasing is always wrong. It is whether a mutable or differently interpreted attribute is being used as the authority for account ownership. Changing the string function alone leaves that design assumption in place.</p>
+<p>AWS’s <a href="https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-case-sensitivity.html">Cognito guidance on user-pool case sensitivity</a> addresses this exact mismatch and recommends a stable identifier such as <code>sub</code> instead of case-sensitive sign-in attributes. This is a reference checked during editing, not a resource the report records using during discovery.</p>
+<h2 id="04-a-model-of-the-corrected-boundary">04. A model of the corrected boundary</h2>
+<p>Token validation has already happened in trusted middleware, including signature, expected issuer and audience, expiration, and token purpose. This function only resolves a validated identity through a server-controlled binding.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#D73A49">def</span><span style="color:#6F42C1"> resolve_account</span><span style="color:#24292E">(validated_identity, bindings):</span></span>
+<span class="line"><span style="color:#6A737D">    # Subject identifiers are scoped to their issuer.</span></span>
+<span class="line"><span style="color:#24292E">    key </span><span style="color:#D73A49">=</span><span style="color:#24292E"> (</span></span>
+<span class="line"><span style="color:#24292E">        validated_identity[</span><span style="color:#032F62">"issuer"</span><span style="color:#24292E">],</span></span>
+<span class="line"><span style="color:#24292E">        validated_identity[</span><span style="color:#032F62">"subject"</span><span style="color:#24292E">],</span></span>
+<span class="line"><span style="color:#24292E">    )</span></span>
+<span class="line"><span style="color:#24292E">    account </span><span style="color:#D73A49">=</span><span style="color:#24292E"> bindings.get(key)</span></span>
+<span class="line"><span style="color:#D73A49">    if</span><span style="color:#24292E"> account </span><span style="color:#D73A49">is</span><span style="color:#005CC5"> None</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#D73A49">        raise</span><span style="color:#005CC5"> PermissionError</span><span style="color:#24292E">(</span><span style="color:#032F62">"No linked application account"</span><span style="color:#24292E">)</span></span>
+<span class="line"><span style="color:#D73A49">    return</span><span style="color:#24292E"> account</span></span></code></pre>
+<p>Notice what is absent: no email lookup, fallback to a matching profile, or automatic merge. An authenticated but unlinked identity receives a denial. Provisioning and account linking can still exist, but must be separate operations with their own ownership checks.</p>
+<p>The second example is a regression test. It checks the property that the original account resolution failed to preserve: two distinct authenticated identities must not inherit one account merely because they share a profile attribute.</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#24292E">bindings </span><span style="color:#D73A49">=</span><span style="color:#24292E"> {(</span><span style="color:#032F62">"issuer-a"</span><span style="color:#24292E">, </span><span style="color:#032F62">"subject-a"</span><span style="color:#24292E">): </span><span style="color:#032F62">"account-a"</span><span style="color:#24292E">}</span></span>
+<span class="line"><span style="color:#24292E">known </span><span style="color:#D73A49">=</span><span style="color:#24292E"> {</span></span>
+<span class="line"><span style="color:#032F62">    "issuer"</span><span style="color:#24292E">: </span><span style="color:#032F62">"issuer-a"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#032F62">    "subject"</span><span style="color:#24292E">: </span><span style="color:#032F62">"subject-a"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#032F62">    "email"</span><span style="color:#24292E">: </span><span style="color:#032F62">"reader@example.invalid"</span><span style="color:#24292E">,</span></span>
+<span class="line"><span style="color:#24292E">}</span></span>
+<span class="line"><span style="color:#D73A49">assert</span><span style="color:#24292E"> resolve_account(known, bindings) </span><span style="color:#D73A49">==</span><span style="color:#032F62"> "account-a"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># The same profile attribute does not establish the same identity.</span></span>
+<span class="line"><span style="color:#D73A49">for</span><span style="color:#24292E"> different </span><span style="color:#D73A49">in</span><span style="color:#24292E"> (</span></span>
+<span class="line"><span style="color:#24292E">    {</span><span style="color:#D73A49">**</span><span style="color:#24292E">known, </span><span style="color:#032F62">"subject"</span><span style="color:#24292E">: </span><span style="color:#032F62">"subject-b"</span><span style="color:#24292E">},</span></span>
+<span class="line"><span style="color:#24292E">    {</span><span style="color:#D73A49">**</span><span style="color:#24292E">known, </span><span style="color:#032F62">"issuer"</span><span style="color:#24292E">: </span><span style="color:#032F62">"issuer-b"</span><span style="color:#24292E">},</span></span>
+<span class="line"><span style="color:#24292E">):</span></span>
+<span class="line"><span style="color:#D73A49">    try</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#24292E">        resolve_account(different, bindings)</span></span>
+<span class="line"><span style="color:#D73A49">    except</span><span style="color:#005CC5"> PermissionError</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#D73A49">        pass</span></span>
+<span class="line"><span style="color:#D73A49">    else</span><span style="color:#24292E">:</span></span>
+<span class="line"><span style="color:#D73A49">        raise</span><span style="color:#005CC5"> AssertionError</span><span style="color:#24292E">(</span><span style="color:#032F62">"Distinct identity inherited an account"</span><span style="color:#24292E">)</span></span></code></pre>
+<p>A production review should also examine how bindings are created, migrated, and removed: a correct lookup cannot repair an incorrectly linked record.</p>
+<h2 id="05-impact-is-more-than-a-matching-profile">05. Impact is more than a matching profile</h2>
+<p>The local evidence goes beyond displaying another account’s name. It documents access to private signing-related data and a reversible attendance write in controlled account contexts, including an administrative context. Those observations support a confidentiality and integrity impact within the tested accounts.</p>
+<p>They do not establish the number of affected customers, every role’s reachable permissions, or an accepted program severity. The source proposes a broad account-takeover impact, but remains marked draft/not submitted. Those distinctions belong in the article, not in a footnote that contradicts the headline.</p>
+<p>The underlying risk is that downstream authorization can operate exactly as designed and still authorize the wrong person. Once the lookup returns the wrong account, correctly enforced business permissions protect the wrong identity boundary.</p>
+<aside class="code-corollary"><strong>Corollary 03.a</strong><p>A signed introduction is not permission to assume somebody else's seat.</p></aside>
+<div class="article-end"><p class="mono">NEXT ARTICLE</p><a href="/bug-code/invitation-is-not-identity/">An invitation shall admit its recipient. Nobody else. →</a><a href="/bug-code/service-identity-is-not-permission/">A service shall not lend its privileges to strangers. →</a></div></article></div></main><footer class="site-footer wrap"><p>© 2026 Niccolò Parlanti</p><p>Offensive security / Research notes</p><div><a href="https://github.com/Niccolo10">GitHub ↗</a><a href="https://www.linkedin.com/in/niccol%C3%B2-parlanti/">LinkedIn ↗</a><a href="/feed.xml">RSS</a></div></footer></body></html>
