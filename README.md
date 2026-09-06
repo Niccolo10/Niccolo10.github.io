@@ -27,7 +27,7 @@ Run `npm run dev -- --port 4322 --force` and open http://127.0.0.1:4322/drafts/ 
 
 `node scripts/draft-browser-check.mjs` checks the three case studies and the casebook index on port 4322, including rendered code blocks and flow steps. `python3 scripts/check-article-models.py` exercises the six reconstructed Python code blocks locally with fictional data and an in-memory storage stub; it makes no external requests. These models illustrate individual checks, not complete production handlers. The regular production preview and checks continue to use port 4321. Avoid running a build concurrently with development checks because Astro shares its content cache between modes.
 
-All report-based drafts need disclosure review before promotion to public research. The invitation report was approved by triage; that does not establish publication permission or remediation. The cloud retest established that the original endpoint was unavailable, not which code-level fix had been applied. Source provenance is kept locally in `editorial/sources.md`.
+The first three reviewed Bug Code articles are published from `src/content/bug-code/`, with explicit `draft: false` and a publication `date`. Edit these public copies for subsequent releases. Private source reports and editorial provenance remain outside Git. Publication was authorized by the site owner for these versions; this is not a claim of program approval. New articles remain draft by default.
 
 ## Legacy compatibility
 
@@ -37,7 +37,7 @@ Twenty-eight original support/assets files remain byte-identical, checked by `le
 
 Old presentation files and styles were moved to the ignored local `editorial/legacy-presentation-backup/` folder; the original repository snapshot is also retained in `/tmp/niccoparla-review-20260906`. `scripts/migrate-archive.py` documents the migration and requires BeautifulSoup plus that snapshot. The original importer refuses to restore the retired presentation after migration. Normal builds do not need Python or that checkout.
 
-The main site includes `/bug-code/`, navigation, and a homepage introduction. Development mode adds the three work-in-progress articles under `/bug-code/<slug>/`, visibly marked as drafts. Production includes the casebook landing page but does not publish the unfinished report-based writeups. Open `http://127.0.0.1:4322/bug-code/` with the dev server running to review everything together. The old `/drafts/` workbench remains a local compatibility route.
+The main site includes the three public case studies under `/bug-code/<slug>/`, the research index, RSS, and sitemap. Development mode also displays any unpublished local drafts not already represented by a public article. The `/drafts/` workbench remains local only. Production checks assert public article presence and exclude unpublished private slugs and editorial notices.
 
 ## Publishing
 

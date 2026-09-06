@@ -2,9 +2,10 @@
 import DraftPage from '../drafts/[...slug].astro';
 import { getCollection } from 'astro:content';
 export async function getStaticPaths() {
-  if (!import.meta.env.DEV) return [];
-  const drafts = await getCollection('drafts');
-  return drafts.map(entry => ({params:{slug:entry.id},props:{entry,drafts}}));
+  const published = await getCollection('bugCode', ({data}) => !data.draft);
+  const local = import.meta.env.DEV ? (await getCollection('drafts')).filter(d => !published.some(p => p.id === d.id)) : [];
+  const entries = [...published, ...local].sort((a,b) => a.data.rule.localeCompare(b.data.rule));
+  return entries.map(entry => ({params:{slug:entry.id},props:{entry,drafts:entries,published:entry.collection === 'bugCode'}}));
 }
 ---
 <DraftPage {...Astro.props} />

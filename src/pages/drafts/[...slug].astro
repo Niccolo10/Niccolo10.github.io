@@ -1,24 +1,30 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+interface Props {
+  entry: CollectionEntry<'drafts'> | CollectionEntry<'bugCode'> | null;
+  drafts: (CollectionEntry<'drafts'> | CollectionEntry<'bugCode'>)[];
+  published?: boolean;
+}
 export async function getStaticPaths() {
   if (!import.meta.env.DEV) return [];
   const drafts = await getCollection('drafts');
   return [{params:{slug:undefined},props:{entry:null,drafts}}, ...drafts.map(entry => ({params:{slug:entry.id},props:{entry,drafts}}))];
 }
-const { entry, drafts } = Astro.props;
+const { entry, drafts, published = false } = Astro.props;
 const rendered = entry ? await render(entry) : null;
 const Content = rendered?.Content;
 const toc = rendered?.headings.filter(h => h.depth === 2) ?? [];
 ---
-<Base title={`${entry ? entry.data.title : 'Editorial workbench'} — Niccolò Parlanti`} noindex>
-  <div class="wrap preview-notice">LOCAL EDITORIAL PREVIEW · Excluded from the production build. Disclosure review pending.</div>
+<Base title={`${entry ? entry.data.title : 'Editorial workbench'} | Niccolò Parlanti`} description={entry?.data.description} noindex={!published}>
+  {!published && <div class="wrap preview-notice">LOCAL EDITORIAL PREVIEW · Excluded from the production build.</div>}
   {entry && Content ? <>
     <header class="article-heading wrap code-heading">
       <a class="back-link mono" href="/bug-code/">← THE BUG CODE</a>
-      <div class="book-opening"><p class="book-running-title">THE BUG CODE</p><p class="book-article"><span aria-hidden="true">❧</span> ARTICLE {entry.data.rule} <span aria-hidden="true">❧</span></p><h1>{entry.data.title}</h1><p class="book-maxim">{entry.data.maxim}</p><div class="book-divider" aria-hidden="true">◆</div><p class="lede">{entry.data.description}</p><p class="byline">Niccolò Parlanti · Anonymized technical case study</p></div>
+<div class="book-opening"><p class="book-running-title">THE BUG CODE</p><p class="book-article"><span aria-hidden="true">❧</span> ARTICLE {entry.data.rule} <span aria-hidden="true">❧</span></p><h1>{entry.data.title}</h1><p class="book-maxim">{entry.data.maxim}</p><div class="book-divider" aria-hidden="true">◆</div><p class="lede">{entry.data.description}</p><p class="byline">Niccolò Parlanti · Technical case study</p></div>
     </header>
-    <div class="article-layout wrap field-article code-article"><aside><dl class="case-facts"><dt>Mechanism</dt><dd>{entry.data.mechanism}</dd><dt>Evidence status</dt><dd>{entry.data.outcome}</dd><dt>Code examples</dt><dd>Simplified Python models. Names and data are fictional.</dd></dl><p class="eyebrow">CONTENTS</p><nav aria-label="Table of contents">{toc.map(h => <a href={`#${h.slug}`}>{h.text}</a>)}</nav></aside><article class="prose"><Content /><div class="article-end"><p class="mono">NEXT ARTICLE</p>{drafts.filter(d => d.id !== entry.id).map(d => <a href={`/bug-code/${d.id}/`}>{d.data.title} →</a>)}</div></article></div>
+    <div class="article-layout wrap field-article code-article"><aside><dl class="case-facts"><dt>Mechanism</dt><dd>{entry.data.mechanism}</dd><dt>Evidence status</dt><dd>{entry.data.outcome}</dd><dt>Code examples</dt><dd>HTTP requests, response excerpts, and Python models.</dd></dl><p class="eyebrow">CONTENTS</p><nav aria-label="Table of contents">{toc.map(h => <a href={`#${h.slug}`}>{h.text}</a>)}</nav></aside><article class="prose"><Content /><div class="article-end"><p class="mono">NEXT ARTICLE</p>{drafts.filter(d => d.id !== entry.id).map(d => <a href={`/bug-code/${d.id}/`}>{d.data.title} →</a>)}</div></article></div>
   </> : <>
     <section class="wrap code-introduction"><div class="code-cover"><p class="cover-kicker">NOTES ON OFFENSIVE SECURITY</p><h1><span>The</span>Bug<br />Code</h1><div class="cover-ornament" aria-hidden="true">◆</div><p class="cover-subtitle">Rules applications<br />learn the hard way.</p><p class="cover-author">NICCOLÒ PARLANTI</p></div><div><p class="eyebrow">A TECHNICAL CASEBOOK / EDITORIAL PREVIEW</p><h2>The rule is short.<br /><em>The proof follows.</em></h2><p class="lede">Each article starts with one rule, then shows the system behavior that broke it: the actors, the missing check, the code model, and the result.</p><p class="section-intro">A nod to the mock-formal rulebook style of <i>The Bro Code</i>. Original rules, drawn from security reports, with the technical details made explicit.</p><a class="text-link" href="#articles">Open the casebook ↓</a></div></section>
     <section class="wrap draft-grid book-index" id="articles" aria-label="Casebook articles">{drafts.sort((a,b) => a.data.rule.localeCompare(b.data.rule)).map(d => <a class="draft-card book-index-card" href={`/drafts/${d.id}/`}><span class="book-article">ARTICLE {d.data.rule}</span><h2>{d.data.title}</h2><p>{d.data.description}</p><span class="text-link">Read the case study ↗</span></a>)}</section>

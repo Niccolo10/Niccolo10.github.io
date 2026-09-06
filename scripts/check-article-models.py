@@ -2,7 +2,7 @@
 from pathlib import Path
 import re
 
-root = Path(__file__).resolve().parents[1] / 'editorial/field-rules'
+root = Path(__file__).resolve().parents[1] / 'src/content/bug-code'
 
 def load_models(slug):
     text = (root / f'{slug}.md').read_text()

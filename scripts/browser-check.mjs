@@ -1,12 +1,13 @@
 import { chromium } from '@playwright/test';
 import assert from 'node:assert/strict';
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
 const browser = await chromium.launch({executablePath:process.env.CHROME_PATH || '/usr/bin/google-chrome',headless:true,args:['--no-sandbox']});
 await mkdir('artifacts',{recursive:true});
 const errors = [];
 const archive = JSON.parse(await readFile('src/data/archive.json','utf8'));
-const pages = ['/', '/about/', '/research/', '/archive/', '/bug-code/', '/research/podinfo-content-type/', '/research/telejson-constructor/', ...archive.map(e=>e.href), '/404.html'];
+const cases = (await readdir('src/content/bug-code')).filter(f => f.endsWith('.md'));
+const pages = ['/', '/about/', '/research/', '/archive/', '/bug-code/', ...cases.map(f => `/bug-code/${f.slice(0,-3)}/`), '/research/podinfo-content-type/', '/research/telejson-constructor/', ...archive.map(e=>e.href), '/404.html'];
 const context = await browser.newContext();
 const page = await context.newPage();
 page.on('pageerror', error => errors.push(error.message));
@@ -17,6 +18,11 @@ for (const width of [1440, 768, 390, 320]) {
     await page.goto(`http://localhost:4321${path}`);
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.locator('h1').count(),1,`Expected one title: ${path}`);
+    if (path.startsWith('/bug-code/') && path !== '/bug-code/') {
+      assert.equal(await page.locator('meta[name="robots"]').count(),0);
+      assert.equal(await page.locator('.preview-notice').count(),0);
+      assert(await page.locator('pre[data-language="http"]').count() > 0);
+    }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),`Overflow at ${width}px: ${path}`);
     const missing = await page.locator('img').evaluateAll(imgs => imgs.filter(img => !img.complete || img.naturalWidth === 0).map(img => img.src));
     assert.deepEqual(missing, [], `Missing images: ${path}`);
@@ -39,13 +45,13 @@ assert.equal(await page.locator('[data-category]:visible').count(),2);
 await page.getByRole('button',{name:'Archive',exact:true}).click();
 assert.equal(await page.locator('[data-category]:visible').count(),archive.length);
 await page.getByRole('button',{name:'Field notes',exact:true}).click();
-assert(await page.locator('#empty').isVisible());
+assert.equal(await page.locator('[data-category]:visible').count(),cases.length);
 await page.getByRole('button',{name:'All',exact:true}).click();
-assert.equal(await page.locator('[data-category]:visible').count(),archive.length+2);
+assert.equal(await page.locator('[data-category]:visible').count(),archive.length+2+cases.length);
 const noJS = await browser.newContext({javaScriptEnabled:false});
 const plain = await noJS.newPage();
 await plain.goto('http://localhost:4321/research/');
-assert.equal(await plain.locator('.research-row').count(),archive.length+2);
+assert.equal(await plain.locator('.research-row').count(),archive.length+2+cases.length);
 assert(!(await plain.locator('.filters').isVisible()));
 assert.deepEqual(errors,[]);
 await browser.close();

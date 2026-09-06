@@ -9,4 +9,8 @@ const drafts = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './editorial/field-rules' }),
   schema: z.object({ title: z.string(), description: z.string(), rule: z.string(), maxim: z.string(), mechanism: z.string(), outcome: z.string(), layout: z.enum(['rulebook', 'casefile']), draft: z.literal(true) })
 });
-export const collections = { research, drafts };
+const bugCode = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/bug-code' }),
+  schema: z.object({ title: z.string(), description: z.string(), rule: z.string(), maxim: z.string(), mechanism: z.string(), outcome: z.string(), layout: z.enum(['rulebook', 'casefile']), date: z.coerce.date(), draft: z.boolean().default(true) })
+});
+export const collections = { research, drafts, bugCode };

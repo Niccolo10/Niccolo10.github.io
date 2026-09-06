@@ -1,8 +1,12 @@
 import { chromium } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import assert from 'node:assert/strict';
-import {mkdir, readdir} from 'node:fs/promises';
+import {mkdir, readdir, readFile} from 'node:fs/promises';
 const slugs = (await readdir('editorial/field-rules')).filter(f => f.endsWith('.md')).map(f => f.slice(0,-3) + '/');
+for (const slug of slugs) {
+  const source = await readFile(`editorial/field-rules/${slug.slice(0,-1)}.md`,'utf8');
+  assert(!/retest/i.test(source), `Retest material in article: ${slug}`);
+}
 const browser = await chromium.launch({executablePath:process.env.CHROME_PATH || '/usr/bin/google-chrome',args:['--no-sandbox']});
 const context = await browser.newContext();
 const page = await context.newPage();
@@ -19,10 +23,15 @@ try {
       await page.locator('h1').waitFor();
       assert.equal(await page.locator('h1').count(),1,`Heading: ${slug}`);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Overflow ${width}: ${slug}`);
-      if (slug) assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, nofollow');
+      if (slug) {
+        const published = await readFile(`src/content/bug-code/${slug.slice(0,-1)}.md`,'utf8').catch(() => '');
+        if (/^draft: false$/m.test(published)) assert.equal(await page.locator('meta[name="robots"]').count(),0);
+        else assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, nofollow');
+      }
       if (slug) {
         assert.equal(await page.locator('pre[data-language="python"] code').count(),2,`Two code models: ${slug}`);
         assert.equal(await page.locator('.case-flow li').count(),3,`Three-stage flow: ${slug}`);
+        assert(await page.locator('pre[data-language="http"] code').count() >= 1, `Missing request evidence: ${slug}`);
         const colors = await page.locator('pre[data-language="python"] code span').evaluateAll(nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))]);
         assert(colors.length >= 4, `Syntax colors missing: ${slug}`);
       }

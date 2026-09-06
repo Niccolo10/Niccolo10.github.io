@@ -4,7 +4,7 @@ import ResearchRow from '../components/ResearchRow.astro';
 import { getCollection } from 'astro:content';
 const entries = (await getCollection('research', ({data}) => !data.draft && data.featured)).sort((a,b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-<Base title="Niccolò Parlanti — Freelance penetration testing & security research" description="Freelance penetration testing for web applications and APIs by Niccolò Parlanti. Manual security assessments, technical reporting, and independent vulnerability research.">
+<Base title="Niccolò Parlanti | Freelance penetration testing & security research" description="Freelance penetration testing for web applications and APIs by Niccolò Parlanti. Manual security assessments, technical reporting, and independent vulnerability research.">
   <section class="hero wrap">
     <div class="hero-copy"><p class="eyebrow"><span class="dot"></span> PENETRATION TESTER · BUG BOUNTY HUNTER</p>
       <h1>Security<br />testing.<br /><em>Research.</em></h1>

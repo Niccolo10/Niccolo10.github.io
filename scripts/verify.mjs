@@ -8,7 +8,11 @@ for (const [file, hash] of Object.entries(manifest)) {
 }
 async function walk(dir) { const list = []; for (const e of await readdir(dir, {withFileTypes:true})) { const p = path.join(dir,e.name); if(e.isDirectory()) list.push(...await walk(p)); else list.push(p); } return list; }
 const generated = (await walk('dist')).filter(p => p.endsWith('.html') && !manifest[p.slice(5)]);
-const draftSlugs = (await readdir('editorial/field-rules').catch(() => [])).filter(f => f.endsWith('.md')).map(f => f.slice(0,-3));
+const publishedSlugs = [];
+for (const file of await readdir('src/content/bug-code')) {
+  if (file.endsWith('.md') && /^draft: false$/m.test(await readFile(`src/content/bug-code/${file}`,'utf8'))) publishedSlugs.push(file.slice(0,-3));
+}
+const draftSlugs = (await readdir('editorial/field-rules').catch(() => [])).filter(f => f.endsWith('.md')).map(f => f.slice(0,-3)).filter(slug => !publishedSlugs.includes(slug));
 const aliases = JSON.parse(await readFile('legacy-redirects.json','utf8'));
 for (const [oldPath,target] of Object.entries(aliases)) {
   const file = path.join('dist',oldPath,oldPath.endsWith('.xml') ? '' : 'index.html');
@@ -20,7 +24,7 @@ assert(!(await walk('dist')).some(p => p.includes('/drafts/')), 'Editorial previ
 for (const file of (await walk('dist')).filter(p => /\.(html|xml|js|json)$/.test(p) && !manifest[p.slice(5)])) {
   const text = await readFile(file,'utf8');
   assert(!draftSlugs.some(slug => text.includes(slug)), `Editorial slug leaked: ${file}`);
-  assert(!/invitation-is-not-identity|service-identity-is-not-permission|The service had access\. The caller had none\.|An invitation is not an identity\.|An invitation shall admit its recipient|A service shall not lend its privileges/.test(text), `Editorial draft leaked: ${file}`);
+  assert(!/LOCAL EDITORIAL PREVIEW|Disclosure review pending|recon-suite\/reports|github_pat_[A-Za-z0-9_]{30,}/.test(text), `Private editorial material leaked: ${file}`);
 }
 for (const file of generated) {
   const html = await readFile(file,'utf8');
@@ -38,4 +42,11 @@ for (const file of generated) {
   }
 }
 assert.equal((await readFile('dist/CNAME','utf8')).trim(),'niccoloparlanti.com');
+for (const slug of publishedSlugs) {
+  const html = await readFile(`dist/bug-code/${slug}/index.html`,'utf8');
+  assert(!html.includes('noindex'), `Published article not indexable: ${slug}`);
+  assert(html.includes('data-language="http"'), `Missing request evidence: ${slug}`);
+  assert((await readFile('dist/sitemap.xml','utf8')).includes(`/bug-code/${slug}/`));
+  assert((await readFile('dist/feed.xml','utf8')).includes(`/bug-code/${slug}/`));
+}
 console.log(`Verified ${Object.keys(manifest).length} unchanged legacy files and links in ${generated.length} new pages. No private draft in generated pages.`);
