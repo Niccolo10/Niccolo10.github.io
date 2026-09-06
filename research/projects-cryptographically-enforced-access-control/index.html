@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Cryptographically enforced access control — Niccolò Parlanti</title><meta name="description" content="Desing and implement a Cryptographically Enforced Access Control using CP-ABE"><link rel="canonical" href="https://niccoloparlanti.com/research/projects-cryptographically-enforced-access-control/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="theme-color" content="#f5f3ec"><meta property="og:title" content="Cryptographically enforced access control — Niccolò Parlanti"><meta property="og:description" content="Desing and implement a Cryptographically Enforced Access Control using CP-ABE"><meta property="og:type" content="website"><meta property="og:url" content="https://niccoloparlanti.com/research/projects-cryptographically-enforced-access-control/"><meta property="og:image" content="https://niccoloparlanti.com/social.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="alternate" type="application/rss+xml" title="Niccolò Parlanti — Research" href="/feed.xml"><link rel="stylesheet" href="/_astro/Base.CHfTFJ9A.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header wrap"><a class="identity" href="/" aria-label="Niccolò Parlanti home"><span class="monogram">np<span>↗</span></span><span>Niccolò Parlanti<span class="identity-sub">OFFENSIVE SECURITY</span></span></a><nav aria-label="Main navigation"><a href="/bug-code/">Bug Code</a><a href="/research/" aria-current="page">Research</a><a href="/archive/">Archive</a><a href="/about/">About</a><a class="nav-contact" href="/about/#contact">Let’s talk <span aria-hidden="true">↗</span></a></nav></header><main id="main"><header class="article-heading wrap"><a class="back-link mono" href="/research/">← ALL RESEARCH</a><div class="article-meta"><span>Archive</span><span>2023</span></div><h1>Cryptographically enforced access control</h1><p class="lede">Desing and implement a Cryptographically Enforced Access Control using CP-ABE</p><p class="byline">Niccolò Parlanti <span> / </span><time datetime="2023-11-08T00:00:00.000Z">8 November 2023</time></p></header><div class="article-layout wrap"><aside><p class="eyebrow">IN THIS ARTICLE</p><nav aria-label="Table of contents"><a href="#definition-of-data-model">Definition of Data Model</a><a href="#access-control-protocol-description">Access Control Protocol Description</a><a href="#implementation-details">Implementation Details</a><a href="#access-policy-definition">Access Policy Definition</a><a href="#conclusion">Conclusion</a></nav></aside><article class="prose"><blockquote>
+<p>From the archive. This article retains its original publication date; tools and recommendations reflect that period.</p>
+</blockquote>
+<p>Desing and implement a Cryptographically Enforced Access Control using CP-ABE</p>
+<h2 id="definition-of-data-model">Definition of Data Model</h2>
+<p>The data model comprises entities: patients, doctors, hospitals, insurance agencies, employers, and health clubs. Additionally, a trusted authority exists, representing an entity trusted by everyone but not an actual entity. For instance, a reputable hospital or a government agency can become a trusted authority.</p>
+<h3 id="entities-and-data-involved">Entities and Data Involved</h3>
+<ul>
+<li><strong>Authority’s public key</strong> $PK$: Accessible to all.</li>
+<li><strong>Authority’s master key</strong> $MK$: Known only to the authority.</li>
+<li><strong>List of all parties and their attributes</strong>: Managed by the authority.</li>
+<li><strong>Each party’s secret key</strong> $SK$: Distributed by the authority and known only to the party.</li>
+<li><strong>Encrypted health records</strong>: Stored in the trusted authority’s server, available for download by all, but decrypting them enforces specific policies.</li>
+</ul>
+<h3 id="requirements">Requirements</h3>
+<ul>
+<li>Encrypt patients' records.</li>
+<li>Allow patients access to their data.</li>
+<li>Enable patients to selectively share records with doctors, insurance agencies, and employers.</li>
+<li>Permit hospitals to insert new records during patient visits.</li>
+<li>Allow health clubs to insert records for their members.</li>
+</ul>
+<h2 id="access-control-protocol-description">Access Control Protocol Description</h2>
+<h3 id="cp-abe-ciphertext-policy-attribute-based-encryption">CP-ABE (Ciphertext-Policy Attribute-Based Encryption)</h3>
+<p>Our implementation is based on the CP-ABE protocol defined in BSW07 \cite{BSW}. CP-ABE associates each encrypted file with a policy tree dictating access. Entities have attribute lists.</p>
+<h4 id="cp-abe-protocol-procedure">CP-ABE Protocol Procedure</h4>
+<ol>
+<li>The trusted authority runs the <strong>Setup</strong> algorithm, publishing $PK$, and retains $MK$.</li>
+</ol>
+<div class="highlight"><pre tabindex="0"><code class="language-python" data-lang="python"><span>from</span> charm.toolbox.pairinggroup <span>import</span> PairingGroup
+<span>from</span> charm.schemes.abenc.abenc_bsw07 <span>import</span> CPabe_BSW07
+<p><span>class</span> <span>KeyDistributor</span>:
+<span>global</span> master_public_key, master_key</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;span&gt;# init method or constructor&lt;/span&gt;</span></span>
+<span class="line"><span>&lt;span&gt;def&lt;/span&gt; __init__(self, cpabe):</span></span>
+<span class="line"><span>    self&lt;span&gt;.&lt;/span&gt;cpabe &lt;span&gt;=&lt;/span&gt; cpabe</span></span>
+<span class="line"><span>    </span></span>
+<span class="line"><span>    self&lt;span&gt;.&lt;/span&gt;master_public_key, self&lt;span&gt;.&lt;/span&gt;master_key &lt;span&gt;=&lt;/span&gt; cpabe&lt;span&gt;.&lt;/span&gt;setup()</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;def&lt;/span&gt; &lt;span&gt;create_secret_key&lt;/span&gt;(self, attributes: list):</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    &lt;span&gt;return&lt;/span&gt; self&lt;span&gt;.&lt;/span&gt;cpabe&lt;span&gt;.&lt;/span&gt;keygen(self&lt;span&gt;.&lt;/span&gt;master_public_key, self&lt;span&gt;.&lt;/span&gt;master_key, attributes)</span></span></code></pre>
+<p></code></pre></div></p>
+<ol start="2">
+<li>The authority maintains a list of involved parties and their attributes, running <strong>KeyGen</strong> for all parties and distributing secret keys accordingly.</li>
+<li>Any entity with $PK$ and a specified access tree can encrypt a document.</li>
+</ol>
+<div class="highlight"><pre tabindex="0"><code class="language-python" data-lang="python"><span>def</span> <span>insert</span>(self, data:HealthData, access_policy, password_manager, entities: list[Entity]):
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>    max_attempts &lt;span&gt;=&lt;/span&gt; &lt;span&gt;3&lt;/span&gt;  &lt;span&gt;# Adjust the number of maximum attempts as needed&lt;/span&gt;</span></span>
+<span class="line"><span>    attempts &lt;span&gt;=&lt;/span&gt; &lt;span&gt;0&lt;/span&gt;</span></span>
+<span class="line"><span>    </span></span>
+<span class="line"><span>    &lt;span&gt;while&lt;/span&gt; attempts &lt;span&gt;&amp;lt;&lt;/span&gt; max_attempts:</span></span>
+<span class="line"><span>        patient_password &lt;span&gt;=&lt;/span&gt; input(&lt;span&gt;"Patient_&lt;/span&gt;&lt;span&gt;{}&lt;/span&gt;&lt;span&gt; password: "&lt;/span&gt;&lt;span&gt;.&lt;/span&gt;format(self&lt;span&gt;.&lt;/span&gt;entity_id))</span></span>
+<span class="line"><span>        check &lt;span&gt;=&lt;/span&gt; password_manager&lt;span&gt;.&lt;/span&gt;check_password(self, patient_password)</span></span>
+<span class="line"><span>        access_policy &lt;span&gt;=&lt;/span&gt; &lt;span&gt;f&lt;/span&gt;&lt;span&gt;"(&lt;/span&gt;&lt;span&gt;{&lt;/span&gt;self&lt;span&gt;.&lt;/span&gt;entity_type&lt;span&gt;}{&lt;/span&gt;self&lt;span&gt;.&lt;/span&gt;entity_id&lt;span&gt;}&lt;/span&gt;&lt;span&gt;)"&lt;/span&gt;</span></span>
+<span class="line"><span>        &lt;span&gt;if&lt;/span&gt; check:</span></span>
+<span class="line"><span>            &lt;span&gt;for&lt;/span&gt; entity &lt;span&gt;in&lt;/span&gt; entities:</span></span>
+<span class="line"><span>                &lt;span&gt;if&lt;/span&gt; entity&lt;span&gt;.&lt;/span&gt;entity_type &lt;span&gt;==&lt;/span&gt; &lt;span&gt;"Hospital"&lt;/span&gt;:</span></span>
+<span class="line"><span>                    self&lt;span&gt;.&lt;/span&gt;addRights(entity)</span></span>
+<span class="line"><span>                    print(&lt;span&gt;f&lt;/span&gt;&lt;span&gt;"Hospital &lt;/span&gt;&lt;span&gt;{&lt;/span&gt;entity&lt;span&gt;.&lt;/span&gt;name&lt;span&gt;}&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;{&lt;/span&gt;entity&lt;span&gt;.&lt;/span&gt;location&lt;span&gt;}&lt;/span&gt;&lt;span&gt; have write rights on &lt;/span&gt;&lt;span&gt;{&lt;/span&gt;self&lt;span&gt;.&lt;/span&gt;entity_type&lt;span&gt;}{&lt;/span&gt;self&lt;span&gt;.&lt;/span&gt;entity_id&lt;span&gt;}&lt;/span&gt;&lt;span&gt; records"&lt;/span&gt;)</span></span>
+<span class="line"><span>                access_policy &lt;span&gt;=&lt;/span&gt; &lt;span&gt;f&lt;/span&gt;&lt;span&gt;'(&lt;/span&gt;&lt;span&gt;{&lt;/span&gt;access_policy&lt;span&gt;}&lt;/span&gt;&lt;span&gt; OR (&lt;/span&gt;&lt;span&gt;{&lt;/span&gt;entity&lt;span&gt;.&lt;/span&gt;entity_type&lt;span&gt;}{&lt;/span&gt;entity&lt;span&gt;.&lt;/span&gt;entity_id&lt;span&gt;}&lt;/span&gt;&lt;span&gt;))'&lt;/span&gt;</span></span>
+<span class="line"><span>            &lt;span&gt;#print(access_policy)&lt;/span&gt;</span></span>
+<span class="line"><span>            cipher_text &lt;span&gt;=&lt;/span&gt; self&lt;span&gt;.&lt;/span&gt;cpabe&lt;span&gt;.&lt;/span&gt;encrypt(self&lt;span&gt;.&lt;/span&gt;master_public_key, data&lt;span&gt;.&lt;/span&gt;msg, access_policy)</span></span>
+<span class="line"><span>            self&lt;span&gt;.&lt;/span&gt;records&lt;span&gt;.&lt;/span&gt;append(cipher_text)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>            &lt;span&gt;break&lt;/span&gt;</span></span>
+<span class="line"><span>        &lt;span&gt;else&lt;/span&gt;:</span></span>
+<span class="line"><span>            attempts &lt;span&gt;+=&lt;/span&gt; &lt;span&gt;1&lt;/span&gt;</span></span>
+<span class="line"><span>            &lt;span&gt;if&lt;/span&gt; attempts &lt;span&gt;&amp;lt;&lt;/span&gt; max_attempts:</span></span>
+<span class="line"><span>                print(&lt;span&gt;"Incorrect password. Please try again."&lt;/span&gt;)</span></span>
+<span class="line"><span>                </span></span>
+<span class="line"><span>    &lt;span&gt;if&lt;/span&gt; attempts &lt;span&gt;==&lt;/span&gt; max_attempts:</span></span>
+<span class="line"><span>        print(&lt;span&gt;"Maximum password attempts reached. Access denied."&lt;/span&gt;)</span></span>
+<span class="line"><span>    </span></span></code></pre>
+<p></code></pre></div></p>
+<ol start="4">
+<li>Entities whose attributes match the access tree can run <strong>Decrypt</strong> to access the plaintext document.</li>
+</ol>
+<div class="highlight"><pre tabindex="0"><code class="language-python" data-lang="python">    <span>def</span> <span>read</span>(self, record):
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>    msg &lt;span&gt;=&lt;/span&gt; self&lt;span&gt;.&lt;/span&gt;cpabe&lt;span&gt;.&lt;/span&gt;decrypt(self&lt;span&gt;.&lt;/span&gt;master_public_key, self&lt;span&gt;.&lt;/span&gt;secret_key, record)</span></span>
+<span class="line"><span>    print(&lt;span&gt;f&lt;/span&gt;&lt;span&gt;"Patient &lt;/span&gt;&lt;span&gt;{&lt;/span&gt;self&lt;span&gt;.&lt;/span&gt;name&lt;span&gt;}&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;{&lt;/span&gt;self&lt;span&gt;.&lt;/span&gt;surname&lt;span&gt;}&lt;/span&gt;&lt;span&gt; read &lt;/span&gt;&lt;span&gt;{&lt;/span&gt;msg&lt;span&gt;}&lt;/span&gt;&lt;span&gt;"&lt;/span&gt;)</span></span></code></pre>
+<p></code></pre></div></p>
+<h3 id="design-choice">Design Choice</h3>
+<p>In our Personal Health Record (PHR) system design, we favor attribute-based encryption (ABE) for granular access control. For example, Patient A’s doctor shouldn’t access Patient B’s data if they aren’t treated by the same doctor. This calls for avoiding role-based access control or the access matrix model. Within ABE, we select ciphertext-policy (CP) over key-policy due to the latter’s impractical public key enumeration. However, CP-ABE introduces a single point of failure due to the trusted authority.</p>
+<p>We maintain a list of parties: patients, doctors, hospitals, insurance agencies, employers, and health clubs. Each entity has specific attributes for precise access control, including UIDs and doctors' specialties (e.g., <code>cardiology</code>, <code>nephrology</code>). Including all UIDs is crucial for precise access rights control.</p>
+<h3 id="authentication-and-insertion">Authentication and Insertion</h3>
+<p>To facilitate insertion, two solutions using Access Control Lists (ACLs) are proposed.</p>
+<h4 id="first-solution-static-password">First Solution: Static Password</h4>
+<ul>
+<li>Entities provide a static “uploading password” upon creation.</li>
+<li>Entities verify passwords with the authority for insertion rights.</li>
+<li>However, this method poses security risks and heavily relies on the central authority.</li>
+</ul>
+<h4 id="second-solution-abe-access-policy-as-acl">Second Solution: ABE Access Policy as ACL</h4>
+<ul>
+<li>The authority generates an ACL file encrypted with a policy tree allowing only the patient to read.</li>
+<li>Patients re-encrypt the file with additional attributes for hospitals/health clubs.</li>
+</ul>
+<div class="highlight"><pre tabindex="0"><code class="language-python" data-lang="python">    <span>def</span> <span>addRights</span>(self, entity):
+        psw <span>=</span> self<span>.</span>group<span>.</span>random(GT)
+        old_policy <span>=</span> self<span>.</span>guestWriteAccess[<span>"policy"</span>]
+        <span># print(f"{old_policy = }")</span>
+        policy <span>=</span> <span>f</span><span>'(</span><span>{</span>old_policy<span>}</span><span> OR (</span><span>{</span>entity<span>.</span>entity_type<span>}{</span>entity<span>.</span>entity_id<span>}</span><span>))'</span>
+        <span># print(policy)</span>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>    cipher_psw &lt;span&gt;=&lt;/span&gt; self&lt;span&gt;.&lt;/span&gt;cpabe&lt;span&gt;.&lt;/span&gt;encrypt(self&lt;span&gt;.&lt;/span&gt;master_public_key, psw, policy)</span></span>
+<span class="line"><span>    &lt;span&gt;# print(f"{cipher_psw = }")&lt;/span&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    self&lt;span&gt;.&lt;/span&gt;guestWriteAccess[&lt;span&gt;'psw'&lt;/span&gt;] &lt;span&gt;=&lt;/span&gt; cipher_psw</span></span>
+<span class="line"><span>    self&lt;span&gt;.&lt;/span&gt;guestWriteAccess[&lt;span&gt;'policy'&lt;/span&gt;] &lt;span&gt;=&lt;/span&gt; policy</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    &lt;span&gt;return&lt;/span&gt;</span></span></code></pre>
+<p></code></pre></div></p>
+<ul>
+<li>Entities retrieve passwords from the ACL file for file insertion, and the authority modifies passwords when necessary.</li>
+</ul>
+<div class="highlight"><pre tabindex="0"><code class="language-python" data-lang="python"><span>def</span> <span>writePatient</span>(self, patient, data:HealthData, password_manager):
+        max_attempts <span>=</span> <span>3</span>  <span># Adjust the number of maximum attempts as needed</span>
+        attempts <span>=</span> <span>0</span>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>    &lt;span&gt;if&lt;/span&gt; data&lt;span&gt;.&lt;/span&gt;type &lt;span&gt;!=&lt;/span&gt; &lt;span&gt;"Health"&lt;/span&gt;:</span></span>
+<span class="line"><span>        print(&lt;span&gt;"You are not allowed to insert this type of data"&lt;/span&gt;)</span></span>
+<span class="line"><span>        &lt;span&gt;#raise Exception("You are not allowed to insert this type of data")&lt;/span&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    &lt;span&gt;while&lt;/span&gt; attempts &lt;span&gt;&amp;lt;&lt;/span&gt; max_attempts:</span></span>
+<span class="line"><span>        </span></span>
+<span class="line"><span>        health_password &lt;span&gt;=&lt;/span&gt; input(&lt;span&gt;"Hospital_&lt;/span&gt;&lt;span&gt;{}&lt;/span&gt;&lt;span&gt; password: "&lt;/span&gt;&lt;span&gt;.&lt;/span&gt;format(self&lt;span&gt;.&lt;/span&gt;entity_id))</span></span>
+<span class="line"><span>        check &lt;span&gt;=&lt;/span&gt; password_manager&lt;span&gt;.&lt;/span&gt;check_password(self, health_password)</span></span>
+<span class="line"><span>        &lt;span&gt;if&lt;/span&gt; check:</span></span>
+<span class="line"><span>            toDec &lt;span&gt;=&lt;/span&gt; patient&lt;span&gt;.&lt;/span&gt;get_crypted_psw()</span></span>
+<span class="line"><span>            decrypted &lt;span&gt;=&lt;/span&gt; self&lt;span&gt;.&lt;/span&gt;cpabe&lt;span&gt;.&lt;/span&gt;decrypt(self&lt;span&gt;.&lt;/span&gt;master_public_key, self&lt;span&gt;.&lt;/span&gt;secret_key, toDec)</span></span>
+<span class="line"><span>            right_check &lt;span&gt;=&lt;/span&gt; patient&lt;span&gt;.&lt;/span&gt;right_check(decrypted)</span></span>
+<span class="line"><span>            &lt;span&gt;if&lt;/span&gt; right_check:</span></span>
+<span class="line"><span>                access_policy &lt;span&gt;=&lt;/span&gt; &lt;span&gt;f&lt;/span&gt;&lt;span&gt;'((&lt;/span&gt;&lt;span&gt;{&lt;/span&gt;patient&lt;span&gt;.&lt;/span&gt;entity_type&lt;span&gt;}{&lt;/span&gt;patient&lt;span&gt;.&lt;/span&gt;entity_id&lt;span&gt;}&lt;/span&gt;&lt;span&gt;))'&lt;/span&gt;</span></span>
+<span class="line"><span>                &lt;span&gt;# msg = self.group.random(GT)&lt;/span&gt;</span></span>
+<span class="line"><span>                cipher_text &lt;span&gt;=&lt;/span&gt; self&lt;span&gt;.&lt;/span&gt;cpabe&lt;span&gt;.&lt;/span&gt;encrypt(self&lt;span&gt;.&lt;/span&gt;master_public_key, data&lt;span&gt;.&lt;/span&gt;msg, access_policy)</span></span>
+<span class="line"><span>                patient&lt;span&gt;.&lt;/span&gt;records&lt;span&gt;.&lt;/span&gt;append(cipher_text)</span></span>
+<span class="line"><span>                &lt;span&gt;break&lt;/span&gt;</span></span>
+<span class="line"><span>            &lt;span&gt;else&lt;/span&gt;:</span></span>
+<span class="line"><span>                print(&lt;span&gt;"You are not allowed to write for this user"&lt;/span&gt;)</span></span>
+<span class="line"><span>                &lt;span&gt;break&lt;/span&gt;</span></span>
+<span class="line"><span>        &lt;span&gt;else&lt;/span&gt;:</span></span>
+<span class="line"><span>            attempts &lt;span&gt;+=&lt;/span&gt; &lt;span&gt;1&lt;/span&gt;</span></span>
+<span class="line"><span>            &lt;span&gt;if&lt;/span&gt; attempts &lt;span&gt;&amp;lt;&lt;/span&gt; max_attempts:</span></span>
+<span class="line"><span>                print(&lt;span&gt;"Incorrect password. Please try again (Max 3 attempts)"&lt;/span&gt;)</span></span>
+<span class="line"><span>                </span></span>
+<span class="line"><span>    &lt;span&gt;if&lt;/span&gt; attempts &lt;span&gt;==&lt;/span&gt; max_attempts:</span></span>
+<span class="line"><span>        print(&lt;span&gt;"Maximum password attempts reached. Access denied."&lt;/span&gt;)</span></span>
+<span class="line"><span>    &lt;span&gt;return&lt;/span&gt;</span></span></code></pre>
+<p></code></pre></div></p>
+<p>The second solution, built atop the reading access control system, offers more security but assumes parties' non-collusion and introduces occasional password entries for hospitals.</p>
+<h2 id="implementation-details">Implementation Details</h2>
+<ul>
+<li><strong>Operating System</strong>: Linux</li>
+<li><strong>Language</strong>: Python v3.10.12</li>
+</ul>
+<p>Our implementation utilizes the <code>charm.schemes.abenc.abenc_bsw07</code> module in the Charm-Crypto v0.50 Python package. We chose a supersingular elliptic curve with a $512$-bit base field as the bilinear group. Each entity, when creating a patient’s health record, determines a policy tree for encryption, enabling selective access. For insertion authentication, passwords are generated via <code>bcrypt</code> hashing.</p>
+<p>Serialization and deserialization complexities within the Charm-Crypto package hinder the implementation’s security. A custom serializer/deserializer is necessary for secure information storage.</p>
+<h2 id="access-policy-definition">Access Policy Definition</h2>
+<p>The mathematical definition of the access policy (policy tree $\mathcal T$) is detailed in Section 2.1, representing various scenarios for reading and inserting files.</p>
+<h3 id="access-policy-scenarios-for-reading-files">Access Policy Scenarios for Reading Files</h3>
+<ol>
+<li><strong>Patient A’s record after seeing Doctor B</strong>: A.patient_id or B.doctor_id</li>
+<li><strong>Patient A’s record after seeing Doctor B and agreeing to share it with all neurologists</strong>: A.patient_id or B.doctor_id or specialization=neurology</li>
+<li><strong>Patient A’s record created by Hospital B after visiting the hospital</strong>: A.patient_id or B.hospital_id</li>
+<li><strong>Patient A’s record from Hospital B shared with Employer C and Insurance Agency D for insurance claim</strong>: A.patient_id or B.hospital_id or C.employer_id or D.insurance_id</li>
+</ol>
+<h3 id="access-policy-scenarios-for-inserting-files">Access Policy Scenarios for Inserting Files</h3>
+<ol>
+<li><strong>When Patient A is born</strong>: A.patient_id</li>
+<li><strong>When Patient A visits Doctor B and B wants to add new files to A’s record</strong>: A.patient_id or B.doctor_id</li>
+<li><strong>When Patient A visits Hospital B</strong>: A.patient_id or B.hospital_id</li>
+<li><strong>When Patient A joins Health Club B</strong>: A.patient_id or B.club_id</li>
+<li><strong>When Patient A is sent to hospital B while exercising as a member of Health Club C</strong>: A.patient_id or B.hospital_id or C.club_id</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>Acknowledging flaws within our code, the demonstration serves its purpose: showcasing a practical implementation fulfilling requirements and exemplifying CP-ABE’s usage in our problem domain.</p>
+<div class="article-end"><span class="monogram">np↗</span><p>Have a question about this research?<br><a href="mailto:parlanti.niccolo@gmail.com">Let’s talk ↗</a></p></div></article></div></main><footer class="site-footer wrap"><p>© 2026 Niccolò Parlanti</p><p>Offensive security / Research notes</p><div><a href="https://github.com/Niccolo10">GitHub ↗</a><a href="https://www.linkedin.com/in/niccol%C3%B2-parlanti/">LinkedIn ↗</a><a href="/feed.xml">RSS</a></div></footer></body></html>

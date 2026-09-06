@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Image watermarking with DWT, SVD, and DCT — Niccolò Parlanti</title><meta name="description" content="Embedding of a watermak using DWT-SVD and a DWT-DCT tranform."><link rel="canonical" href="https://niccoloparlanti.com/research/projects-watermarking/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="theme-color" content="#f5f3ec"><meta property="og:title" content="Image watermarking with DWT, SVD, and DCT — Niccolò Parlanti"><meta property="og:description" content="Embedding of a watermak using DWT-SVD and a DWT-DCT tranform."><meta property="og:type" content="website"><meta property="og:url" content="https://niccoloparlanti.com/research/projects-watermarking/"><meta property="og:image" content="https://niccoloparlanti.com/social.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="alternate" type="application/rss+xml" title="Niccolò Parlanti — Research" href="/feed.xml"><link rel="stylesheet" href="/_astro/Base.CHfTFJ9A.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header wrap"><a class="identity" href="/" aria-label="Niccolò Parlanti home"><span class="monogram">np<span>↗</span></span><span>Niccolò Parlanti<span class="identity-sub">OFFENSIVE SECURITY</span></span></a><nav aria-label="Main navigation"><a href="/bug-code/">Bug Code</a><a href="/research/" aria-current="page">Research</a><a href="/archive/">Archive</a><a href="/about/">About</a><a class="nav-contact" href="/about/#contact">Let’s talk <span aria-hidden="true">↗</span></a></nav></header><main id="main"><header class="article-heading wrap"><a class="back-link mono" href="/research/">← ALL RESEARCH</a><div class="article-meta"><span>Archive</span><span>2022</span></div><h1>Image watermarking with DWT, SVD, and DCT</h1><p class="lede">Embedding of a watermak using DWT-SVD and a DWT-DCT tranform.</p><p class="byline">Niccolò Parlanti <span> / </span><time datetime="2022-10-18T00:00:00.000Z">18 October 2022</time></p></header><div class="article-layout wrap"><aside><p class="eyebrow">IN THIS ARTICLE</p><nav aria-label="Table of contents"><a href="#challenge">Challenge</a><a href="#embedding-method-explanation">Embedding Method Explanation</a><a href="#attack-method-explanation">Attack Method Explanation</a></nav></aside><article class="prose"><blockquote>
+<p>From the archive. This article retains its original publication date; tools and recommendations reflect that period.</p>
+</blockquote>
+<p>Embedding of a watermak using DWT-SVD and a DWT-DCT tranform.</p>
+<h2 id="challenge">Challenge</h2>
+<p>In my project, I utilized <strong>advanced watermarking techniques</strong> to embed a mark of size 512x512 into three different images. The primary focus was to ensure the <strong>highest possible image quality</strong> while effectively embedding the watermark.</p>
+<p>To achieve this, I combined <strong>cutting-edge watermarking techniques</strong> known for their ability to maintain image quality. These techniques involved optimizing the placement and strength of the watermark, considering factors such as perceptual masking and robustness to attacks.</p>
+<p>After successfully embedding the watermark in the images, another crucial aspect of the project was to develop an <strong>attacking technique</strong>. The objective of this technique was to attempt to <strong>destroy the embedded mark</strong> created by another group while preserving the image’s best possible quality. Striking the right balance between attack effectiveness and its impact on overall image quality was paramount.</p>
+<p>Throughout the project, special attention was given to the quality of the images to ensure seamless integration of the watermark without compromising visual appeal or clarity. By employing <strong>advanced watermarking techniques</strong> and devising an effective attacking strategy, the aim was to demonstrate the <strong>robustness and resilience</strong> of the embedded mark against potential attacks while maintaining the highest image quality.</p>
+<h2 id="embedding-method-explanation">Embedding Method Explanation</h2>
+<p>The watermarking method I employed utilizes two different mark embedding techniques:</p>
+<ul>
+<li>
+<p>The first technique involves a <strong>two-level wavelet transform</strong> in the HL/HL quadrant, where a DCT transform is applied. The most significant bit is selected after sorting the bits, and an <strong>8-bit long code</strong> represents a single bit of the mark.</p>
+</li>
+<li>
+<p>The second technique utilizes a <strong>three-level wavelet transform</strong> in the LL/LL/LL quadrant, applying SVD. In this case, a <strong>2-bit long code</strong> corresponds to a single bit of the mark.</p>
+</li>
+</ul>
+<p>This embedding method is designed to simultaneously embed the mark in three different images. A CSV file is utilized for the WPSNR function in the detection method. The detection method takes the original image, the watermarked image, and the image after being attacked as inputs. It determines if the mark is still present in the attacked image and calculates the WPSNR of this image. This method can be easily modified to detect the presence of the mark in any given image.</p>
+<div class="highlight"><pre tabindex="0"><code class="language-python" data-lang="python"><span>def</span> <span>mixed_embedding</span>(<span>....</span>):
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>&lt;span&gt;#dwt &lt;/span&gt;</span></span>
+<span class="line"><span>coefficient &lt;span&gt;=&lt;/span&gt; pywt&lt;span&gt;.&lt;/span&gt;dwt2(original, wavelet&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'haar'&lt;/span&gt;)</span></span>
+<span class="line"><span>quadrants &lt;span&gt;=&lt;/span&gt; [coefficient[&lt;span&gt;0&lt;/span&gt;],&lt;span&gt;*&lt;/span&gt;coefficient[&lt;span&gt;1&lt;/span&gt;]]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>coefficient2_dct &lt;span&gt;=&lt;/span&gt; pywt&lt;span&gt;.&lt;/span&gt;dwt2(quadrants[loc_dct_lv1], wavelet&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'haar'&lt;/span&gt;)</span></span>
+<span class="line"><span>quadrants2_dct &lt;span&gt;=&lt;/span&gt; [coefficient2_dct[&lt;span&gt;0&lt;/span&gt;],&lt;span&gt;*&lt;/span&gt;coefficient2_dct[&lt;span&gt;1&lt;/span&gt;]]</span></span>
+<span class="line"><span>coefficient2_svd &lt;span&gt;=&lt;/span&gt; pywt&lt;span&gt;.&lt;/span&gt;dwt2(quadrants[loc_svd_lv1], wavelet&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'haar'&lt;/span&gt;)</span></span>
+<span class="line"><span>quadrants2_svd &lt;span&gt;=&lt;/span&gt; [coefficient2_svd[&lt;span&gt;0&lt;/span&gt;],&lt;span&gt;*&lt;/span&gt;coefficient2_svd[&lt;span&gt;1&lt;/span&gt;]]</span></span></code></pre>
+<p><span>#SVD SU TERZO LIVELLO</span>
+coefficient3_svd <span>=</span> pywt<span>.</span>dwt2(quadrants2_svd[loc_svd_lv1], wavelet<span>=</span><span>‘haar’</span>)
+quadrants3_svd <span>=</span> [coefficient3_svd[<span>0</span>],<span>*</span>coefficient3_svd[<span>1</span>]</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>size &lt;span&gt;=&lt;/span&gt; quadrants2_dct[&lt;span&gt;1&lt;/span&gt;]&lt;span&gt;.&lt;/span&gt;shape[&lt;span&gt;0&lt;/span&gt;]</span></span>
+<span class="line"><span>size_svd &lt;span&gt;=&lt;/span&gt; quadrants3_svd[&lt;span&gt;1&lt;/span&gt;]&lt;span&gt;.&lt;/span&gt;shape[&lt;span&gt;0&lt;/span&gt;]</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;#divisione in blocchi dei quadranti scelti&lt;/span&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>blocks_dct &lt;span&gt;=&lt;/span&gt; quadrants2_dct[loc_dct_lv2]</span></span>
+<span class="line"><span>blocks_dct &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;hsplit(blocks_dct, size&lt;span&gt;//&lt;/span&gt;&lt;span&gt;4&lt;/span&gt;)</span></span>
+<span class="line"><span>blocks_svd &lt;span&gt;=&lt;/span&gt; quadrants3_svd[loc_svd_lv2]</span></span>
+<span class="line"><span>blocks_svd &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;hsplit(blocks_svd, size_svd&lt;span&gt;//&lt;/span&gt;&lt;span&gt;2&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;for&lt;/span&gt; k &lt;span&gt;in&lt;/span&gt; range(len(blocks_dct)):</span></span>
+<span class="line"><span>  blocks_dct[k] &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;vsplit(blocks_dct[k], size&lt;span&gt;//&lt;/span&gt;&lt;span&gt;4&lt;/span&gt;)</span></span>
+<span class="line"><span>  blocks_svd[k] &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;vsplit(blocks_svd[k], size_svd&lt;span&gt;//&lt;/span&gt;&lt;span&gt;2&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;# dct, svd; embedding; idct, isvd &lt;/span&gt;</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;for&lt;/span&gt; i &lt;span&gt;in&lt;/span&gt; range(len(blocks_dct)):</span></span>
+<span class="line"><span>  &lt;span&gt;for&lt;/span&gt; j &lt;span&gt;in&lt;/span&gt; range(len(blocks_dct)):</span></span>
+<span class="line"><span>      blocks_dct[i][j] &lt;span&gt;=&lt;/span&gt; dct(dct(blocks_dct[i][j],axis&lt;span&gt;=&lt;/span&gt;&lt;span&gt;0&lt;/span&gt;, norm&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'ortho'&lt;/span&gt;),axis&lt;span&gt;=&lt;/span&gt;&lt;span&gt;1&lt;/span&gt;, norm&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'ortho'&lt;/span&gt;)           </span></span>
+<span class="line"><span>      U,S,VH &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;linalg&lt;span&gt;.&lt;/span&gt;svd(blocks_svd[i][j])</span></span>
+<span class="line"><span>      &lt;span&gt;if&lt;/span&gt;(mark[i][j] &lt;span&gt;==&lt;/span&gt; &lt;span&gt;0&lt;/span&gt;):  </span></span>
+<span class="line"><span>         blocks_dct[i][j] &lt;span&gt;+=&lt;/span&gt; alpha_dct&lt;span&gt;*&lt;/span&gt;(np&lt;span&gt;.&lt;/span&gt;array(padding(blocks_dct[i][j],seq_0_dct))&lt;span&gt;.&lt;/span&gt;reshape(&lt;span&gt;4&lt;/span&gt;,&lt;span&gt;4&lt;/span&gt;))</span></span>
+<span class="line"><span>         S &lt;span&gt;+=&lt;/span&gt;  alpha_svd&lt;span&gt;*&lt;/span&gt;(np&lt;span&gt;.&lt;/span&gt;array(seq_0_svd)) </span></span>
+<span class="line"><span>      &lt;span&gt;else&lt;/span&gt;:</span></span>
+<span class="line"><span>         blocks_dct[i][j] &lt;span&gt;+=&lt;/span&gt; alpha_dct&lt;span&gt;*&lt;/span&gt;(np&lt;span&gt;.&lt;/span&gt;array(padding(blocks_dct[i][j],seq_1_dct))&lt;span&gt;.&lt;/span&gt;reshape(&lt;span&gt;4&lt;/span&gt;,&lt;span&gt;4&lt;/span&gt;))</span></span>
+<span class="line"><span>         S &lt;span&gt;+=&lt;/span&gt;  alpha_svd&lt;span&gt;*&lt;/span&gt;(np&lt;span&gt;.&lt;/span&gt;array(seq_1_svd))</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>      blocks_svd[i][j] &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;dot(U&lt;span&gt;*&lt;/span&gt;S,VH)</span></span>
+<span class="line"><span>      blocks_dct[i][j] &lt;span&gt;=&lt;/span&gt; idct(idct(blocks_dct[i][j],axis&lt;span&gt;=&lt;/span&gt;&lt;span&gt;1&lt;/span&gt;, norm&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'ortho'&lt;/span&gt;),axis&lt;span&gt;=&lt;/span&gt;&lt;span&gt;0&lt;/span&gt;, norm&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'ortho'&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;for&lt;/span&gt; k &lt;span&gt;in&lt;/span&gt; range(len(blocks_dct)):</span></span>
+<span class="line"><span>  blocks_dct[k] &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;array(np&lt;span&gt;.&lt;/span&gt;vstack(blocks_dct[k]))&lt;span&gt;.&lt;/span&gt;reshape(&lt;span&gt;128&lt;/span&gt;,&lt;span&gt;4&lt;/span&gt;)</span></span>
+<span class="line"><span>  blocks_svd[k] &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;array(np&lt;span&gt;.&lt;/span&gt;vstack(blocks_svd[k]))&lt;span&gt;.&lt;/span&gt;reshape(&lt;span&gt;64&lt;/span&gt;,&lt;span&gt;2&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>quadrants2_dct[loc_dct_lv2] &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;array(np&lt;span&gt;.&lt;/span&gt;hstack(blocks_dct))&lt;span&gt;.&lt;/span&gt;reshape(&lt;span&gt;128&lt;/span&gt;,&lt;span&gt;128&lt;/span&gt;)</span></span>
+<span class="line"><span>quadrants3_svd[loc_svd_lv2] &lt;span&gt;=&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;array(np&lt;span&gt;.&lt;/span&gt;hstack(blocks_svd))&lt;span&gt;.&lt;/span&gt;reshape(&lt;span&gt;64&lt;/span&gt;,&lt;span&gt;64&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>coefficient3_svd &lt;span&gt;=&lt;/span&gt; quadrants3_svd[&lt;span&gt;0&lt;/span&gt;],(quadrants3_svd[&lt;span&gt;1&lt;/span&gt;],quadrants3_svd[&lt;span&gt;2&lt;/span&gt;],quadrants3_svd[&lt;span&gt;3&lt;/span&gt;])</span></span>
+<span class="line"><span>quadrants2_svd[loc_svd_lv1] &lt;span&gt;=&lt;/span&gt; pywt&lt;span&gt;.&lt;/span&gt;idwt2(coefficient3_svd, wavelet&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'haar'&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>coefficient2_dct &lt;span&gt;=&lt;/span&gt; quadrants2_dct[&lt;span&gt;0&lt;/span&gt;],(quadrants2_dct[&lt;span&gt;1&lt;/span&gt;],quadrants2_dct[&lt;span&gt;2&lt;/span&gt;],quadrants2_dct[&lt;span&gt;3&lt;/span&gt;])</span></span>
+<span class="line"><span>coefficient2_svd &lt;span&gt;=&lt;/span&gt; quadrants2_svd[&lt;span&gt;0&lt;/span&gt;],(quadrants2_svd[&lt;span&gt;1&lt;/span&gt;],quadrants2_svd[&lt;span&gt;2&lt;/span&gt;],quadrants2_svd[&lt;span&gt;3&lt;/span&gt;])</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;#rimettiamo ogni quadrante al suo posto nel primo livello&lt;/span&gt;</span></span>
+<span class="line"><span>quadrants[loc_dct_lv1] &lt;span&gt;=&lt;/span&gt; pywt&lt;span&gt;.&lt;/span&gt;idwt2(coefficient2_dct, wavelet&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'haar'&lt;/span&gt;)</span></span>
+<span class="line"><span>quadrants[loc_svd_lv1] &lt;span&gt;=&lt;/span&gt; pywt&lt;span&gt;.&lt;/span&gt;idwt2(coefficient2_svd, wavelet&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'haar'&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>coefficient &lt;span&gt;=&lt;/span&gt; quadrants[&lt;span&gt;0&lt;/span&gt;],(quadrants[&lt;span&gt;1&lt;/span&gt;],quadrants[&lt;span&gt;2&lt;/span&gt;],quadrants[&lt;span&gt;3&lt;/span&gt;])</span></span>
+<span class="line"><span>final &lt;span&gt;=&lt;/span&gt; pywt&lt;span&gt;.&lt;/span&gt;idwt2(coefficient, wavelet&lt;span&gt;=&lt;/span&gt;&lt;span&gt;'haar'&lt;/span&gt;)</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>&lt;span&gt;return&lt;/span&gt; np&lt;span&gt;.&lt;/span&gt;uint8(np&lt;span&gt;.&lt;/span&gt;rint(np&lt;span&gt;.&lt;/span&gt;clip(final, &lt;span&gt;0&lt;/span&gt;, &lt;span&gt;255&lt;/span&gt;)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</span></span></code></pre>
+<h2 id="attack-method-explanation">Attack Method Explanation</h2>
+<p>The “attacks” file contains various <strong>brute-force attacks</strong> for destroying the mark on the images:</p>
+<ul>
+<li>
+<p>“Base-attacks” is a brute-force method in the spatial domain. It applies different single methods (AWGN, BLUR, SHARPENING, MEDIAN-FILTER, RESIZING, JPEG) to the given image. The best attack from a list of successful attacks is selected, and attempts are made to attack the image again with combined attacks.</p>
+</li>
+<li>
+<p>“Wavelet_attack” follows a similar approach as “Base-attacks.” However, the attack is localized in the area of the DWT transform where the mark seems to be, based on a comparison between the original and watermarked images.</p>
+</li>
+<li>
+<p>“Ftt_attack” and “Dct_attack” work similarly to the other attacks, but they are localized on the most significant bit of the DCT or FTT, where the mark seems to be, after comparing the original and watermarked images.</p>
+</li>
+</ul>
+<p>You can find my full project on the <a href="https://github.com/Niccolo10/DWT-SVD_DWT-DCT-image-watermaking/">Github Repository</a>, where you can also check the code.</p>
+<div class="article-end"><span class="monogram">np↗</span><p>Have a question about this research?<br><a href="mailto:parlanti.niccolo@gmail.com">Let’s talk ↗</a></p></div></article></div></main><footer class="site-footer wrap"><p>© 2026 Niccolò Parlanti</p><p>Offensive security / Research notes</p><div><a href="https://github.com/Niccolo10">GitHub ↗</a><a href="https://www.linkedin.com/in/niccol%C3%B2-parlanti/">LinkedIn ↗</a><a href="/feed.xml">RSS</a></div></footer></body></html>
