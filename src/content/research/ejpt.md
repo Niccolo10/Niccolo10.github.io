@@ -1,0 +1,131 @@
+---
+title: "My experience with eJPTv2"
+description: "Preparation, practice, and lessons from my first penetration testing certification."
+category: Archive
+date: 2024-07-03
+draft: false
+---
+
+> From the archive. This article retains its original publication date; tools and recommendations reflect that period.
+
+
+<p>My experience preparing and passing the exam for eJPTv2 - Junior Penetration Testing certification</p>
+<h2 id="introduction">Introduction</h2>
+<p>Hi there! I’m Niccolò, and I recently passed my eJPT. This certification is a significant step for anyone looking to advance in the cybersecurity field. In this article, I’ll share my journey, study tips, experiences with the exam and resources to help future test-takers or anyone interested in this path.</p>
+<p><img alt="Badge" src="/images/badge.png"/></p>
+<h2 id="preparing-for-the-certification">Preparing for the Certification</h2>
+<h3 id="research-and-resources-">Research and Resources 🔍</h3>
+<p>To kick off my preparation, I dove deep into a variety of resources. Here are some that stood out:</p>
+<ul>
+<li>
+<p><strong>Ine eJPT Course</strong>: Together with the voucher to take the exam, Ine includes a course of about 140 hours. This course is very comprehensive, covering everything you need to know to tackle the exam labs effectively. It delves into critical topics such as Enumeration, Metasploit, and both host and network exploitation.</p>
+</li>
+<li>
+<p><strong>Websites</strong>: Sites like TryHackMe and HackTheBox are perfect for training your skills in a challenging environment.</p>
+</li>
+<li>
+<p><strong>Communities</strong>: Joining forums and communities such as Reddit’s r/eLearnSecurity or r/netsec, and Discord groups like TryHackMe or for fellow Italians, Offensive Security Italia, offered support and advice from other learners and people who already passed the exam.</p>
+</li>
+</ul>
+<h3 id="study-plan">Study Plan</h3>
+<p>With the bundle, I got 3 months of access to the course, but I mostly studied for 1 month:</p>
+<ul>
+<li>
+<p><strong>Structured Schedule</strong>: I dedicated time every day in the afternoon (and after dinner when I was free) to watch lectures and practice.</p>
+</li>
+<li>
+<p><strong>Hands-On Practice</strong>: I believe practice was the most important part of learning. The labs in the Ine course are straightforward and demonstrate how to work with specific topics from the lectures. However, the confidence gained from solving boxes on TryHackMe is what truly makes a difference on exam day.</p>
+</li>
+</ul>
+<h3 id="tools-and-techniques-">Tools and Techniques 🛠️</h3>
+<p>Mastering the right tools and techniques is essential:</p>
+<ul>
+<li>
+<p><strong>Tools</strong>: Many tools presented in the course are necessary to pass the exam, but the most important are:</p>
+<ul>
+<li><em><strong>Metasploit</strong></em>: It simplifies the exploitation process, making it easier to identify and exploit vulnerabilities.</li>
+<li><em><strong>Nmap</strong></em>: A crucial tool for network scanning and enumeration. It helps you discover hosts and services on a computer network, laying the groundwork for further penetration testing activities.</li>
+<li><em><strong>Hydra</strong></em>: Used for brute-force attacks on login pages and various protocols.</li>
+<li><em><strong>Dirb</strong></em>: A web content scanner that helps in directory and file brute-forcing. It’s important for discovering hidden files and directories on a web server.</li>
+<li><em><strong>Searchsploit</strong></em>: A command-line tool for searching the Exploit Database. It helps quickly find relevant exploits for known vulnerabilities, streamlining the exploitation process.</li>
+</ul>
+</li>
+<li>
+<p><strong>Techniques</strong>:</p>
+<ul>
+<li><em><strong>Host Discovery</strong></em>: Identifying live hosts within a network using tools like Nmap to map out the environment and understand the network’s structure.</li>
+<li><em><strong>Enumeration</strong></em>: Gathering detailed information about the discovered hosts, including open ports and running services.</li>
+<li><em><strong>Finding the Right Exploit</strong></em>: Using tools like Searchsploit and Metasploit to locate and match known vulnerabilities with appropriate exploits.</li>
+<li>*<strong>Pivoting</strong>: A technique used to move from one compromised system to other systems within the same network to gain deeper access.</li>
+</ul>
+</li>
+</ul>
+<h2 id="study-tips-and-recommendations">Study Tips and Recommendations</h2>
+<h3 id="study-habits">Study Habits</h3>
+<p>Finding your way to study is important because the lessons are numerous and sometimes very repetitive.</p>
+<ul>
+<li>
+<p><strong>Time Management</strong>: I personally got bored after a few consecutive lessons, and doing boxes and challenges on TryHackMe at those times helped me progress quickly without losing the motivation to study.</p>
+</li>
+<li>
+<p><strong>Note-Taking</strong>: Having good notes makes all the difference during the exam, and taking them during the lessons helps you to better understand what you are doing. That said, I used notes found online, which I will leave at the end of the article.</p>
+</li>
+</ul>
+<h3 id="practice-and-simulation">Practice and Simulation</h3>
+<p>Practical experience is key in penetration testing. I recommend:</p>
+<ul>
+<li><strong>Labs</strong>: Platforms like Hack The Box and TryHackMe for hands-on practice. I will list some resources at the end of the article for the best boxes suited for exam preparation.</li>
+</ul>
+<h2 id="exam-experience">Exam Experience</h2>
+<h3 id="preparation-on-exam-day">Preparation on Exam Day</h3>
+<p>I prepared for the exam by reading the letter of engagement and the explanations about the exam available on the Ine website. It is very important for a successful examination to read and understand the evaluation criteria.</p>
+<p><img alt="Evaluation Criteria" src="/images/results.png"/></p>
+<p>From the image, you can see the actions evaluated during your exam. Since it’s not always clear where they collect this information from, I suggest going through all of it multiple times and in different machines and situations inside the lab.</p>
+<h3 id="exam-structure-and-content">Exam Structure and Content</h3>
+<p>Understanding the exam structure helped me prepare better:</p>
+<ul>
+<li>
+<p><strong>Format</strong>: The exam consisted of 35 random questions (multiple-choice, flags, passwords, etc.) that you can answer only by going through the practical labs.</p>
+</li>
+<li>
+<p><strong>Content of the Lab</strong>: The exam is a black box Penetration Testing, and for that, I cannot say much about it. The basic idea is that you will be inside a network where there are several machines to enumerate and exploit in order to answer questions.</p>
+</li>
+</ul>
+<blockquote>
+<p>As I explained, answering all questions is not enough to pass the exam!</p>
+</blockquote>
+<h3 id="challenges-and-strategies">Challenges and Strategies</h3>
+<p>I faced several challenges during the exam. Here’s how I tackled them:</p>
+<ul>
+<li>
+<p><strong>Enumeration is Key</strong>: One of the most critical strategies was to meticulously enumerate everything at all times. Collecting as much data, versions, and other relevant information from every service was vital. This comprehensive approach to gathering information helped me understand the environment better, identify potential vulnerabilities more effectively, and find ways to exploit services when I was stuck.</p>
+</li>
+<li>
+<p><strong>Embrace Brute Force</strong>: Another crucial strategy was not to shy away from brute-forcing. When faced with tough situations, employing brute-force techniques on login pages and other access points proved to be effective.</p>
+</li>
+<li>
+<p><strong>Read All the Questions</strong>: Reading the questions at the start of the exam is important to have an overview of what you will find in the lab, and it also gives you some nice hints when you are stuck.</p>
+</li>
+<li>
+<p><strong>Take Notes</strong>: Take notes of everything you find, as it can always be useful in the future, or in case you have to reset the machine.</p>
+</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>Obtaining the penetration testing certification has been an immensely rewarding experience. The journey of studying for the exam taught me a great deal and significantly enhanced my skills in various aspects of cybersecurity. The certification itself is well-structured and provides a comprehensive understanding of the essential tools and techniques required in the field.</p>
+<h2 id="final-thoughts-and-encouragement">Final Thoughts and Encouragement</h2>
+<p>The exam is not overly difficult, especially if you have some familiarity with solving boxes on platforms like TryHackMe. This hands-on experience is invaluable and prepares you well for the types of challenges you’ll face during the certification process. Overall, I highly recommend this certification for anyone looking to deepen their knowledge and advance their career in penetration testing.</p>
+<p>Good luck to all future test-takers! 🎉</p>
+<h2 id="resources">Resources</h2>
+<p>Here are some valuable resources that helped me during my preparation:</p>
+<ul>
+<li><a href="https://blog.syselement.com/ine/courses/ejpt/ejpt-cheatsheet">eJPT Cheatsheet</a>: My favorite notes for the exam.</li>
+<li><a href="https://github.com/abhi-ingle/ejpt-roadmap?tab=readme-ov-file#week-5">Study Plan Guide</a>: A nice list with boxes and challenges related to the different chapters of the course.</li>
+<li><a href="https://github.com/edoardottt/eJPT-notes">Notes</a>: Other nice notes on GitHub.</li>
+<li><a href="https://www.reddit.com/r/eLearnSecurity">Reddit’s r/eLearnSecurity</a>: A subreddit dedicated to eLearnSecurity certifications, including eJPT.</li>
+<li><a href="https://www.reddit.com/r/netsec">Reddit’s r/netsec</a>: A subreddit focused on network security, where professionals and enthusiasts share news, resources, and advice.</li>
+<li><a href="https://discord.gg/V35nYxM3">Offensive Security Italia</a>: A Discord community for Italian speakers interested in offensive security with a section dedicated to eJPT.</li>
+<li><a href="https://tryhackme.com/p/whitek">TryHackMe</a>: An online platform that offers a wide range of cybersecurity challenges and learning paths.</li>
+<li><a href="https://www.hackthebox.eu">Hack The Box</a>: A platform that provides a variety of penetration testing labs and challenges.</li>
+</ul>
+<p>These resources were instrumental in my journey to achieving the eJPT certification, and I hope you find them just as useful. Happy studying! 📚</p>
+

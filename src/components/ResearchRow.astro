@@ -1,0 +1,10 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { entry: CollectionEntry<'research'>; index?: number; }
+const { entry, index = 0 } = Astro.props;
+---
+<a class="research-row" href={`/research/${entry.id}/`}>
+  <span class="row-number mono">{String(index + 1).padStart(2, '0')}</span>
+  <div><div class="article-meta"><span>{entry.data.category}</span><span>{entry.data.cve || entry.data.date.getFullYear()}</span></div><h3>{entry.data.title}</h3><p>{entry.data.description}</p></div>
+  <span class="row-arrow" aria-hidden="true">↗</span>
+</a>

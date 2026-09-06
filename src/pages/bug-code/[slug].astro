@@ -1,0 +1,10 @@
+---
+import DraftPage from '../drafts/[...slug].astro';
+import { getCollection } from 'astro:content';
+export async function getStaticPaths() {
+  if (!import.meta.env.DEV) return [];
+  const drafts = await getCollection('drafts');
+  return drafts.map(entry => ({params:{slug:entry.id},props:{entry,drafts}}));
+}
+---
+<DraftPage {...Astro.props} />

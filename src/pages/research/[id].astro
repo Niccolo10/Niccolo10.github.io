@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() { return (await getCollection('research', ({data}) => !data.draft)).map(entry => ({params: {id: entry.id}, props: {entry}})); }
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const toc = headings.filter(h => h.depth === 2);
+if (!toc.length && entry.body) {
+  for (const match of entry.body.matchAll(/<h2\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/h2>/g)) {
+    toc.push({ depth: 2, slug: match[1], text: match[2].replace(/<[^>]+>/g, '') });
+  }
+}
+---
+<Base title={`${entry.data.title} — Niccolò Parlanti`} description={entry.data.description}>
+  <header class="article-heading wrap"><a class="back-link mono" href="/research/">← ALL RESEARCH</a><div class="article-meta"><span>{entry.data.category}</span><span>{entry.data.cve || entry.data.date.getFullYear()}</span></div><h1>{entry.data.title}</h1><p class="lede">{entry.data.description}</p><p class="byline">Niccolò Parlanti <span> / </span><time datetime={entry.data.date.toISOString()}>{entry.data.date.toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})}</time></p></header>
+  <div class="article-layout wrap"><aside><p class="eyebrow">IN THIS ARTICLE</p><nav aria-label="Table of contents">{toc.map(h => <a href={`#${h.slug}`}>{h.text}</a>)}</nav></aside><article class="prose"><Content /><div class="article-end"><span class="monogram">np↗</span><p>Have a question about this research?<br /><a href="mailto:parlanti.niccolo@gmail.com">Let’s talk ↗</a></p></div></article></div>
+</Base>

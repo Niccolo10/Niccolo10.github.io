@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import entries from '../data/archive.json';
+const groups = ['CTF writeups', 'Projects', 'Learning notes'];
+---
+<Base title="Archive — Niccolò Parlanti" description="Earlier CTF writeups, university projects, and learning notes by Niccolò Parlanti.">
+  <section class="page-heading wrap"><p class="eyebrow">ARCHIVE / 2021–2024</p><h1>Earlier work.<br /><em>Same curiosity.</em></h1><p class="lede">CTF challenges, university projects, and notes from learning the craft. Original publication dates are retained.</p><nav class="archive-jump" aria-label="Archive sections">{groups.map((group,index) => <a class="text-link" href={`#group-${index}`}>{group} ↓</a>)}</nav></section>
+  {groups.map((group,index) => <section class="wrap archive-group" id={`group-${index}`}><div class="section-heading"><h2>{group}</h2><span class="mono">{entries.filter(e => e.section === group).length} {entries.filter(e => e.section === group).length === 1 ? 'ENTRY' : 'ENTRIES'}</span></div>{entries.filter(e => e.section === group).sort((a,b) => b.date.localeCompare(a.date)).map(entry => <a class="archive-entry" href={entry.href}><time class="mono" datetime={entry.date}>{entry.date.slice(0,4)}</time><h3>{entry.title}</h3><span aria-hidden="true">↗</span></a>)}</section>)}
+</Base>

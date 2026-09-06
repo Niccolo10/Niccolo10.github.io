@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Received proof</title>
+  <style>
+    body { margin: 2rem; background: #111; color: #eee; font: 16px system-ui, sans-serif; }
+    h1 { color: #7ee787; }
+    p { color: #bbb; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; background: #1b1f24; border: 1px solid #444; border-radius: 8px; }
+    .error { color: #ff7b72; }
+  </style>
+</head>
+<body>
+  <h1 id="heading">Receiving proof...</h1>
+  <p id="note">The result was transferred from the previous page into this origin.</p>
+  <pre id="result"></pre>
+  <script>
+    (() => {
+      const heading = document.getElementById("heading");
+      const note = document.getElementById("note");
+      const output = document.getElementById("result");
+      try {
+        const token = location.hash.slice(1);
+        if (!token) throw new Error("NO_RESULT_IN_FRAGMENT");
+        const normalized = token.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+        const binary = atob(padded);
+        const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+        const value = JSON.parse(new TextDecoder().decode(bytes));
+        history.replaceState(null, "", location.pathname);
+        window.name = "";
+        heading.textContent = "Received proof";
+        note.textContent = "The JSON below is now readable by this attacker-controlled origin.";
+        output.textContent = JSON.stringify(value, null, 2);
+      } catch (error) {
+        window.name = "";
+        heading.textContent = "Proof transfer failed";
+        heading.className = "error";
+        note.textContent = "The receiver loaded, but no valid result was supplied.";
+        output.textContent = error instanceof Error ? error.message : "UNKNOWN";
+      }
+    })();
+  </script>
+</body>
+</html>

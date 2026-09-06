@@ -1,0 +1,80 @@
+[
+  {
+    "title": "My Experience with eJPTv2",
+    "href": "/research/ejpt/",
+    "date": "2024-07-03",
+    "section": "Learning notes"
+  },
+  {
+    "title": "Cryptographically enforced access control",
+    "href": "/research/projects-cryptographically-enforced-access-control/",
+    "date": "2023-11-08",
+    "section": "Projects"
+  },
+  {
+    "title": "Edit distance with and without N-grams",
+    "href": "/research/projects-editdistance/",
+    "date": "2021-09-05",
+    "section": "Projects"
+  },
+  {
+    "title": "Evading Deepfake Classifier with Adversarial Attacks",
+    "href": "/research/projects-evading-classifier/",
+    "date": "2024-01-28",
+    "section": "Projects"
+  },
+  {
+    "title": "FastTicket Web App",
+    "href": "/research/projects-fastticket-webapp/",
+    "date": "2022-04-08",
+    "section": "Projects"
+  },
+  {
+    "title": "Kruskal Algorithm",
+    "href": "/research/projects-kruskal/",
+    "date": "2021-09-08",
+    "section": "Projects"
+  },
+  {
+    "title": "Todo List",
+    "href": "/research/projects-todolist/",
+    "date": "2021-10-24",
+    "section": "Projects"
+  },
+  {
+    "title": "Vulnerabilities Identification and Exploitation",
+    "href": "/research/projects-vulnerability-assessment/",
+    "date": "2023-06-15",
+    "section": "Projects"
+  },
+  {
+    "title": "Image watermarking with DWT, SVD, and DCT",
+    "href": "/research/projects-watermarking/",
+    "date": "2022-10-18",
+    "section": "Projects"
+  },
+  {
+    "title": "Dante CTF Writeups - Forensics",
+    "href": "/research/writeups-dante-ctf-2023/",
+    "date": "2023-06-05",
+    "section": "CTF writeups"
+  },
+  {
+    "title": "Dante CTF Writeups - Web",
+    "href": "/research/dante-web/",
+    "date": "2023-06-05",
+    "section": "CTF writeups"
+  },
+  {
+    "title": "THS Challenges Writeups - Misc",
+    "href": "/research/writeups-ths-challenge/",
+    "date": "2023-09-10",
+    "section": "CTF writeups"
+  },
+  {
+    "title": "THS Challenges Writeups - Crypto",
+    "href": "/research/ths-crypto/",
+    "date": "2023-09-12",
+    "section": "CTF writeups"
+  }
+]

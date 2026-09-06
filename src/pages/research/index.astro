@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro';
+import ResearchRow from '../../components/ResearchRow.astro';
+import { getCollection } from 'astro:content';
+const entries = (await getCollection('research', ({data}) => !data.draft)).sort((a,b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="Research & field notes — Niccolò Parlanti">
+  <section class="page-heading wrap"><p class="eyebrow">RESEARCH / ADVISORIES / FIELD NOTES</p><h1>Notes from<br /><em>the attack surface.</em></h1><p class="lede">Vulnerability writeups, public advisories, and the assumptions that failed under testing.</p></section>
+  <section class="wrap research-index"><div class="filters" role="group" aria-label="Filter research" hidden>{['All', 'Advisory', 'Field notes', 'Archive'].map(label => <button data-filter={label} aria-pressed={label === 'All'}>{label === 'Advisory' ? 'Advisories' : label}</button>)}</div><p class="mono result-count" aria-live="polite">{entries.length} articles</p><div>{entries.map((entry,index) => <div data-category={entry.data.category}><ResearchRow entry={entry} index={index} /></div>)}</div><p id="empty" hidden>No articles in this category yet. Explore the advisories or the archive.</p></section>
+  <section class="archive-note wrap"><p class="eyebrow">EARLIER WORK</p><h2>The archive.</h2><p>Browse <a href="/archive/">CTF writeups, projects, and learning notes</a>, collected in one place.</p></section>
+</Base>
+<script>
+  const filters = document.querySelector<HTMLElement>('.filters');
+  if (filters) filters.hidden = false;
+  document.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach(button => button.addEventListener('click', () => {
+    const category = button.dataset.filter;
+    document.querySelectorAll('[data-filter]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+    let count = 0;
+    document.querySelectorAll<HTMLElement>('[data-category]').forEach(row => { row.hidden = category !== 'All' && row.dataset.category !== category; if (!row.hidden) count++; });
+    const counter = document.querySelector('.result-count'); if (counter) counter.textContent = `${count} article${count === 1 ? '' : 's'}`;
+    const empty = document.querySelector<HTMLElement>('#empty'); if (empty) empty.hidden = count !== 0;
+  }));
+</script>
