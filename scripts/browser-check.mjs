@@ -24,7 +24,13 @@ for (const width of [1440, 768, 390, 320]) {
       const a11y = await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
       assert.deepEqual(a11y.violations.map(v => ({id:v.id, targets:v.nodes.map(n => n.target)})),[],`Accessibility: ${path}`);
     }
-    if (path === '/' && [1440,390].includes(width)) await page.screenshot({path:`artifacts/home-${width}.png`,fullPage:true});
+    if (path === '/') {
+      assert.equal(await page.getByRole('link',{name:'Freelance pentesting',exact:false}).getAttribute('href'),'#freelance');
+      assert.equal(await page.locator('#freelance .freelance-details dt').count(),3);
+      assert((await page.locator('#contact h2').innerText()).includes('penetration test?'));
+      assert((await page.locator('#contact .button').getAttribute('href')).startsWith('mailto:'));
+      if ([1440,390].includes(width)) await page.screenshot({path:`artifacts/home-${width}.png`,fullPage:true});
+    }
   }
 }
 await page.goto('http://localhost:4321/research/');

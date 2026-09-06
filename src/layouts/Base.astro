@@ -29,7 +29,7 @@ const canonical = new URL(path, Astro.site);
         <a href="/research/" aria-current={path.startsWith('/research') ? 'page' : undefined}>Research</a>
         <a href="/archive/" aria-current={path.startsWith('/archive') ? 'page' : undefined}>Archive</a>
         <a href="/about/" aria-current={path.startsWith('/about') ? 'page' : undefined}>About</a>
-        <a class="nav-contact" href="/about/#contact">Let’s talk <span aria-hidden="true">↗</span></a>
+        <a class="nav-contact" href="/#contact">Contact <span aria-hidden="true">↗</span></a>
       </nav>
     </header>
     <main id="main"><slot /></main>

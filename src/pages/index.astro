@@ -4,12 +4,12 @@ import ResearchRow from '../components/ResearchRow.astro';
 import { getCollection } from 'astro:content';
 const entries = (await getCollection('research', ({data}) => !data.draft && data.featured)).sort((a,b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-<Base>
+<Base title="Niccolò Parlanti — Freelance penetration testing & security research" description="Freelance penetration testing for web applications and APIs by Niccolò Parlanti. Manual security assessments, technical reporting, and independent vulnerability research.">
   <section class="hero wrap">
     <div class="hero-copy"><p class="eyebrow"><span class="dot"></span> PENETRATION TESTER · BUG BOUNTY HUNTER</p>
-      <h1>Offensive<br />security.<br /><em>From the field.</em></h1>
-      <p class="hero-description">I’m Niccolò. Penetration tester, bug bounty hunter, and the person who checks what happens when the application’s assumptions don’t hold.</p>
-      <div class="hero-actions"><a class="button" href="/research/">Read the research <span aria-hidden="true">↗</span></a><a class="text-link" href="/about/">About me <span aria-hidden="true">→</span></a></div>
+      <h1>Security<br />testing.<br /><em>Research.</em></h1>
+      <p class="hero-description">I’m Niccolò Parlanti, a penetration tester and bug bounty hunter. I offer freelance security testing for web applications and APIs.</p>
+      <div class="hero-actions"><a class="button" href="#freelance">Freelance pentesting <span aria-hidden="true">↓</span></a><a class="text-link" href="/research/">Read the research <span aria-hidden="true">↗</span></a></div>
     </div>
     <figure class="boundary-figure" aria-label="An abstract diagram of an unexpected path crossing a system boundary">
       <div class="figure-label mono">FIG. 01 / THE UNEXPECTED PATH</div>
@@ -29,12 +29,16 @@ const entries = (await getCollection('research', ({data}) => !data.draft && data
     </figure>
   </section>
   <div class="practice-strip"><div class="wrap"><span class="mono">RESEARCH MEETS PRACTICE</span><p>Penetration testing</p><span aria-hidden="true">/</span><p>Vulnerability research</p><span aria-hidden="true">/</span><p>Triage & campaign management</p></div></div>
+  <section class="section wrap freelance-section" id="freelance" aria-labelledby="freelance-heading">
+    <div class="freelance-intro"><div><p class="eyebrow">01 / WORK WITH ME</p><h2 id="freelance-heading">Freelance<br /><em>penetration testing.</em></h2></div><div><p>I work with teams that need an independent security assessment of their web applications or APIs. We agree on the scope, access, and timing before testing starts.</p><a class="text-link" href="mailto:parlanti.niccolo@gmail.com?subject=Freelance%20pentest%20enquiry">Discuss a pentest <span aria-hidden="true">↗</span></a></div></div>
+    <dl class="freelance-details"><div><dt>Application & API testing</dt><dd>Manual testing of authentication, access controls, business logic, and the way components interact.</dd></div><div><dt>Technical reporting</dt><dd>Findings with reproducible evidence, an explanation of the impact, and practical remediation guidance.</dd></div><div><dt>Findings walkthrough</dt><dd>A discussion of the results with your team. Follow-up testing can be agreed as part of the scope.</dd></div></dl>
+  </section>
   <section class="section wrap">
-    <div class="section-heading"><div><p class="eyebrow">01 / SELECTED RESEARCH</p><h2>Findings & writeups.</h2></div><a class="text-link" href="/research/">All research <span aria-hidden="true">↗</span></a></div>
+    <div class="section-heading"><div><p class="eyebrow">02 / SELECTED RESEARCH</p><h2>Findings & writeups.</h2></div><a class="text-link" href="/research/">All research <span aria-hidden="true">↗</span></a></div>
     <p class="section-intro">Root causes, evidence, and lessons from testing real applications.</p>
     <div class="research-list">{entries.map((entry,index) => <ResearchRow entry={entry} index={index} />)}</div>
     <div class="home-casebook"><div><p class="eyebrow">THE BUG CODE</p><h3>Rules applications learn the hard way.</h3><p>A casebook of broken assumptions, code, and evidence.</p></div><a class="text-link" href="/bug-code/">Open the casebook ↗</a></div>
   </section>
-  <section class="practice-section"><div class="wrap practice-grid"><div><p class="eyebrow">02 / THE DAY JOB</p><h2>Testing.<br />Research.<br /><em>Triage.</em></h2></div><div class="practice-copy"><p class="large-copy">I write reports. I review them, too.</p><p>My work spans penetration testing and independent bug bounty research. At UNGUESS, I also manage vulnerability triage and security testing campaigns for private organizations.</p><p>I investigate unexpected behavior, establish what it actually allows, and explain the result so that another person can reproduce and assess it.</p><a class="text-link" href="/about/">More about my work <span aria-hidden="true">↗</span></a></div></div></section>
-  <section class="contact-band wrap"><p class="eyebrow">CONTACT</p><div><h2>Have an application<br /><em>worth a closer look?</em></h2><a class="button" href="mailto:parlanti.niccolo@gmail.com">Get in touch <span aria-hidden="true">↗</span></a></div><p>Penetration testing enquiries, research collaborations, and technical conversations.</p></section>
+  <section class="practice-section"><div class="wrap practice-grid"><div><p class="eyebrow">03 / THE DAY JOB</p><h2>Testing.<br />Research.<br /><em>Triage.</em></h2></div><div class="practice-copy"><p class="large-copy">My work at UNGUESS.</p><p>Alongside penetration testing and independent bug bounty research, I manage vulnerability triage and security testing campaigns for private organizations at UNGUESS.</p><p>I assess reported vulnerabilities, review the evidence, and help make the impact and next steps clear.</p><a class="text-link" href="/about/">More about my work <span aria-hidden="true">↗</span></a></div></div></section>
+  <section class="contact-band wrap" id="contact"><p class="eyebrow">CONTACT</p><div><h2>Need a<br /><em>penetration test?</em></h2><a class="button" href="mailto:parlanti.niccolo@gmail.com?subject=Freelance%20pentest%20enquiry">Email me <span aria-hidden="true">↗</span></a></div><p>Send me a brief description of your project and your preferred timeframe. We can discuss scope and availability.</p><a class="contact-email" href="mailto:parlanti.niccolo@gmail.com">parlanti.niccolo@gmail.com</a></section>
 </Base>
