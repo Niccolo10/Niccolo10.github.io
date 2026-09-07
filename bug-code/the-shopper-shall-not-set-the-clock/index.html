@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>The shopper shall not set the clock. | Niccolò Parlanti</title><meta name="description" content="Pricing logic abuse: a guest-writable shopper context activated a scheduled future discount in the product response and basket."><link rel="canonical" href="https://niccoloparlanti.com/bug-code/the-shopper-shall-not-set-the-clock/"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="theme-color" content="#f5f3ec"><meta property="og:title" content="The shopper shall not set the clock. | Niccolò Parlanti"><meta property="og:description" content="Pricing logic abuse: a guest-writable shopper context activated a scheduled future discount in the product response and basket."><meta property="og:type" content="website"><meta property="og:url" content="https://niccoloparlanti.com/bug-code/the-shopper-shall-not-set-the-clock/"><meta property="og:image" content="https://niccoloparlanti.com/social.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="alternate" type="application/rss+xml" title="Niccolò Parlanti | Research" href="/feed.xml"><link rel="stylesheet" href="/_astro/Base.BWTXkXq0.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="site-header wrap"><a class="identity" href="/" aria-label="Niccolò Parlanti home"><span class="monogram">np<span>↗</span></span><span>Niccolò Parlanti<span class="identity-sub">OFFENSIVE SECURITY</span></span></a><nav aria-label="Main navigation"><a href="/bug-code/" aria-current="page">Bug Code</a><a href="/research/">Research</a><a href="/archive/">Archive</a><a href="/about/">About</a><a class="nav-contact" href="/#contact">Contact <span aria-hidden="true">↗</span></a></nav></header><main id="main"><header class="article-heading wrap code-heading"><a class="back-link mono" href="/bug-code/">← THE BUG CODE</a><div class="book-opening"><p class="book-running-title">THE BUG CODE</p><p class="book-article"><span aria-hidden="true">❧</span> ARTICLE 08 <span aria-hidden="true">❧</span></p><h1>The shopper shall not set the clock.</h1><p class="book-maxim">Tomorrow&#39;s price is not today&#39;s permission.</p><div class="book-divider" aria-hidden="true">◆</div><p class="lede">Pricing logic abuse: a guest-writable shopper context activated a scheduled future discount in the product response and basket.</p><p class="byline">Niccolò Parlanti · Technical case study</p></div></header><div class="article-layout wrap field-article code-article"><aside><dl class="case-facts"><dt>Mechanism</dt><dd>Overprivileged guest token / shopper-context price manipulation</dd><dt>Evidence status</dt><dd>Future pricing reflected in product and basket; no completed payment or fulfilled purchase evidenced</dd><dt>Code examples</dt><dd>Request excerpts and mechanism examples.</dd></dl><p class="eyebrow">CONTENTS</p><nav aria-label="Table of contents"><a href="#01-a-guest-token-is-still-a-token-with-permissions">01. A guest token is still a token with permissions</a><a href="#02-change-the-context-not-the-product">02. Change the context, not the product</a><a href="#03-repeat-the-same-product-read">03. Repeat the same product read</a><a href="#04-why-the-servers-calculation-was-still-wrong">04. Why the server’s calculation was still wrong</a><a href="#05-keep-preview-authority-out-of-shopper-sessions">05. Keep preview authority out of shopper sessions</a></nav></aside><article class="prose"><p>The test did not submit a lower price. It submitted a different time.</p>
+<p>The storefront used a pricing engine that could evaluate scheduled prices and promotions for a supplied effective date. Its guest client was allowed to write that date into the shopper’s context. The product API and basket then used the resulting future price in the current shopping session.</p>
+<p>This is the kind of business-logic flaw that can survive careful checks of the price field itself. The calculated price came from the server. The untrusted input was one of the assumptions used to calculate it.</p>
+<p><em>Requests follow the recorded flow with identifying details removed. Dates, product identifiers, and prices below are illustrative.</em></p>
+<h2 id="01-a-guest-token-is-still-a-token-with-permissions">01. A guest token is still a token with permissions</h2>
+<p>The storefront issued visitors a guest session token. No registered account was needed, but the API requests were not credential-free: they carried that guest bearer token.</p>
+<p>The report records the <code>sfcc.shopper-context.rw</code> scope on the public client. That permission allowed a guest to update its own Shopper Context, including <code>effectiveDateTime</code>. Ownership of the session was not the missing check. The problem was allowing that owner to control an input with authority over pricing.</p>
+<p>The baseline was an ordinary product read in the guest session. In this example, the current product price is 120.00 and a later scheduled price is 100.00. Those are not arbitrary amounts an attacker can choose; the pricing configuration must already contain a relevant future price or promotion.</p>
+<h2 id="02-change-the-context-not-the-product">02. Change the context, not the product</h2>
+<p>The recorded write used the same guest token and its own session identifier:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">PUT</span><span style="color:#24292E"> /shopper-context/guest-session-01?siteId=EXAMPLE </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> commerce.example.invalid</span></span>
+<span class="line"><span style="color:#22863A">Authorization</span><span style="color:#D73A49">:</span><span style="color:#032F62"> Bearer GUEST_TOKEN_REDACTED</span></span>
+<span class="line"><span style="color:#22863A">Content-Type</span><span style="color:#D73A49">:</span><span style="color:#032F62"> application/json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#24292E">{</span><span style="color:#005CC5">"effectiveDateTime"</span><span style="color:#24292E">:</span><span style="color:#032F62">"2030-08-15T12:00:00Z"</span><span style="color:#24292E">}</span></span></code></pre>
+<p>The source records HTTP 201 for the write. A subsequent context read returned the stored date. That matters because it distinguishes a silently ignored field from a value actually accepted into the pricing context.</p>
+<p>Notice what the request does not contain: no product price, coupon code, administrative account, or modification to the promotion definition. The guest asks the existing engine to evaluate its own session as though a different point in time were current.</p>
+<h2 id="03-repeat-the-same-product-read">03. Repeat the same product read</h2>
+<p>The next request selected the same product under the same guest authorization:</p>
+<pre class="astro-code github-light" style="background-color:#fff;color:#24292e; overflow-x: auto;" tabindex="0" data-language="http"><code><span class="line"><span style="color:#D73A49">GET</span><span style="color:#24292E"> /products/item-01?siteId=EXAMPLE&amp;expand=prices,promotions </span><span style="color:#D73A49">HTTP</span><span style="color:#24292E">/</span><span style="color:#005CC5">1.1</span></span>
+<span class="line"><span style="color:#22863A">Host</span><span style="color:#D73A49">:</span><span style="color:#032F62"> commerce.example.invalid</span></span>
+<span class="line"><span style="color:#22863A">Authorization</span><span style="color:#D73A49">:</span><span style="color:#032F62"> Bearer GUEST_TOKEN_REDACTED</span></span></code></pre>
+<p>The report records a lower price and corresponding promotional price in the response. The storefront also displayed the changed price, and adding the item produced a basket line and total using it.</p>
+<table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Before the context write</th>
+<th>After the context write</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Product selection</td>
+<td>Same item</td>
+<td>Same item</td>
+</tr>
+<tr>
+<td>Caller</td>
+<td>Guest session</td>
+<td>Same guest session</td>
+</tr>
+<tr>
+<td>Effective pricing date</td>
+<td>Normal session context</td>
+<td>Shopper-supplied future date</td>
+</tr>
+<tr>
+<td>Product and basket price, illustrated</td>
+<td>120.00</td>
+<td>100.00</td>
+</tr>
+</tbody>
+</table>
+<p>That basket check is the important follow-through. A changed product-page label could be a display-only issue. A server-calculated basket accepting the changed price demonstrates that the injected context influences a commercial operation beyond presentation.</p>
+<p>The evidence does not include a settled payment or a fulfilled order. The source discusses checkout impact, but the concrete result retained here is the product response and basket pricing. It would be inaccurate to turn that into a claim that goods were purchased at the lower price.</p>
+<h2 id="04-why-the-servers-calculation-was-still-wrong">04. Why the server’s calculation was still wrong</h2>
+<figure class="case-flow"><figcaption>The input that changed the price</figcaption><ol><li><strong>Guest context write</strong><span>Supplies an effective date</span></li><li><strong>Pricing engine</strong><span>Selects scheduled price or promotion</span></li><li><strong>Product and basket</strong><span>Use the future result now</span></li></ol></figure>
+<p>The engine was doing what it was asked to do. Its configuration supported future-state evaluation, and the caller was given a permission that exposed that capability in a real shopping context. Correct arithmetic cannot compensate for an unauthorized premise.</p>
+<p>Salesforce’s <a href="https://developer.salesforce.com/docs/commerce/sfra/guide/shopper-context-api.html">Shopper Context guidance</a> is directly relevant: it recommends setting context through a secure backend with a private client and warns about granting the scope to public clients. This reference was checked during editing. It explains why a guest’s ability to update its own context is not automatically an appropriate permission.</p>
+<p>The scope of the finding is also bounded by the engine’s configured schedules. The test did not establish arbitrary pricing, free items, or a discount on every product. Other context fields and storefronts need their own evidence; sharing a platform does not make every possible pricing manipulation demonstrated.</p>
+<h2 id="05-keep-preview-authority-out-of-shopper-sessions">05. Keep preview authority out of shopper sessions</h2>
+<p>Remove direct guest authority to set pricing-sensitive context. If the storefront needs context updates, a trusted backend should accept only the fields appropriate to the feature and derive sensitive values from server-controlled policy.</p>
+<p>Future-pricing preview can still be useful for authorized staff. It should be isolated from live shopper baskets and orders, not exposed through the same guest capability. Revalidate the applicable commercial terms at checkout rather than trusting a context value because it was previously stored.</p>
+<p>The regression sequence should preserve the original comparison: attempt the guest context write, then read the product and calculate a basket. A rejected write is useful; an unchanged server-calculated basket confirms that the unwanted pricing authority has not moved to another path.</p>
+<aside class="code-corollary"><strong>Corollary 08.a</strong><p>A price can be calculated correctly from a date nobody should have accepted.</p></aside>
+<div class="article-end"><p class="mono">NEXT ARTICLE</p><a href="/bug-code/a-template-is-not-an-administrator/">A template shall not promote its author. →</a><a href="/bug-code/an-id-shall-not-rewrite-the-route/">An identifier shall not choose the route. →</a><a href="/bug-code/a-signed-response-is-not-a-safe-response/">A signature shall not vouch for what the parser swallowed. →</a><a href="/bug-code/a-token-is-not-an-account/">A valid token shall speak for one account only. →</a><a href="/bug-code/service-identity-is-not-permission/">A service shall not lend its privileges to strangers. →</a><a href="/bug-code/a-mask-shall-not-answer-questions/">A mask shall not answer questions about what it hides. →</a><a href="/bug-code/remember-the-device-not-the-password/">Remember the device. Forget the password. →</a><a href="/bug-code/invitation-is-not-identity/">An invitation shall admit its recipient. Nobody else. →</a></div></article></div></main><footer class="site-footer wrap"><p>© 2026 Niccolò Parlanti</p><p>Offensive security / Research notes</p><div><a href="https://github.com/Niccolo10">GitHub ↗</a><a href="https://www.linkedin.com/in/niccol%C3%B2-parlanti/">LinkedIn ↗</a><a href="/feed.xml">RSS</a></div></footer></body></html>
