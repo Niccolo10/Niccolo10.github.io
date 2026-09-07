@@ -1,6 +1,7 @@
 """Exercise the locally authored Python teaching models, without network or targets."""
 from pathlib import Path
 import re
+import sqlite3
 
 root = Path(__file__).resolve().parents[1] / 'src/content/bug-code'
 
@@ -51,4 +52,9 @@ assert storage.calls == [('private', 'example.pdf')]
 identity = load_models('a-token-is-not-an-account')
 assert identity['resolve_account'](identity['known'], identity['bindings']) == 'account-a'
 denied(lambda: identity['resolve_account']({**identity['known'], 'subject': 'unknown'}, identity['bindings']))
-print('Six article code blocks verified: recipient binding, authorization before storage, and issuer/subject account binding. No external requests.')
+sql_source = (root / 'a-mask-shall-not-answer-questions.md').read_text()
+sql_blocks = re.findall(r'```sql\n(.*?)\n```', sql_source, re.S)
+assert len(sql_blocks) == 1
+with sqlite3.connect(':memory:') as database:
+    assert database.execute(sql_blocks[0]).fetchone() == (1, 0)
+print('Six Python article blocks and the SQL wildcard model verified locally. No external requests.')

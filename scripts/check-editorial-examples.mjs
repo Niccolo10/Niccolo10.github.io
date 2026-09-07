@@ -18,5 +18,10 @@ for (const directory of directories) for (const file of await readdir(directory)
     assert.equal(code.length, 1);
     vm.runInNewContext(code[0][1], {btoa, atob, encodeURIComponent, decodeURIComponent, console:{assert: value => assert(value)}}, {timeout:1000});
   }
+  if (file === 'an-id-shall-not-rewrite-the-route.md') {
+    const code = [...source.matchAll(/```javascript\n([\s\S]*?)\n```/g)];
+    assert.equal(code.length, 1);
+    vm.runInNewContext(code[0][1], {URL, console:{assert: value => assert(value)}}, {timeout:1000});
+  }
 }
-console.log('Article request/JSON checks and the local cookie encoding example passed. No target requests or template evaluation.');
+console.log('Article request/JSON checks and local cookie encoding and URL construction examples passed. No target requests or template evaluation.');

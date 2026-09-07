@@ -21,11 +21,13 @@ for (const width of [1440, 768, 390, 320]) {
     if (path === '/bug-code/') {
       const links = await page.locator('.book-index-card').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
       assert.deepEqual(links, [
-        'a-template-is-not-an-administrator', 'a-signed-response-is-not-a-safe-response',
-        'a-token-is-not-an-account', 'service-identity-is-not-permission',
+        'a-template-is-not-an-administrator', 'an-id-shall-not-rewrite-the-route',
+        'a-signed-response-is-not-a-safe-response', 'a-token-is-not-an-account',
+        'the-shopper-shall-not-set-the-clock', 'service-identity-is-not-permission',
+        'a-mask-shall-not-answer-questions',
         'remember-the-device-not-the-password', 'invitation-is-not-identity'
       ].map(slug => `/bug-code/${slug}/`));
-      assert.equal(await page.locator('.book-index-card p').count(),6);
+      assert.equal(await page.locator('.book-index-card p').count(),cases.length);
     }
     if (path.startsWith('/bug-code/') && path !== '/bug-code/') {
       assert.equal(await page.locator('meta[name="robots"]').count(),0);
