@@ -1,7 +1,7 @@
 ---
 title: "An identifier shall not choose the route."
 description: "Path-only SSRF: a product ID redirected a backend request to an internal staff directory, then a decoding error exposed the response."
-rule: "07"
+rule: "02"
 order: 15
 maxim: "One field, one identifier. No detours."
 mechanism: "Server-side path injection / constrained SSRF / error disclosure"
@@ -87,4 +87,4 @@ The internal service should independently authorize access to staff data. The pu
 
 Finally, return a generic decoding failure and a correlation identifier to the caller. Keep the rejected upstream body in appropriately protected diagnostics if it is needed at all. The regression test must inspect both the selected upstream route and the public response body, including the 400 path.
 
-<aside class="code-corollary"><strong>Corollary 07.a</strong><p>A fixed destination does not imply a fixed destination inside it.</p></aside>
+<aside class="code-corollary"><strong>Corollary 02.a</strong><p>A fixed destination does not imply a fixed destination inside it.</p></aside>

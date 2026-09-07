@@ -1,7 +1,7 @@
 ---
 title: "The shopper shall not set the clock."
 description: "Pricing logic abuse: a guest-writable shopper context activated a scheduled future discount in the product response and basket."
-rule: "08"
+rule: "07"
 order: 35
 maxim: "Tomorrow's price is not today's permission."
 mechanism: "Overprivileged guest token / shopper-context price manipulation"
@@ -85,4 +85,4 @@ Future-pricing preview can still be useful for authorized staff. It should be is
 
 The regression sequence should preserve the original comparison: attempt the guest context write, then read the product and calculate a basket. A rejected write is useful; an unchanged server-calculated basket confirms that the unwanted pricing authority has not moved to another path.
 
-<aside class="code-corollary"><strong>Corollary 08.a</strong><p>A price can be calculated correctly from a date nobody should have accepted.</p></aside>
+<aside class="code-corollary"><strong>Corollary 07.a</strong><p>A price can be calculated correctly from a date nobody should have accepted.</p></aside>

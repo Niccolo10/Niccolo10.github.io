@@ -1,7 +1,7 @@
 ---
 title: "A service shall not lend its privileges to strangers."
 description: "Missing API authentication: cloud-identity-backed processing and a signed diagnostic link exposed internal error data."
-rule: "02"
+rule: "05"
 order: 40
 maxim: "The service has credentials. This does not mean you do."
 mechanism: "Missing API authentication / service identity misuse"
@@ -182,4 +182,4 @@ An unauthenticated or wrong-organization request now fails **before any storage 
 
 Limit the managed identity to the resources the service needs. For errors, return a correlation identifier and keep detailed traces internally. If users need diagnostic downloads, authorize them separately and constrain the signed link’s permissions and lifetime.
 
-<aside class="code-corollary"><strong>Corollary 02.a</strong><p>An error response is still a response. Check what it hands back.</p></aside>
+<aside class="code-corollary"><strong>Corollary 05.a</strong><p>An error response is still a response. Check what it hands back.</p></aside>

@@ -1,7 +1,7 @@
 ---
 title: "An invitation shall admit its recipient. Nobody else."
 description: "Privilege escalation through invitation hijacking: a missing recipient check assigned an administrator role to a different account."
-rule: "01"
+rule: "06"
 order: 900
 maxim: "Possession of the invitation does not constitute an invitation."
 mechanism: "Broken access control / invitation acceptance"
@@ -132,4 +132,4 @@ A full implementation must also validate expiry, organization and inviter author
 
 The regression test: **a valid invitation must still be rejected when the authenticated account is the wrong recipient**. The rightful recipient should succeed, and a second redemption should fail.
 
-<aside class="code-corollary"><strong>Corollary 01.a</strong><p>A UUID may be difficult to guess. It is not proof of identity.</p></aside>
+<aside class="code-corollary"><strong>Corollary 06.a</strong><p>A UUID may be difficult to guess. It is not proof of identity.</p></aside>

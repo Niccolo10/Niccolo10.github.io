@@ -1,7 +1,7 @@
 ---
 title: "Remember the device. Forget the password."
 description: "Recoverable password storage: a remember-me cookie retained a Base64-encoded password for 180 days, readable by page scripts."
-rule: "06"
+rule: "09"
 order: 50
 maxim: "A change of alphabet is not a security control."
 mechanism: "Recoverable password storage / script-readable persistent cookie"
@@ -77,4 +77,4 @@ Adding `Secure` or `SameSite` alone would not fix the root problem. Even an `Htt
 
 For regression, log in with the option both enabled and disabled, inspect storage and outgoing requests, and confirm that no retained value decodes to the test password. Then check the replacement token's logout, expiry, and revocation behavior separately.
 
-<aside class="code-corollary"><strong>Corollary 06.a</strong><p>Remember me is a convenience setting, not permission to keep my password.</p></aside>
+<aside class="code-corollary"><strong>Corollary 09.a</strong><p>Remember me is a convenience setting, not permission to keep my password.</p></aside>

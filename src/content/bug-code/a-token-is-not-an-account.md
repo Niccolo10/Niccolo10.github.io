@@ -1,7 +1,7 @@
 ---
 title: "A valid token shall speak for one account only."
 description: "Account impersonation through email normalization: distinct authenticated subjects resolved to the same application account."
-rule: "03"
+rule: "04"
 order: 30
 maxim: "Thou shalt not confuse a familiar name with a proven identity."
 mechanism: "Identity normalization / incorrect account binding"
@@ -132,4 +132,4 @@ They do not establish the number of affected customers, every role's reachable p
 
 The underlying risk is that downstream authorization can operate exactly as designed and still authorize the wrong person. Once the lookup returns the wrong account, correctly enforced business permissions protect the wrong identity boundary.
 
-<aside class="code-corollary"><strong>Corollary 03.a</strong><p>A signed introduction is not permission to assume somebody else's seat.</p></aside>
+<aside class="code-corollary"><strong>Corollary 04.a</strong><p>A signed introduction is not permission to assume somebody else's seat.</p></aside>

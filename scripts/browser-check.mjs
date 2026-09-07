@@ -28,6 +28,7 @@ for (const width of [1440, 768, 390, 320]) {
     if (path === '/bug-code/') {
       const links = await page.locator('.book-index-card').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
       assert.deepEqual(links, readingOrder);
+      assert.deepEqual(await page.locator('.rule-reference').allTextContents(),readingOrder.map((_,i)=>`RULE ${String(i+1).padStart(2,'0')}`));
       assert.equal(await page.locator('.casebook-chapter').count(),3);
       assert.deepEqual(await page.locator('.casebook-chapter').evaluateAll(nodes => nodes.map(n => n.querySelectorAll('.book-index-card').length)),[3,3,3]);
       assert.equal(await page.locator('.chapter-navigation a').count(),3);
@@ -38,6 +39,9 @@ for (const width of [1440, 768, 390, 320]) {
       assert.equal(await page.locator('.preview-notice').count(),0);
       assert(await page.locator('pre[data-language="http"]').count() > 0);
       const next = page.locator('nav.article-end a');
+      const rule = String(readingOrder.indexOf(path)+1).padStart(2,'0');
+      assert((await page.locator('.book-opening .book-article').innerText()).includes(`ARTICLE ${rule}`));
+      assert((await page.locator('.code-corollary strong').textContent()).includes(`Corollary ${rule}.`));
       assert.equal(await next.count(),1);
       assert.equal(await next.getAttribute('href'),readingOrder[readingOrder.indexOf(path)+1] ?? '/bug-code/#articles');
     }

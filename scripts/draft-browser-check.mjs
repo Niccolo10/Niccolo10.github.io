@@ -50,7 +50,7 @@ try {
   const articleLinks = await page.locator('.book-index-card').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
   assert(articleLinks[0].includes('a-template-is-not-an-administrator'));
   assert(articleLinks.at(-1).includes('remember-the-device-not-the-password'));
-  await page.getByRole('link').filter({hasText:'RULE 01'}).click();
+  await page.getByRole('link').filter({hasText:'RULE 06'}).click();
   assert(page.url().includes('invitation-is-not-identity'));
   await page.locator('nav.article-end a').click();
   assert(page.url().includes('the-shopper-shall-not-set-the-clock'));

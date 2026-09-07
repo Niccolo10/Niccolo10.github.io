@@ -1,7 +1,7 @@
 ---
 title: "A template shall not promote its author."
 description: "Server-side template injection: brace-free QWeb syntax passed the WAF, then exposed privileged database reads and writes."
-rule: "05"
+rule: "01"
 order: 10
 maxim: "Permission to write the message is not permission to run the office."
 mechanism: "Server-side template injection / privileged ORM access"
@@ -112,4 +112,4 @@ A template that accepts untrusted authorship should not expose database environm
 
 The regression comparison should remain the same as the investigation: a caller denied a model operation directly must not acquire it indirectly by rendering a message. Verify both reads and own-record writes in a controlled test environment. An arithmetic result alone cannot establish whether that boundary is fixed.
 
-<aside class="code-corollary"><strong>Corollary 05.a</strong><p>A preview button should preview a message, not a promotion.</p></aside>
+<aside class="code-corollary"><strong>Corollary 01.a</strong><p>A preview button should preview a message, not a promotion.</p></aside>

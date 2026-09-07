@@ -1,7 +1,7 @@
 ---
 title: "A signature shall not vouch for what the parser swallowed."
 description: "Unauthenticated XXE in SAML: local DTD reuse turned a signed error response into a server-file disclosure channel."
-rule: "04"
+rule: "03"
 order: 20
 maxim: "Signing the answer does not make the question safe."
 mechanism: "XML external entities / local DTD reuse / response reflection"
@@ -85,4 +85,4 @@ The useful regression test is an input containing a DTD that references a contro
 
 Output escaping is not the primary fix: by the time the response serializer sees the value, the filesystem read has already happened. Signing the result also does nothing to prevent that read. The boundary to repair is where untrusted XML can ask the server to load a resource.
 
-<aside class="code-corollary"><strong>Corollary 04.a</strong><p>An error may reject the login and still answer the wrong question.</p></aside>
+<aside class="code-corollary"><strong>Corollary 03.a</strong><p>An error may reject the login and still answer the wrong question.</p></aside>

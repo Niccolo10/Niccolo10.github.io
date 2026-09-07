@@ -1,7 +1,7 @@
 ---
 title: "A mask shall not answer questions about what it hides."
 description: "LIKE-wildcard injection: a public leaderboard masked account numbers in its output but let search filters test the hidden digits."
-rule: "09"
+rule: "08"
 order: 45
 maxim: "Hiding the answer is not enough if the search will confirm it."
 mechanism: "Wildcard matching / masked-identifier inference"
@@ -85,4 +85,4 @@ A stronger design gives leaderboard entries a separate public identifier, indepe
 
 Regression tests should cover the whole information boundary: display, search, no-match behavior, and alternative filters. The question is whether the public feature can answer facts about hidden digits, not simply whether the stars still appear on screen.
 
-<aside class="code-corollary"><strong>Corollary 09.a</strong><p>A hidden digit is not hidden if the server will mark your guesses.</p></aside>
+<aside class="code-corollary"><strong>Corollary 08.a</strong><p>A hidden digit is not hidden if the server will mark your guesses.</p></aside>
