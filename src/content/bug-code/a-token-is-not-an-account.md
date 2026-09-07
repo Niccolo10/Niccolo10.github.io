@@ -1,7 +1,8 @@
 ---
 title: "A valid token shall speak for one account only."
-description: "Two distinct login identities resolved to the same application account. The signature was not the problem; the account lookup was."
+description: "Account impersonation through email normalization: distinct authenticated subjects resolved to the same application account."
 rule: "03"
+order: 30
 maxim: "Thou shalt not confuse a familiar name with a proven identity."
 mechanism: "Identity normalization / incorrect account binding"
 outcome: "Locally documented with researcher-controlled accounts; source marked draft, not submitted"

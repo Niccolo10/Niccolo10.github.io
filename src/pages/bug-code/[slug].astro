@@ -1,10 +1,11 @@
 ---
 import DraftPage from '../drafts/[...slug].astro';
 import { getCollection } from 'astro:content';
+import { casebookOrder } from '../../lib/casebook-order';
 export async function getStaticPaths() {
   const published = await getCollection('bugCode', ({data}) => !data.draft);
   const local = import.meta.env.DEV ? (await getCollection('drafts')).filter(d => !published.some(p => p.id === d.id)) : [];
-  const entries = [...published, ...local].sort((a,b) => a.data.rule.localeCompare(b.data.rule));
+  const entries = [...published, ...local].sort(casebookOrder);
   return entries.map(entry => ({params:{slug:entry.id},props:{entry,drafts:entries,published:entry.collection === 'bugCode'}}));
 }
 ---

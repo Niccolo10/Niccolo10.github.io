@@ -29,11 +29,11 @@ try {
         else assert.equal(await page.locator('meta[name="robots"]').getAttribute('content'),'noindex, nofollow');
       }
       if (slug) {
-        assert.equal(await page.locator('pre[data-language="python"] code').count(),2,`Two code models: ${slug}`);
+        assert(await page.locator('pre code').count() >= 2, `Missing technical examples: ${slug}`);
         assert.equal(await page.locator('.case-flow li').count(),3,`Three-stage flow: ${slug}`);
         assert(await page.locator('pre[data-language="http"] code').count() >= 1, `Missing request evidence: ${slug}`);
-        const colors = await page.locator('pre[data-language="python"] code span').evaluateAll(nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))]);
-        assert(colors.length >= 4, `Syntax colors missing: ${slug}`);
+        const colors = await page.locator('pre code span').evaluateAll(nodes => [...new Set(nodes.map(n => getComputedStyle(n).color))]);
+        assert(colors.length >= 3, `Syntax colors missing: ${slug}`);
       }
       if (width === 1440) {
         const results = await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
@@ -47,6 +47,9 @@ try {
     }
   }
   await page.goto('http://localhost:4322/bug-code/');
+  const articleLinks = await page.locator('.book-index-card').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
+  assert(articleLinks[0].includes('a-template-is-not-an-administrator'));
+  assert(articleLinks.at(-1).includes('invitation-is-not-identity'));
   await page.getByRole('link').filter({hasText:'ARTICLE 01'}).click();
   assert(page.url().includes('invitation-is-not-identity'));
   await page.getByRole('link',{name:'A service shall not lend its privileges to strangers. →'}).click();

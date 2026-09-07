@@ -18,6 +18,15 @@ for (const width of [1440, 768, 390, 320]) {
     await page.goto(`http://localhost:4321${path}`);
     await page.evaluate(() => document.fonts.ready);
     assert.equal(await page.locator('h1').count(),1,`Expected one title: ${path}`);
+    if (path === '/bug-code/') {
+      const links = await page.locator('.book-index-card').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
+      assert.deepEqual(links, [
+        'a-template-is-not-an-administrator', 'a-signed-response-is-not-a-safe-response',
+        'a-token-is-not-an-account', 'service-identity-is-not-permission',
+        'remember-the-device-not-the-password', 'invitation-is-not-identity'
+      ].map(slug => `/bug-code/${slug}/`));
+      assert.equal(await page.locator('.book-index-card p').count(),6);
+    }
     if (path.startsWith('/bug-code/') && path !== '/bug-code/') {
       assert.equal(await page.locator('meta[name="robots"]').count(),0);
       assert.equal(await page.locator('.preview-notice').count(),0);

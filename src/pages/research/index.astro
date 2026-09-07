@@ -2,7 +2,18 @@
 import Base from '../../layouts/Base.astro';
 import ResearchRow from '../../components/ResearchRow.astro';
 import { getCollection } from 'astro:content';
-const entries = [...await getCollection('research', ({data}) => !data.draft), ...await getCollection('bugCode', ({data}) => !data.draft)].sort((a,b) => b.data.date.valueOf() - a.data.date.valueOf());
+import { casebookOrder } from '../../lib/casebook-order';
+const entries = [...await getCollection('research', ({data}) => !data.draft), ...await getCollection('bugCode', ({data}) => !data.draft)].sort((a,b) => {
+  // Keep the deferred introductory case below the selected technical work.
+  const deferredA = a.collection === 'bugCode' && a.data.order >= 900;
+  const deferredB = b.collection === 'bugCode' && b.data.order >= 900;
+  if (deferredA !== deferredB) return Number(deferredA) - Number(deferredB);
+  const dateOrder = b.data.date.valueOf() - a.data.date.valueOf();
+  if (dateOrder) return dateOrder;
+  if (a.collection !== b.collection) return a.collection.localeCompare(b.collection);
+  if (a.collection === 'bugCode' && b.collection === 'bugCode') return casebookOrder(a,b);
+  return a.id.localeCompare(b.id);
+});
 ---
 <Base title="Research & field notes | Niccolò Parlanti">
   <section class="page-heading wrap"><p class="eyebrow">RESEARCH / ADVISORIES / FIELD NOTES</p><h1>Notes from<br /><em>the attack surface.</em></h1><p class="lede">Vulnerability writeups, public advisories, and the assumptions that failed under testing.</p></section>

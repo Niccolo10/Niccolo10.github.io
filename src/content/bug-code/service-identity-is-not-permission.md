@@ -1,7 +1,8 @@
 ---
 title: "A service shall not lend its privileges to strangers."
-description: "An unauthenticated processing API used its managed identity to access storage, and its error handler returned a readable diagnostic object."
+description: "Missing API authentication: cloud-identity-backed processing and a signed diagnostic link exposed internal error data."
 rule: "02"
+order: 40
 maxim: "The service has credentials. This does not mean you do."
 mechanism: "Missing API authentication / service identity misuse"
 outcome: "No-auth processing and a signed diagnostic-object read documented"

@@ -1,7 +1,8 @@
 ---
 title: "An invitation shall admit its recipient. Nobody else."
-description: "How a missing recipient check turned a pending administrator invitation into a privilege-escalation path."
+description: "Privilege escalation through invitation hijacking: a missing recipient check assigned an administrator role to a different account."
 rule: "01"
+order: 900
 maxim: "Possession of the invitation does not constitute an invitation."
 mechanism: "Broken access control / invitation acceptance"
 outcome: "Approved by triage; ordinary-member access and a pending admin invite required"
