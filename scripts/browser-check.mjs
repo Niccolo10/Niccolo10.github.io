@@ -7,6 +7,13 @@ await mkdir('artifacts',{recursive:true});
 const errors = [];
 const archive = JSON.parse(await readFile('src/data/archive.json','utf8'));
 const cases = (await readdir('src/content/bug-code')).filter(f => f.endsWith('.md'));
+const readingOrder = [
+  'a-template-is-not-an-administrator', 'an-id-shall-not-rewrite-the-route',
+  'a-signed-response-is-not-a-safe-response', 'a-token-is-not-an-account',
+  'service-identity-is-not-permission', 'invitation-is-not-identity',
+  'the-shopper-shall-not-set-the-clock', 'a-mask-shall-not-answer-questions',
+  'remember-the-device-not-the-password'
+].map(slug => `/bug-code/${slug}/`);
 const pages = ['/', '/about/', '/research/', '/archive/', '/bug-code/', ...cases.map(f => `/bug-code/${f.slice(0,-3)}/`), '/research/podinfo-content-type/', '/research/telejson-constructor/', ...archive.map(e=>e.href), '/404.html'];
 const context = await browser.newContext();
 const page = await context.newPage();
@@ -20,19 +27,19 @@ for (const width of [1440, 768, 390, 320]) {
     assert.equal(await page.locator('h1').count(),1,`Expected one title: ${path}`);
     if (path === '/bug-code/') {
       const links = await page.locator('.book-index-card').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
-      assert.deepEqual(links, [
-        'a-template-is-not-an-administrator', 'an-id-shall-not-rewrite-the-route',
-        'a-signed-response-is-not-a-safe-response', 'a-token-is-not-an-account',
-        'the-shopper-shall-not-set-the-clock', 'service-identity-is-not-permission',
-        'a-mask-shall-not-answer-questions',
-        'remember-the-device-not-the-password', 'invitation-is-not-identity'
-      ].map(slug => `/bug-code/${slug}/`));
+      assert.deepEqual(links, readingOrder);
+      assert.equal(await page.locator('.casebook-chapter').count(),3);
+      assert.deepEqual(await page.locator('.casebook-chapter').evaluateAll(nodes => nodes.map(n => n.querySelectorAll('.book-index-card').length)),[3,3,3]);
+      assert.equal(await page.locator('.chapter-navigation a').count(),3);
       assert.equal(await page.locator('.book-index-card p').count(),cases.length);
     }
     if (path.startsWith('/bug-code/') && path !== '/bug-code/') {
       assert.equal(await page.locator('meta[name="robots"]').count(),0);
       assert.equal(await page.locator('.preview-notice').count(),0);
       assert(await page.locator('pre[data-language="http"]').count() > 0);
+      const next = page.locator('nav.article-end a');
+      assert.equal(await next.count(),1);
+      assert.equal(await next.getAttribute('href'),readingOrder[readingOrder.indexOf(path)+1] ?? '/bug-code/#articles');
     }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),`Overflow at ${width}px: ${path}`);
     const missing = await page.locator('img').evaluateAll(imgs => imgs.filter(img => !img.complete || img.naturalWidth === 0).map(img => img.src));

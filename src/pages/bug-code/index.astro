@@ -1,14 +1,22 @@
 ---
 import Base from '../../layouts/Base.astro';
+import '../../styles/casebook.css';
 import { getCollection } from 'astro:content';
-import { casebookOrder } from '../../lib/casebook-order';
+import { casebookOrder, casebookChapters, casebookTopic } from '../../lib/casebook-order';
 const published = await getCollection('bugCode', ({data}) => !data.draft);
 const local = import.meta.env.DEV ? (await getCollection('drafts')).filter(d => !published.some(p => p.id === d.id)) : [];
 const drafts = [...published, ...local].sort(casebookOrder);
+const chapters = casebookChapters.map(chapter => ({ ...chapter, entries: drafts.filter(d => casebookTopic(d).chapter === chapter.id) })).filter(chapter => chapter.entries.length);
 ---
 <Base title="The Bug Code | Niccolò Parlanti" description="An offensive security casebook: rules applications learn the hard way.">
   <section class="wrap code-introduction"><div class="code-cover"><p class="cover-kicker">NOTES ON OFFENSIVE SECURITY</p><h1><span>The</span>Bug<br />Code</h1><div class="cover-ornament" aria-hidden="true">◆</div><p class="cover-subtitle">Rules applications<br />learn the hard way.</p><p class="cover-author">NICCOLÒ PARLANTI</p></div><div><p class="eyebrow">AN OFFENSIVE SECURITY CASEBOOK</p><h2>The rule is short.<br /><em>The proof follows.</em></h2><p class="lede">Real findings, written as a collection of rules: what the application assumed, where that assumption failed, and what the evidence showed.</p><p class="section-intro">Each article follows one case from behavior to impact, with code models, diagrams, and the checks that should have been there.</p><a class="text-link" href="#articles">Browse the casebook ↓</a></div></section>
   <section id="articles" class="wrap bug-code-contents"><div class="section-heading"><h2>Contents.</h2><span class="mono">THE BUG CODE</span></div>
-    {drafts.length ? <div class="draft-grid book-index">{drafts.map(d => <a class="draft-card book-index-card" href={`/bug-code/${d.id}/`}><span class="book-article">ARTICLE {d.data.rule}{d.collection === 'drafts' ? ' · LOCAL DRAFT' : ''}</span><h3>{d.data.title}</h3><p>{d.data.description}</p><span class="text-link">Read the case study ↗</span></a>)}</div> : <div class="casebook-pending"><p>The first case studies are being edited.</p></div>}
+    <p class="section-intro">Browse by mechanism, or read chapter by chapter. Rule numbers are permanent references, not reading positions.</p>
+    <nav class="chapter-navigation" aria-label="Casebook chapters">{chapters.map((chapter, index) => <a href={`#${chapter.id}`}><span class="mono">{String(index + 1).padStart(2, '0')}</span> {chapter.title}</a>)}</nav>
+    {chapters.map((chapter, index) => <section class="casebook-chapter" id={chapter.id} aria-labelledby={`${chapter.id}-title`}>
+      <header><span class="eyebrow">CHAPTER {String(index + 1).padStart(2, '0')}</span><h2 id={`${chapter.id}-title`}>{chapter.title}</h2><p>{chapter.description}</p></header>
+      <div class="draft-grid book-index">{chapter.entries.map(d => <a class="draft-card book-index-card chapter-card" href={`/bug-code/${d.id}/`}><span class="mono rule-reference">RULE {d.data.rule}{d.collection === 'drafts' ? ' · LOCAL DRAFT' : ''}</span><h3>{casebookTopic(d).label}</h3><span class="casebook-rule-title">{d.data.title}</span><p>{d.data.description}</p><span class="text-link">Read the case study ↗</span></a>)}</div>
+    </section>)}
+    {!drafts.length && <div class="casebook-pending"><p>The first case studies are being edited.</p></div>}
   </section>
 </Base>

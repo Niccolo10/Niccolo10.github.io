@@ -49,11 +49,11 @@ try {
   await page.goto('http://localhost:4322/bug-code/');
   const articleLinks = await page.locator('.book-index-card').evaluateAll(nodes => nodes.map(n => n.getAttribute('href')));
   assert(articleLinks[0].includes('a-template-is-not-an-administrator'));
-  assert(articleLinks.at(-1).includes('invitation-is-not-identity'));
-  await page.getByRole('link').filter({hasText:'ARTICLE 01'}).click();
+  assert(articleLinks.at(-1).includes('remember-the-device-not-the-password'));
+  await page.getByRole('link').filter({hasText:'RULE 01'}).click();
   assert(page.url().includes('invitation-is-not-identity'));
-  await page.getByRole('link',{name:'A service shall not lend its privileges to strangers. →'}).click();
-  assert(page.url().includes('service-identity-is-not-permission'));
+  await page.locator('nav.article-end a').click();
+  assert(page.url().includes('the-shopper-shall-not-set-the-clock'));
   await page.getByRole('link',{name:'← THE BUG CODE',exact:true}).click();
   assert(page.url().endsWith('/bug-code/'));
   await page.getByRole('navigation',{name:'Main navigation'}).getByRole('link',{name:'Archive',exact:true}).click();

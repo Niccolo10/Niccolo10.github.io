@@ -1,0 +1,16 @@
+.chapter-navigation { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 28px 0 48px; }
+.chapter-navigation a { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
+.chapter-navigation .mono { color: var(--green); margin-right: 6px; }
+.casebook-chapter { scroll-margin-top: 100px; margin-bottom: 64px; }
+.casebook-chapter > header { border-top: 2px solid var(--green); padding-top: 24px; margin-bottom: 28px; }
+.casebook-chapter > header h2 { font-size: clamp(26px, 4vw, 36px); margin: 10px 0; }
+.casebook-chapter > header p { color: var(--muted); max-width: 650px; }
+.chapter-card { text-align: left; align-items: flex-start; padding: 25px 20px; }
+.chapter-card h3 { font-size: 25px; line-height: 1.25; margin: 14px 0; }
+.rule-reference { color: var(--muted); font-size: 11px; }
+.casebook-rule-title { font: italic 19px/1.5 var(--serif); color: var(--green); }
+.chapter-card p { margin-block: 16px 24px; }
+@media (max-width: 620px) {
+  .chapter-navigation { flex-direction: column; align-items: flex-start; }
+  .chapter-card { padding-inline: 12px; }
+}
